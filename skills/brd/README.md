@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](file:///Users/skakumanu/practice/skills-catalog/LICENSE)
 [![Runtimes](https://img.shields.io/badge/Runtimes-Antigravity%20%7C%20Claude%20%7C%20Codex-purple.svg)](file:///Users/skakumanu/practice/skills-catalog/README.md)
 [![Cost Profile](https://img.shields.io/badge/Cost%20Tiering-Optimized%20Routing-brightgreen.svg)](#-model-selection--cost-optimization)
+[![Context Management](https://img.shields.io/badge/Context%20Budget-Progressive%20Loading-orange.svg)](#-context-window-management--token-efficiency)
 
 Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**. It transforms unstructured product concepts, stakeholder notes, and strategic goals into verified, authoritative, and pure **Business Requirements Documents (`BRD.md`)** strictly adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
 
@@ -15,6 +16,7 @@ Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for
 - [Skill Structure](#-skill-structure)
 - [Core Directives](#-core-directives)
 - [⚡ Model Selection & Cost Optimization](#-model-selection--cost-optimization)
+- [🧠 Context Window Management & Token Efficiency](#-context-window-management--token-efficiency)
 - [Five-Phase Cognitive Protocol](#-five-phase-cognitive-protocol)
 - [Mandatory 7-Section BRD Schema](#-mandatory-7-section-brd-schema)
 - [Installation & Activation](#-installation--activation)
@@ -40,7 +42,7 @@ When activated, the AI agent assumes the persona of a **Principal Product Owner 
 ```text
 skills/brd/
 ├── SKILL.md                 # Agent instructions, persona directives, and cognitive protocol
-├── README.md                # Dedicated skill documentation, model guide, and usage reference
+├── README.md                # Dedicated skill documentation, model guide, and context specs
 ├── assets/
 │   └── BRD_SCHEMA.md        # Standard 7-section BABOK/IEEE 29148 BRD template & specification
 └── scripts/
@@ -66,6 +68,9 @@ The agent must execute the 5-phase cognitive protocol systematically before emit
 
 ### Directive 3: Cost-Aware Model Tiering
 The agent must avoid invoking expensive, high-reasoning models randomly for low-complexity or routine operations, reserving them strictly for deep cognitive reasoning phases.
+
+### Directive 4: Context Window Optimization & Progressive Loading
+The agent must keep the active context window clean and unburdened by applying progressive loading, subagent delegation, and line-sliced file operations.
 
 ---
 
@@ -105,7 +110,48 @@ flowchart TD
 
 ---
 
-## 🧠 Five-Phase Cognitive Protocol
+## 🧠 Context Window Management & Token Efficiency
+
+Generating enterprise-grade Business Requirements Documents requires processing hundreds of requirements and personas. Without deliberate context management, token saturation degrades reasoning accuracy. The `brd` skill enforces four context preservation strategies:
+
+### 1. Progressive Asset Loading (Lazy Loading)
+- **Problem**: Preloading full schema specifications (`assets/BRD_SCHEMA.md`) and large code examples during initialization burns thousands of prompt tokens before reasoning begins.
+- **Solution**: The `brd` skill instructions in `SKILL.md` are compact (~1.5k tokens). Supporting assets (`BRD_SCHEMA.md`, validator scripts) are read **just-in-time** only when entering Phase 5 (Compilation).
+
+### 2. Subagent Context Isolation
+- **Problem**: Running document linters, inspecting raw regex outputs, or verifying cross-references directly in the main orchestrator pollutes conversation history with verbose logs.
+- **Solution**: The orchestrator spawns an ephemeral **Lightweight Subagent** (or runs `validate_brd.py --json` locally), which performs the audit in an isolated context window and returns only a compact diagnostic summary.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Orchestrator as Main AI-PO (Reasoning Tier)
+    participant Subagent as Validator Subagent (Lightweight Tier)
+    participant FS as Local Filesystem
+
+    User->>Orchestrator: /brd Onboarding Platform Concept
+    Note over Orchestrator: Phases 1–3: Elicit Personas, ToT Domain Model, Use Cases
+    Orchestrator->>FS: Write Draft BRD.md
+    Orchestrator->>Subagent: Run validate_brd.py --strict
+    Note over Subagent: Isolated Context Window<br>(No Main Context Bloat)
+    Subagent->>FS: Lint BRD.md
+    Subagent-->>Orchestrator: Clean Summary (e.g., 0 Errors, 1 Persona Warning)
+    Note over Orchestrator: Phase 4 & 5: Self-Correct & Baseline Final BRD.md
+    Orchestrator-->>User: Present Final BRD.md + Walkthrough
+```
+
+### 3. Line-Bounded Slicing for Document Edits
+- Rather than dumping the entire 1,000+ line `BRD.md` file into context to modify a single use case:
+  - Use `view_file` with precise `StartLine` and `EndLine` parameters.
+  - Use targeted chunk replacements (`replace_file_content`) to update specific sections without reloading the entire document.
+
+### 4. Compact CLI Output Modes
+- The bundled validator [`validate_brd.py`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/scripts/validate_brd.py) supports `--quiet` and `--json` flags to emit concise machine-readable status reports rather than voluminous stack dumps.
+
+---
+
+## 🔬 Five-Phase Cognitive Protocol
 
 ```mermaid
 flowchart LR
@@ -242,10 +288,13 @@ python3 skills/brd/scripts/validate_brd.py path/to/BRD.md --json
 
 ## 🧪 Testing
 
-Unit tests for the `brd` validator are located in `tests/test_validate_brd.py`:
+Unit tests for the `brd` validator and catalog registry are located in `tests/`:
 
 ```bash
-# Run unit tests
+# Run all unit tests
+python3 -m unittest discover tests
+
+# Run specific BRD validator test suite
 python3 -m unittest tests/test_validate_brd.py
 ```
 

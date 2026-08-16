@@ -3,6 +3,7 @@
 [![Standard](https://img.shields.io/badge/Standard-Agent%20Skills%20Spec-blue.svg)](file:///Users/skakumanu/practice/skills-catalog/registry.json)
 [![Runtimes](https://img.shields.io/badge/Runtimes-Antigravity%20%7C%20Claude%20%7C%20Codex-purple.svg)](#-runtime-compatibility-matrix)
 [![Cost Optimization](https://img.shields.io/badge/Model%20Routing-Cost%20Tiered-brightgreen.svg)](#-model-selection--cost-optimization-framework)
+[![Context Management](https://img.shields.io/badge/Context%20Window-Optimized%20Budget-orange.svg)](#-context-window-management--token-efficiency-standard)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](file:///Users/skakumanu/practice/skills-catalog/LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](#-testing--quality-assurance)
 
@@ -16,6 +17,7 @@ A curated, production-grade monorepo of modular **Agent Skills** engineered for 
 - [Runtime Compatibility Matrix](#-runtime-compatibility-matrix)
 - [Available Skills](#-available-skills)
 - [⚡ Model Selection & Cost Optimization Framework](#-model-selection--cost-optimization-framework)
+- [🧠 Context Window Management & Token Efficiency Standard](#-context-window-management--token-efficiency-standard)
 - [Installation & Deployment](#-installation--deployment)
 - [Agent Skills Standard Specification](#-agent-skills-standard-specification)
 - [Central Registry (`registry.json`)](#-central-registry-registryjson)
@@ -39,11 +41,11 @@ skills-catalog/
 ├── skills/                          # Modular agent skills directory
 │   └── <skill_name>/                # Individual skill package
 │       ├── SKILL.md                 # Agent persona, directives, and cognitive execution protocol
-│       ├── README.md                # Dedicated skill documentation, model guide, and schema
+│       ├── README.md                # Dedicated skill documentation, model guide, and context specs
 │       ├── assets/                  # Templates, output schemas, and reference assets
 │       └── scripts/                 # Standalone validation linters and helper utilities
 └── tests/                           # Catalog-wide automated test suite
-    ├── test_registry.py             # Manifest and skill metadata validation
+    ├── test_registry.py             # Manifest, context standards, and skill metadata validation
     └── test_validate_<skill>.py     # Unit tests for skill validators
 ```
 
@@ -66,9 +68,9 @@ All skills in this catalog are designed for zero-friction cross-runtime compatib
 
 Each skill in the catalog is self-contained and documented with its own dedicated `README.md`:
 
-| Skill | Version | Description | Target Runtimes | Cost Profile | Dedicated Documentation |
+| Skill | Version | Description | Target Runtimes | Cost & Context Profile | Dedicated Documentation |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) that generates pure BABOK v3 & IEEE 29148 compliant Business Requirements Documents. | Antigravity, Claude, Codex | Tiered (Reasoning + Cheap Fast) | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
+| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) that generates pure BABOK v3 & IEEE 29148 compliant Business Requirements Documents. | Antigravity, Claude, Codex | Tiered Routing + Progressive Loading | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
 
 *(Additional skills can be authored and added following the [Contribution Guide](#-authoring--contributing-skills).)*
 
@@ -90,6 +92,31 @@ To prevent unnecessary token expenditure, all skills in this catalog enforce a *
 1. **Intelligent Delegation**: When a skill orchestrates subagents or automated steps, trivial utility actions (formatting, linting, regex scanning) must be delegated to the **Lightweight Tier**.
 2. **Preserve Reasoning Tokens**: High-tier models (`sonnet`, `pro`, `opus`, `o3-mini`) are reserved exclusively for deep domain analysis, creative synthesis, and complex multi-perspective critique loops.
 3. **Local CLI Execution First**: Where possible, validation scripts (e.g., zero-dependency Python tools) should be executed directly on the host machine before querying any LLM.
+
+---
+
+## 🧠 Context Window Management & Token Efficiency Standard
+
+Managing the agent's context window efficiently is essential for maintaining prompt responsiveness, avoiding context saturation, and maximizing reasoning accuracy across extended multi-step workflows.
+
+All skills in `skills-catalog` must adhere to the **Four Pillars of Context Window Efficiency**:
+
+```mermaid
+flowchart TD
+    subgraph "Four Pillars of Context Management"
+        P1["1. Progressive Loading<br>Keep SKILL.md compact; read assets on-demand"]
+        P2["2. Subagent Isolation<br>Delegate linting/tools to clean ephemeral sub-contexts"]
+        P3["3. Line-Bounded Slicing<br>Read & replace targeted line ranges (no bulk dumps)"]
+        P4["4. Compact CLI Outputs<br>Use --quiet / --json for machine-readable status summaries"]
+    end
+```
+
+| Context Strategy | Anti-Pattern (Wasteful) | Best Practice (Optimized) | Impact |
+| :--- | :--- | :--- | :--- |
+| **Asset Loading** | Inlining 500-line schemas into `SKILL.md` or preloading them on launch | Loading `assets/*.md` just-in-time when entering compilation phases | ~70% reduction in initial discovery prompt tokens |
+| **Verification** | Running verbose linters directly in the main orchestrator conversation | Spawning isolated subagents or running quiet CLI scripts | Prevents log clutter and retains clean reasoning history |
+| **Document Refinement** | Rewriting or re-reading entire 1,000-line files for single-line changes | Using line slicing (`view_file` Start/End lines) and chunk diff replacements | Eliminates redundant context churn during iterative editing |
+| **State Tracking** | Accumulating sprawling chat logs over multi-phase workflows | Checkpointing intermediate results to disk files or structured markdown sections | Retains tight focus on active phase requirements |
 
 ---
 
@@ -146,10 +173,10 @@ Deploy skills from this catalog to your local AI agent runtimes using the automa
 Each skill in `skills/<skill_name>/` follows the standardized Agent Skills anatomy:
 
 1. **`SKILL.md` (Required Entrypoint)**:
-   - Contains YAML frontmatter metadata (`name`, `description`, `license`, `compatibility`, `models`).
-   - Defines agent persona, behavioral boundaries, prime directives, cost-aware model routing, and cognitive reasoning phases.
+   - Contains YAML frontmatter metadata (`name`, `description`, `license`, `compatibility`, `models`, `context_optimization`).
+   - Defines agent persona, behavioral boundaries, prime directives, cost-aware model routing, and context preservation guidelines.
 2. **`README.md` (Required Documentation)**:
-   - Complete reference manual for the specific skill, explaining role, schema, triggers, model selection guide, validation tools, and tests.
+   - Complete reference manual for the specific skill, explaining role, schema, triggers, model selection guide, context management, and validation tests.
 3. **`assets/` (Optional Resources)**:
    - Houses formal output schemas, templates (e.g., `BRD_SCHEMA.md`), reference examples, and architectural diagrams.
 4. **`scripts/` (Optional Tooling)**:
@@ -172,6 +199,10 @@ models:
     gemini: gemini-2.5-flash / gemini-2.0-flash-lite
     claude: claude-3-5-haiku
     codex: gpt-4o-mini
+context_optimization:
+  progressive_loading: true
+  chunked_synthesis: true
+  subagent_delegation: true
 ---
 ```
 
@@ -186,11 +217,11 @@ The catalog maintains a centralized, machine-readable manifest at [`registry.jso
   "$schema": "https://agentskills.io/schema/registry.json",
   "name": "skills-catalog",
   "version": "1.0.0",
-  "compatibility": {
-    "antigravity": ">=2.0.0",
-    "claude_code": ">=1.0.0",
-    "codex": ">=1.0.0",
-    "python": ">=3.9"
+  "context_standards": {
+    "progressive_loading": true,
+    "subagent_isolation": true,
+    "targeted_file_slicing": true,
+    "compact_tool_outputs": true
   },
   "skills": [
     {
@@ -202,6 +233,11 @@ The catalog maintains a centralized, machine-readable manifest at [`registry.jso
       "description": "...",
       "triggers": ["/brd", "generate brd"],
       "runtimes": ["antigravity", "claude", "codex"],
+      "context_optimization": {
+        "progressive_loading": true,
+        "chunked_synthesis": true,
+        "subagent_delegation": true
+      },
       "models": {
         "reasoning_tier": { ... },
         "lightweight_tier": { ... }
@@ -215,13 +251,16 @@ The catalog maintains a centralized, machine-readable manifest at [`registry.jso
 
 ## 🧪 Testing & Quality Assurance
 
-All skills and validators within the catalog are tested to ensure continuous reliability:
+All skills, registry schemas, and validators within the catalog are tested to ensure continuous reliability:
 
 ```bash
 # Run all unit test suites across the catalog
 python3 -m unittest discover tests
 
-# Run specific skill test suite
+# Run registry and context validation tests
+python3 -m unittest tests/test_registry.py
+
+# Run specific skill validator test suite
 python3 -m unittest tests/test_validate_brd.py
 ```
 
@@ -236,17 +275,17 @@ To contribute or add a new skill to `skills-catalog`:
    mkdir -p skills/<new_skill>/assets skills/<new_skill>/scripts
    ```
 2. **Author `SKILL.md`**:
-   - Add valid YAML frontmatter (`name`, `description`, `license`, `compatibility`, and `models` tiering).
-   - Define directives, cognitive reasoning protocols, and cost-aware delegation rules.
+   - Add valid YAML frontmatter (`name`, `description`, `license`, `compatibility`, `models`, and `context_optimization`).
+   - Define directives, cognitive reasoning protocols, and cost/context-aware delegation rules.
 3. **Author `README.md`**:
-   - Provide comprehensive documentation for the specific skill in `skills/<new_skill>/README.md`, including a Model Selection & Cost Optimization section.
+   - Provide comprehensive documentation for the specific skill in `skills/<new_skill>/README.md`, including Model Selection and Context Window Management sections.
 4. **Add Assets & Schemas**:
    - Place output templates and schemas under `skills/<new_skill>/assets/`.
 5. **Add Validator Scripts & Tests**:
    - Add standalone validators under `skills/<new_skill>/scripts/`.
    - Add unit tests in `tests/test_validate_<new_skill>.py`.
 6. **Register in `registry.json`**:
-   - Append the skill entry with metadata, entrypoint, triggers, tags, and model configurations to [`registry.json`](file:///Users/skakumanu/practice/skills-catalog/registry.json).
+   - Append the skill entry with metadata, entrypoint, triggers, tags, context configuration, and model mappings to [`registry.json`](file:///Users/skakumanu/practice/skills-catalog/registry.json).
 7. **Update Available Skills**:
    - Add a row for the new skill in the [Available Skills](#-available-skills) table of this root `README.md`.
 

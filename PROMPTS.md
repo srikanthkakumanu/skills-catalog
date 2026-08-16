@@ -19,6 +19,12 @@ Create the exact directory structure and all necessary files with full, producti
    - Trivial / mechanical tasks (linter execution, schema verification, table formatting, regex scanning, minor text fixes) MUST use cheap, ultra-low-cost, fast models (e.g. `gemini-2.5-flash` / `gemini-2.0-flash-lite`, `claude-3-5-haiku`, `gpt-4o-mini`).
    - Deep cognitive reasoning tasks (Phases 1-4: persona elicitation, ToT domain decomposition, use case & Gherkin formulation, ReAct critique) MUST use capable reasoning models (e.g. `gemini-2.5-pro` / `gemini-3.7-flash` (High), `claude-3-7-sonnet` / `claude-3-5-sonnet`, `gpt-4o` / `o3-mini`).
    - Skills must NOT randomly invoke expensive high-reasoning models for routine tasks.
+7. Context Window Management & Token Efficiency:
+   - Managing the agent's context window efficiently is essential to maintain reasoning fidelity and prevent token bloat across multi-step workflows.
+   - Progressive Loading (Lazy Loading): Keep `SKILL.md` entrypoints compact; load extensive schema templates (`assets/*.md`) only when entering final document compilation phases.
+   - Subagent Context Isolation: Offload heavy tool executions (such as running `validate_brd.py` linters, regex audits, or checking references) to ephemeral subagents or local CLI scripts, returning only compact summaries to the main orchestrator.
+   - Line-Bounded Slicing: Use line-sliced file reads and targeted replacement chunks rather than dumping multi-hundred-line documents into context.
+   - Intermediate Checkpointing: Persist state to disk or structured sections rather than accumulating sprawling chat history.
 
 ---
 
@@ -28,13 +34,15 @@ Create the exact directory structure and all necessary files with full, producti
    - Master catalog documentation containing all information that applies universally across all skills.
    - Monorepo architecture, Agent Skills standard directory anatomy, and runtime compatibility matrix (Antigravity 2.x, Claude Code, Codex, CLI).
    - Model Selection & Cost Optimization Framework documenting the two-tier routing strategy across Gemini, Claude, and Codex runtimes.
+   - Context Window Management & Token Efficiency Standard establishing the Four Pillars of context optimization (Progressive Loading, Subagent Isolation, Line-Bounded Slicing, Compact CLI Outputs).
    - Universal installation & deployment guide using `./install.sh` (targets, symlink/copy modes, specific skills).
-   - Available Skills table indexing all skills with links to each skill's dedicated `README.md` and cost profiles.
+   - Available Skills table indexing all skills with links to each skill's dedicated `README.md` and cost/context profiles.
    - Central registry (`registry.json`) specification, catalog testing conventions, and step-by-step contribution guide for authoring new skills.
 
 2. `registry.json`
    - Machine-readable manifest conforming to `https://agentskills.io/schema/registry.json`.
-   - Register the `brd` skill with path `skills/brd`, entrypoint `SKILL.md`, readme `README.md`, version `1.0.0`, detailed description, triggers (`/brd`, `generate brd`, `create business requirements`), and `models` tiering configuration.
+   - Top-level `context_standards` defining progressive loading, subagent isolation, and targeted file slicing.
+   - Register the `brd` skill with path `skills/brd`, entrypoint `SKILL.md`, readme `README.md`, version `1.0.0`, detailed description, triggers (`/brd`, `generate brd`, `create business requirements`), `context_optimization` configuration, and `models` tiering.
 
 3. `install.sh`
    - Executable bash script supporting targets: `antigravity`, `claude`, `codex`, and `all`.
@@ -59,14 +67,19 @@ Create the exact directory structure and all necessary files with full, producti
          gemini: gemini-2.5-flash / gemini-2.0-flash-lite
          claude: claude-3-5-haiku
          codex: gpt-4o-mini
+     context_optimization:
+       progressive_loading: true
+       chunked_synthesis: true
+       subagent_delegation: true
      ---
      ```
-   - Comprehensive instructions embodying the Principal Product Owner persona, operational guardrails, cost-aware model tiering directive, step-by-step cognitive phases (CoT, ToT, ReAct), and self-rectification routines.
+   - Comprehensive instructions embodying the Principal Product Owner persona, operational guardrails, cost-aware model tiering directive, context window optimization directive (Directive 4), step-by-step cognitive phases (CoT, ToT, ReAct), and self-rectification routines.
 
 5. `skills/brd/README.md` (Skill-Specific Documentation)
    - Dedicated documentation for the `brd` skill.
    - Explains the AI-PO persona, pure functional scope directives (forbidden vs. mandatory boundaries).
    - Dedicated Model Selection & Cost Optimization Guide with cross-runtime model tier matrix and task-to-model routing flowchart.
+   - Dedicated Context Window Management & Token Efficiency section detailing lazy asset loading, subagent context isolation sequence diagram, and line-bounded slicing.
    - Visual Mermaid flowchart and details for the 5-Phase Cognitive Protocol.
    - Reference for the 7 mandatory BRD sections compliant with BABOK v3 and IEEE 29148.
    - Skill-specific installation commands, invocation triggers (`/brd`), validation CLI usage, and unit testing instructions.
@@ -87,13 +100,13 @@ Create the exact directory structure and all necessary files with full, producti
      - Scans for and warns about technical scope leakage (e.g., SQL, HTTP verbs, container/cloud keywords).
      - Checks for orphaned personas lacking mapped use cases.
      - Validates Given-When-Then Gherkin acceptance criteria in use cases.
-     - Supports CLI flags: `--strict`, `--json`, and `--quiet`.
+     - Supports CLI flags: `--strict`, `--json`, and `--quiet` for compact context-friendly output.
      - Exits with status code 0 on success or 1 on structural failure.
 
 8. `tests/test_validate_brd.py`
    - Automated unit test suite verifying `validate_brd.py` against valid and invalid BRD samples, strict mode enforcement, and JSON reporting.
 
 9. `tests/test_registry.py`
-   - Automated unit test suite verifying `registry.json` schema validity, skill directory paths, mandatory metadata fields, and model configuration structures.
+   - Automated unit test suite verifying `registry.json` schema validity, skill directory paths, mandatory metadata fields, model configuration structures, and context optimization settings.
 
 Ensure all scripts (`install.sh` and `skills/brd/scripts/validate_brd.py`) are created with executable permissions (`chmod +x`). Execute the creation now.

@@ -12,6 +12,10 @@ models:
     gemini: gemini-2.5-flash / gemini-2.0-flash-lite
     claude: claude-3-5-haiku
     codex: gpt-4o-mini
+context_optimization:
+  progressive_loading: true
+  chunked_synthesis: true
+  subagent_delegation: true
 ---
 
 # Autonomous Principal Product Owner & Requirements Engineer (`brd`)
@@ -41,6 +45,13 @@ You must systematically execute the 5-phase cognitive reasoning protocol before 
 Avoid invoking expensive high-reasoning models randomly for low-complexity or routine operations:
 - **Reasoning Tier (`gemini-2.5-pro` / `gemini-3.7-flash`, `claude-3-7-sonnet` / `claude-3-5-sonnet`, `gpt-4o` / `o3-mini`)**: Dedicated to complex cognitive reasoning (Phase 1 persona elicitation, Phase 2 ToT domain decomposition, Phase 3 use case & Gherkin synthesis, Phase 4 ReAct critique loop).
 - **Lightweight Tier (`gemini-2.5-flash` / `gemini-2.0-flash-lite`, `claude-3-5-haiku`, `gpt-4o-mini`)**: Route routine and trivial tasks such as running validation scripts (`validate_brd.py`), formatting tables, minor text edits, and schema structure checks.
+
+### Directive 4: Strict Context Window Optimization & Progressive Loading
+Preserve the agent's context window through lazy-loading, isolation, and targeted operations:
+- **Progressive / Lazy Loading**: Do NOT preload large asset files (e.g., `assets/BRD_SCHEMA.md`) into context during discovery or initial reasoning. Read schemas just-in-time when compiling Section 4 & Section 5.
+- **Subagent Context Isolation**: Spawn lightweight subagents for memory-heavy verification tasks (e.g. running `validate_brd.py`, conducting persona-coverage audits, or checking Gherkin syntax), returning only concise findings to the parent context.
+- **Targeted File Operations**: Use line-range slicing (`view_file` with `StartLine`/`EndLine`) and focused replacement chunks rather than reading or dumping entire multi-hundred-line documents into context.
+- **Incremental Section Synthesis**: Write sections to disk or scratch artifacts progressively to keep active prompt tokens streamlined and focused.
 
 ---
 

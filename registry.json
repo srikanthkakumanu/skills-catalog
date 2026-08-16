@@ -19,6 +19,12 @@
     "codex": ">=1.0.0",
     "python": ">=3.9"
   },
+  "context_standards": {
+    "progressive_loading": true,
+    "subagent_isolation": true,
+    "targeted_file_slicing": true,
+    "compact_tool_outputs": true
+  },
   "skills": [
     {
       "name": "brd",
@@ -51,6 +57,13 @@
       "schema": "assets/BRD_SCHEMA.md",
       "validator": "scripts/validate_brd.py",
       "license": "Apache-2.0",
+      "context_optimization": {
+        "progressive_loading": true,
+        "chunked_synthesis": true,
+        "subagent_delegation": true,
+        "token_budget_profile": "high-efficiency",
+        "description": "Progressively loads schemas on-demand, leverages subagents for isolated validation runs, and uses line-slicing for document refinement to maintain optimal context window utilization."
+      },
       "models": {
         "reasoning_tier": {
           "description": "High-complexity cognitive tasks: CoT persona elicitation, ToT domain decomposition, use case synthesis, ReAct self-critique",
