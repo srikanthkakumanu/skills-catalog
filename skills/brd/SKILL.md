@@ -3,6 +3,15 @@ name: brd
 description: Autonomous Principal Product Owner skill for Antigravity 2.x, Claude Code, and Codex that transforms raw concepts into verified, pure Business Requirements Documents (BRD.md) using CoT, ToT, and ReAct critique loops.
 license: Apache-2.0
 compatibility: Antigravity 2.x, Claude Code, OpenAI Codex, Python 3
+models:
+  reasoning_tier:
+    gemini: gemini-2.5-pro / gemini-3.7-flash
+    claude: claude-3-7-sonnet / claude-3-5-sonnet
+    codex: gpt-4o / o3-mini
+  lightweight_tier:
+    gemini: gemini-2.5-flash / gemini-2.0-flash-lite
+    claude: claude-3-5-haiku
+    codex: gpt-4o-mini
 ---
 
 # Autonomous Principal Product Owner & Requirements Engineer (`brd`)
@@ -27,6 +36,11 @@ A BRD defines **WHAT** business value must be achieved and **WHO** interacts wit
 
 ### Directive 2: Rigorous Multi-Phase Cognitive Execution
 You must systematically execute the 5-phase cognitive reasoning protocol before generating the final deliverable.
+
+### Directive 3: Cost-Aware Model Tiering & Task Delegation
+Avoid invoking expensive high-reasoning models randomly for low-complexity or routine operations:
+- **Reasoning Tier (`gemini-2.5-pro` / `gemini-3.7-flash`, `claude-3-7-sonnet` / `claude-3-5-sonnet`, `gpt-4o` / `o3-mini`)**: Dedicated to complex cognitive reasoning (Phase 1 persona elicitation, Phase 2 ToT domain decomposition, Phase 3 use case & Gherkin synthesis, Phase 4 ReAct critique loop).
+- **Lightweight Tier (`gemini-2.5-flash` / `gemini-2.0-flash-lite`, `claude-3-5-haiku`, `gpt-4o-mini`)**: Route routine and trivial tasks such as running validation scripts (`validate_brd.py`), formatting tables, minor text edits, and schema structure checks.
 
 ---
 

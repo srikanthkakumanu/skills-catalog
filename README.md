@@ -1,138 +1,257 @@
 # Agent Skills Catalog (`skills-catalog`)
 
-Production-grade Agent Skills Monorepo adhering to the open **Agent Skills Standard**, engineered for cross-runtime compatibility with **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**.
+[![Standard](https://img.shields.io/badge/Standard-Agent%20Skills%20Spec-blue.svg)](file:///Users/skakumanu/practice/skills-catalog/registry.json)
+[![Runtimes](https://img.shields.io/badge/Runtimes-Antigravity%20%7C%20Claude%20%7C%20Codex-purple.svg)](#-runtime-compatibility-matrix)
+[![Cost Optimization](https://img.shields.io/badge/Model%20Routing-Cost%20Tiered-brightgreen.svg)](#-model-selection--cost-optimization-framework)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](file:///Users/skakumanu/practice/skills-catalog/LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](#-testing--quality-assurance)
+
+A curated, production-grade monorepo of modular **Agent Skills** engineered for cross-runtime execution across **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**, complying with the open **Agent Skills Standard**.
+
+---
+
+## 📑 Table of Contents
+
+- [Overview & Architecture](#-overview--architecture)
+- [Runtime Compatibility Matrix](#-runtime-compatibility-matrix)
+- [Available Skills](#-available-skills)
+- [⚡ Model Selection & Cost Optimization Framework](#-model-selection--cost-optimization-framework)
+- [Installation & Deployment](#-installation--deployment)
+- [Agent Skills Standard Specification](#-agent-skills-standard-specification)
+- [Central Registry (`registry.json`)](#-central-registry-registryjson)
+- [Testing & Quality Assurance](#-testing--quality-assurance)
+- [Authoring & Contributing Skills](#-authoring--contributing-skills)
+- [License](#-license)
+
+---
+
+## 🧭 Overview & Architecture
+
+The **Agent Skills Catalog** provides a standardized, runtime-agnostic collection of domain-expert AI agent skills. Each skill encapsulates autonomous cognitive workflows, prime directives, output schemas, validation linters, model tier routing, and verification test suites.
+
+### Monorepo Structure
+
+```text
+skills-catalog/
+├── registry.json                    # Central catalog manifest & machine-readable registry
+├── install.sh                       # Multi-runtime CLI installer (symlink / copy modes)
+├── README.md                        # Catalog-wide overview and documentation (this file)
+├── skills/                          # Modular agent skills directory
+│   └── <skill_name>/                # Individual skill package
+│       ├── SKILL.md                 # Agent persona, directives, and cognitive execution protocol
+│       ├── README.md                # Dedicated skill documentation, model guide, and schema
+│       ├── assets/                  # Templates, output schemas, and reference assets
+│       └── scripts/                 # Standalone validation linters and helper utilities
+└── tests/                           # Catalog-wide automated test suite
+    ├── test_registry.py             # Manifest and skill metadata validation
+    └── test_validate_<skill>.py     # Unit tests for skill validators
+```
 
 ---
 
 ## 🚀 Runtime Compatibility Matrix
 
-| Runtime Environment | Target Location | Trigger Mechanism | Status |
+All skills in this catalog are designed for zero-friction cross-runtime compatibility:
+
+| Runtime Environment | Target Installation Path | Discovery & Trigger Mechanism | Status |
 | :--- | :--- | :--- | :--- |
-| **Google Antigravity 2.x** | `~/.antigravity/skills/` | `/brd`, Slash Command, Natural Language | **Tier 1 Supported** |
-| **Claude Code** | `~/.claude/skills/` | `/brd`, Prompt Invocation | **Tier 1 Supported** |
-| **OpenAI Codex** | `~/.codex/skills/` | `/brd`, Prompt Invocation | **Tier 1 Supported** |
-| **Standalone / CI** | Native CLI (`python3`) | `scripts/validate_brd.py` | **Supported (Python >= 3.9)** |
+| **Google Antigravity 2.x** | `~/.antigravity/skills/<skill>/` or `.agents/skills/<skill>/` | Slash commands (`/<skill>`), Natural Language, Auto-Discovery | **Tier 1 Supported** |
+| **Claude Code** | `~/.claude/skills/<skill>/` | Slash commands (`/<skill>`), Prompt Invocation | **Tier 1 Supported** |
+| **OpenAI Codex** | `~/.codex/skills/<skill>/` | Slash commands (`/<skill>`), Prompt Invocation | **Tier 1 Supported** |
+| **Standalone / CI** | Native CLI (`python3`) | Direct script execution, GitHub Actions / CI runners | **Supported (Python >= 3.9)** |
 
 ---
 
-## 📁 Monorepo Architecture
+## 📚 Available Skills
 
-The repository adheres to the standard Agent Skills schema defined in [`registry.json`](file:///Users/skakumanu/practice/skills-catalog/registry.json):
+Each skill in the catalog is self-contained and documented with its own dedicated `README.md`:
 
-```text
-skills-catalog/
-├── registry.json                    # Machine-readable Agent Skills manifest
-├── install.sh                       # Cross-platform multi-runtime installer
-├── README.md                        # Catalog documentation and reference guide
-└── skills/
-    └── brd/                         # Autonomous Principal Product Owner Skill
-        ├── SKILL.md                 # Agent persona, directives, and cognitive protocol
-        ├── assets/
-        │   └── BRD_SCHEMA.md        # Standard 7-section BABOK/IEEE 29148 BRD schema
-        └── scripts/
-            └── validate_brd.py      # Standalone zero-dependency Python BRD linter
-```
+| Skill | Version | Description | Target Runtimes | Cost Profile | Dedicated Documentation |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) that generates pure BABOK v3 & IEEE 29148 compliant Business Requirements Documents. | Antigravity, Claude, Codex | Tiered (Reasoning + Cheap Fast) | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
+
+*(Additional skills can be authored and added following the [Contribution Guide](#-authoring--contributing-skills).)*
+
+---
+
+## ⚡ Model Selection & Cost Optimization Framework
+
+To prevent unnecessary token expenditure, all skills in this catalog enforce a **two-tier model selection architecture**. Skills must never randomly invoke expensive high-reasoning models for trivial or mechanical operations.
+
+### 1. Model Tiering Taxonomy
+
+| Tier | Complexity & Task Types | Google Antigravity / Gemini | Anthropic Claude | OpenAI Codex / GPT | Cost Profile |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Reasoning Tier** | • Multi-phase cognitive reasoning (CoT, ToT)<br>• 360° Persona elicitation & RACI modeling<br>• Domain decomposition & cohesion analysis<br>• Comprehensive document authoring<br>• ReAct self-critique & boundary audits | `gemini-2.5-pro`<br>`gemini-3.7-flash` (High) | `claude-3-7-sonnet`<br>`claude-3-5-sonnet`<br>`claude-3-opus` | `gpt-4o`<br>`o3-mini`<br>`o1` | Standard / High Intelligence |
+| **Lightweight Tier** | • Standalone script execution (e.g. `validate_brd.py`)<br>• Schema syntax & header linting<br>• Table formatting & Markdown alignment<br>• Persona ID / Regex pattern audits<br>• Simple diffing & typo corrections | `gemini-2.5-flash`<br>`gemini-2.0-flash-lite` | `claude-3-5-haiku`<br>`claude-3-haiku` | `gpt-4o-mini`<br>`codex-mini` | **Ultra-Low Cost (~10-20x cheaper)** |
+
+### 2. Core Economic Principles for Skills
+
+1. **Intelligent Delegation**: When a skill orchestrates subagents or automated steps, trivial utility actions (formatting, linting, regex scanning) must be delegated to the **Lightweight Tier**.
+2. **Preserve Reasoning Tokens**: High-tier models (`sonnet`, `pro`, `opus`, `o3-mini`) are reserved exclusively for deep domain analysis, creative synthesis, and complex multi-perspective critique loops.
+3. **Local CLI Execution First**: Where possible, validation scripts (e.g., zero-dependency Python tools) should be executed directly on the host machine before querying any LLM.
 
 ---
 
 ## 📦 Installation & Deployment
 
-Deploy skills to your local AI agent runtimes using the automated installer script [`install.sh`](file:///Users/skakumanu/practice/skills-catalog/install.sh).
+Deploy skills from this catalog to your local AI agent runtimes using the automated installer script [`install.sh`](file:///Users/skakumanu/practice/skills-catalog/install.sh).
 
-### Quick Install (All Platforms)
+### Quick Install (All Skills to All Runtimes)
 
 ```bash
-# Symlink all skills into Antigravity, Claude Code, and Codex runtimes
+# Symlink all catalog skills into Antigravity, Claude Code, and Codex runtimes
 ./install.sh
 ```
 
 ### Targeted Installations
 
 ```bash
-# Install exclusively for Antigravity 2.x
+# Install all skills exclusively for Google Antigravity 2.x
 ./install.sh --target antigravity
 
-# Install exclusively for Claude Code
+# Install all skills exclusively for Claude Code
 ./install.sh --target claude
 
-# Install exclusively for OpenAI Codex
+# Install all skills exclusively for OpenAI Codex
 ./install.sh --target codex
 
+# Install a specific skill (e.g., brd) to all runtimes
+./install.sh --skill brd
+
+# Install a specific skill to a specific runtime
+./install.sh --skill brd --target antigravity
+
 # Install via file copying instead of symlinks
-./install.sh --target all --mode copy
+./install.sh --mode copy
 
 # Force overwrite existing installations
 ./install.sh --force
 ```
 
----
+### CLI Installer Options Reference
 
-## 🧠 Featured Skill: `brd` (Principal Product Owner)
-
-The [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/SKILL.md) skill operates as an autonomous **Principal Product Owner & Requirements Engineer (AI-PO)**. It transforms unstructured product concepts into verified, pure **Business Requirements Documents (`BRD.md`)** compliant with **BABOK v3** and **IEEE 29148:2018**.
-
-### Key Capabilities
-
-1. **Strict Pure Functional Scope**: Excludes technical architectures, SQL schemas, API routes, and cloud infrastructure to produce an unambiguous business foundation for downstream engineering.
-2. **Multi-Phase Cognitive Protocol**:
-   - **Phase 1: Chain of Thought (CoT)**: Elicits a 360° persona ecosystem (End-Users, Ops, Support, Risk/Compliance, Admins) and quantifiable KPIs.
-   - **Phase 2: Tree of Thoughts (ToT)**: Evaluates 2–3 competing domain decomposition paths to select the model with minimal functional coupling.
-   - **Phase 3: MoSCoW & Flow Synthesis**: Maps use cases with nominal paths, alternate/exception flows, and formal Gherkin Given-When-Then criteria while strictly isolating Phase 1 MVP boundaries.
-   - **Phase 4: ReAct Critique Loop**: Self-corrects boundary collisions, orphaned personas, unhandled exceptions, and scope creep.
-   - **Phase 5: Markdown Compilation**: Emits [`BRD_SCHEMA.md`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/assets/BRD_SCHEMA.md)-compliant markdown.
-
-### 7 Mandatory BRD Sections
-
-1. **Executive Summary & Business Intent**
-2. **Stakeholder, Persona & Actor Ecosystem**
-3. **Functional Domain Taxonomy & Boundaries**
-4. **Comprehensive Business Use Case Catalog**
-5. **MVP Scoping & Phased Rollout Matrix**
-6. **Business Constraints & Governance Guardrails**
-7. **Refinement & Validation Changelog**
-
-### Invocation Triggers
-
-In Antigravity, Claude Code, or Codex, invoke the skill with:
-
-```text
-/brd Create a customer onboarding and identity verification platform
-```
-or
-```text
-generate brd for an automated expense reconciliation workflow
-```
+| Flag | Argument | Description | Default |
+| :--- | :--- | :--- | :--- |
+| `-t`, `--target` | `antigravity` \| `claude` \| `codex` \| `all` | Target runtime environment | `all` |
+| `-m`, `--mode` | `symlink` \| `copy` | Installation method | `symlink` |
+| `-s`, `--skill` | `<skill_name>` \| `all` | Specific skill to deploy | `all` |
+| `-f`, `--force` | (None) | Overwrite existing skill directories in target runtime | `false` |
+| `-h`, `--help` | (None) | Display help and usage information | |
 
 ---
 
-## 🔍 Automated Verification & Linting
+## 📐 Agent Skills Standard Specification
 
-Validate any generated `BRD.md` against BABOK and IEEE 29148 standards using the bundled Python 3 linter:
+Each skill in `skills/<skill_name>/` follows the standardized Agent Skills anatomy:
+
+1. **`SKILL.md` (Required Entrypoint)**:
+   - Contains YAML frontmatter metadata (`name`, `description`, `license`, `compatibility`, `models`).
+   - Defines agent persona, behavioral boundaries, prime directives, cost-aware model routing, and cognitive reasoning phases.
+2. **`README.md` (Required Documentation)**:
+   - Complete reference manual for the specific skill, explaining role, schema, triggers, model selection guide, validation tools, and tests.
+3. **`assets/` (Optional Resources)**:
+   - Houses formal output schemas, templates (e.g., `BRD_SCHEMA.md`), reference examples, and architectural diagrams.
+4. **`scripts/` (Optional Tooling)**:
+   - Standalone utilities, formatters, and compliance linters (e.g., zero-dependency Python scripts) that can be run by agents or in CI/CD pipelines.
+
+### Standard YAML Frontmatter Example
+
+```yaml
+---
+name: sample-skill
+description: Comprehensive summary of what the skill does and when the agent should trigger it.
+license: Apache-2.0
+compatibility: Antigravity 2.x, Claude Code, OpenAI Codex, Python 3
+models:
+  reasoning_tier:
+    gemini: gemini-2.5-pro / gemini-3.7-flash
+    claude: claude-3-7-sonnet / claude-3-5-sonnet
+    codex: gpt-4o / o3-mini
+  lightweight_tier:
+    gemini: gemini-2.5-flash / gemini-2.0-flash-lite
+    claude: claude-3-5-haiku
+    codex: gpt-4o-mini
+---
+```
+
+---
+
+## 🗂️ Central Registry (`registry.json`)
+
+The catalog maintains a centralized, machine-readable manifest at [`registry.json`](file:///Users/skakumanu/practice/skills-catalog/registry.json) for automated indexing, tooling, and package discovery:
+
+```json
+{
+  "$schema": "https://agentskills.io/schema/registry.json",
+  "name": "skills-catalog",
+  "version": "1.0.0",
+  "compatibility": {
+    "antigravity": ">=2.0.0",
+    "claude_code": ">=1.0.0",
+    "codex": ">=1.0.0",
+    "python": ">=3.9"
+  },
+  "skills": [
+    {
+      "name": "brd",
+      "version": "1.0.0",
+      "path": "skills/brd",
+      "entrypoint": "SKILL.md",
+      "readme": "README.md",
+      "description": "...",
+      "triggers": ["/brd", "generate brd"],
+      "runtimes": ["antigravity", "claude", "codex"],
+      "models": {
+        "reasoning_tier": { ... },
+        "lightweight_tier": { ... }
+      }
+    }
+  ]
+}
+```
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+All skills and validators within the catalog are tested to ensure continuous reliability:
 
 ```bash
-# Standard validation
-python3 skills/brd/scripts/validate_brd.py BRD.md
+# Run all unit test suites across the catalog
+python3 -m unittest discover tests
 
-# Strict validation (fails on any technical scope leakage)
-python3 skills/brd/scripts/validate_brd.py BRD.md --strict
-
-# Machine-readable JSON output for CI/CD
-python3 skills/brd/scripts/validate_brd.py BRD.md --json
+# Run specific skill test suite
+python3 -m unittest tests/test_validate_brd.py
 ```
 
 ---
 
-## 🤝 Contributing New Skills
+## 🤝 Authoring & Contributing Skills
 
-To add a new skill to `skills-catalog`:
-1. Create a new directory under `skills/<skill_name>/`.
-2. Add `SKILL.md` with valid YAML frontmatter (`name`, `description`, `license`, `compatibility`).
-3. Add any schema specifications under `skills/<skill_name>/assets/`.
-4. Add any validation tools or helpers under `skills/<skill_name>/scripts/`.
-5. Register the skill in [`registry.json`](file:///Users/skakumanu/practice/skills-catalog/registry.json).
+To contribute or add a new skill to `skills-catalog`:
+
+1. **Create Skill Directory**:
+   ```bash
+   mkdir -p skills/<new_skill>/assets skills/<new_skill>/scripts
+   ```
+2. **Author `SKILL.md`**:
+   - Add valid YAML frontmatter (`name`, `description`, `license`, `compatibility`, and `models` tiering).
+   - Define directives, cognitive reasoning protocols, and cost-aware delegation rules.
+3. **Author `README.md`**:
+   - Provide comprehensive documentation for the specific skill in `skills/<new_skill>/README.md`, including a Model Selection & Cost Optimization section.
+4. **Add Assets & Schemas**:
+   - Place output templates and schemas under `skills/<new_skill>/assets/`.
+5. **Add Validator Scripts & Tests**:
+   - Add standalone validators under `skills/<new_skill>/scripts/`.
+   - Add unit tests in `tests/test_validate_<new_skill>.py`.
+6. **Register in `registry.json`**:
+   - Append the skill entry with metadata, entrypoint, triggers, tags, and model configurations to [`registry.json`](file:///Users/skakumanu/practice/skills-catalog/registry.json).
+7. **Update Available Skills**:
+   - Add a row for the new skill in the [Available Skills](#-available-skills) table of this root `README.md`.
 
 ---
 
 ## 📄 License
 
-Apache-2.0 © Srikanth Kakumanu
+Apache-2.0 © [Srikanth Kakumanu](https://github.com/srikanthkakumanu)
