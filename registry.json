@@ -1,0 +1,55 @@
+{
+  "$schema": "https://agentskills.io/schema/registry.json",
+  "name": "skills-catalog",
+  "version": "1.0.0",
+  "description": "Production-grade Agent Skills Monorepo compatible with Antigravity 2.x, Claude Code, and OpenAI Codex following the open Agent Skills standard.",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/srikanthkakumanu/skills-catalog",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srikanthkakumanu/skills-catalog.git"
+  },
+  "author": {
+    "name": "Srikanth Kakumanu",
+    "email": "srikanthkakumanu@users.noreply.github.com"
+  },
+  "compatibility": {
+    "antigravity": ">=2.0.0",
+    "claude_code": ">=1.0.0",
+    "codex": ">=1.0.0",
+    "python": ">=3.9"
+  },
+  "skills": [
+    {
+      "name": "brd",
+      "version": "1.0.0",
+      "path": "skills/brd",
+      "entrypoint": "SKILL.md",
+      "description": "Autonomous Principal Product Owner skill for Antigravity 2.x, Claude Code, and Codex that transforms raw concepts into verified, pure Business Requirements Documents (BRD.md) using CoT, ToT, and ReAct critique loops.",
+      "triggers": [
+        "/brd",
+        "generate brd",
+        "create business requirements",
+        "draft brd",
+        "business requirements document",
+        "requirements analysis"
+      ],
+      "runtimes": [
+        "antigravity",
+        "claude",
+        "codex"
+      ],
+      "tags": [
+        "requirements-engineering",
+        "product-management",
+        "babok",
+        "ieee-29148",
+        "business-analysis",
+        "pure-functional-spec"
+      ],
+      "schema": "assets/BRD_SCHEMA.md",
+      "validator": "scripts/validate_brd.py",
+      "license": "Apache-2.0"
+    }
+  ]
+}
