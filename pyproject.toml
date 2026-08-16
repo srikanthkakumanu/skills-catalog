@@ -1,0 +1,29 @@
+[project]
+name = "skills-catalog"
+version = "1.0.0"
+description = "A curated monorepo of modular Agent Skills engineered for cross-runtime execution across Antigravity 2.x, Claude Code, and OpenAI Codex."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Srikanth Kakumanu" }
+]
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.5.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]

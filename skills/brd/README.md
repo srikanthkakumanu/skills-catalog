@@ -3,10 +3,11 @@
 [![Standard](https://img.shields.io/badge/Standard-BABOK%20v3%20%7C%20IEEE%2029148-blue.svg)](https://www.iiba.org/standards-and-resources/babok/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](file:///Users/skakumanu/practice/skills-catalog/LICENSE)
 [![Runtimes](https://img.shields.io/badge/Runtimes-Antigravity%20%7C%20Claude%20%7C%20Codex-purple.svg)](file:///Users/skakumanu/practice/skills-catalog/README.md)
+[![Scope Support](https://img.shields.io/badge/Scopes-Prototype%20%7C%20MVP%20%7C%20Full-blueviolet.svg)](#-scope-boundaries-prototype-mvp-full)
 [![Cost Profile](https://img.shields.io/badge/Cost%20Tiering-Optimized%20Routing-brightgreen.svg)](#-model-selection--cost-optimization)
 [![Context Management](https://img.shields.io/badge/Context%20Budget-Progressive%20Loading-orange.svg)](#-context-window-management--token-efficiency)
 
-Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**. It transforms unstructured product concepts, stakeholder notes, and strategic goals into verified, authoritative, and pure **Business Requirements Documents (`BRD.md`)** strictly adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
+Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**. It transforms unstructured product concepts, stakeholder notes, and strategic goals into verified, authoritative, and pure **Business Requirements Documents (`BRD.md`)** tailored to your desired delivery boundary (**`prototype`**, **`mvp`**, or **`full`**) while strictly adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
 
 ---
 
@@ -15,6 +16,7 @@ Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for
 - [Overview & Role](#-overview--role)
 - [Skill Structure](#-skill-structure)
 - [Core Directives](#-core-directives)
+- [🎯 Scope Boundaries: Prototype, MVP, Full](#-scope-boundaries-prototype-mvp-full)
 - [⚡ Model Selection & Cost Optimization](#-model-selection--cost-optimization)
 - [🧠 Context Window Management & Token Efficiency](#-context-window-management--token-efficiency)
 - [Five-Phase Cognitive Protocol](#-five-phase-cognitive-protocol)
@@ -31,9 +33,10 @@ Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for
 When activated, the AI agent assumes the persona of a **Principal Product Owner & Lead Requirements Engineer (AI-PO)**. 
 
 ### Key Objectives
-1. **Bridge the Business-to-Engineering Chasm**: Produce crisp, unambiguous functional requirements that serve as the single source of truth for engineering, architecture, QA, and executive stakeholders.
-2. **Enforce Pure Functional Neutrality**: Isolate business logic, workflows, user personas, and governance from implementation specifics (databases, API contracts, cloud infrastructure).
-3. **Execute Structured Cognitive Reasoning**: Leverage Chain-of-Thought (CoT), Tree-of-Thoughts (ToT), and ReAct self-critique loops before generating final artifacts.
+1. **Calibrate Output to Delivery Target**: Understands and strictly bounds requirements according to your selected scope: **`prototype`**, **`mvp`**, or **`full`**.
+2. **Bridge the Business-to-Engineering Chasm**: Produce crisp, unambiguous functional requirements that serve as the single source of truth for engineering, architecture, QA, and executive stakeholders.
+3. **Enforce Pure Functional Neutrality**: Isolate business logic, workflows, user personas, and governance from implementation specifics (databases, API contracts, cloud infrastructure).
+4. **Execute Structured Cognitive Reasoning**: Leverage Chain-of-Thought (CoT), Tree-of-Thoughts (ToT), and ReAct self-critique loops before generating final artifacts.
 
 ---
 
@@ -71,6 +74,38 @@ The agent must avoid invoking expensive, high-reasoning models randomly for low-
 
 ### Directive 4: Context Window Optimization & Progressive Loading
 The agent must keep the active context window clean and unburdened by applying progressive loading, subagent delegation, and line-sliced file operations.
+
+### Directive 5: Strict Scope Boundary Control (`prototype` | `mvp` | `full`)
+The agent must strictly calibrate the depth, personas, use cases, and governance constraints to the selected scope boundary.
+
+---
+
+## 🎯 Scope Boundaries: Prototype, MVP, Full
+
+The `brd` skill natively understands three delivery targets and tailors its cognitive reasoning and documentation depth accordingly:
+
+```mermaid
+flowchart LR
+    subgraph Scopes["BRD Scope Boundaries"]
+        P["Prototype<br>Feasibility & Concept UX"]
+        M["MVP (Default)<br>Day-1 Production Viability"]
+        F["Full<br>Enterprise Multi-Phase Spec"]
+    end
+    P --> M
+    M --> F
+```
+
+### Scope Comparison Matrix
+
+| Feature Dimension | 🧪 Prototype Scope | 🚀 MVP Scope (Default) | 🏢 Full Enterprise Scope |
+| :--- | :--- | :--- | :--- |
+| **Primary Objective** | Validate concept feasibility, key assumptions, and core user journey | Deliver leanest standalone viable release delivering real business value | Comprehensive multi-tenant platform with long-term roadmap |
+| **Stakeholder Ecosystem** | 1–2 essential actors (`PER-001` End User, `PER-002` basic Admin/Reviewer) | 3–4 core operational actors (End-User, Ops Specialist, Admin/Support) | Full 360° ecosystem (5+ actors including Risk, Compliance, Tier-1/2 Support, Tenant Admins) |
+| **Domain Decomposition** | 1 focused core capability flow | 2–3 core L1 capabilities isolating the MVP module cut-line | Exhaustive hierarchy of all L1 capabilities and nested L2 business modules |
+| **Use Case Granularity** | 1–2 happy path nominal flows (`UC-101`, `UC-102`) + basic input errors | Full nominal flows + primary exception flows (`E1`, `E2`) + Given-When-Then criteria | Complete use case catalog covering all nominal, alternate, edge, and disaster recovery flows |
+| **MoSCoW Matrix** | 100% focused on Prototype validation slice | Strict Must-Haves (Phase 1) vs Should/Could Haves (Phase 2+) | Multi-phased release roadmap (Phase 1 MVP, Phase 2 Scaling, Phase 3 Enterprise, Horizon) |
+| **Governance & Constraints** | Lightweight assumptions; DR and heavy regulatory compliance deferred | Core privacy/legal constraints and Day-1 operational SLAs | Comprehensive regulatory matrices (GDPR, HIPAA, SOC2), enterprise SLAs (99.9x%, RTO/RPO) |
+| **Metadata Header** | `**Scope Level** \| `Prototype`` | `**Scope Level** \| `MVP`` | `**Scope Level** \| `Full`` |
 
 ---
 
@@ -115,12 +150,10 @@ flowchart TD
 Generating enterprise-grade Business Requirements Documents requires processing hundreds of requirements and personas. Without deliberate context management, token saturation degrades reasoning accuracy. The `brd` skill enforces four context preservation strategies:
 
 ### 1. Progressive Asset Loading (Lazy Loading)
-- **Problem**: Preloading full schema specifications (`assets/BRD_SCHEMA.md`) and large code examples during initialization burns thousands of prompt tokens before reasoning begins.
-- **Solution**: The `brd` skill instructions in `SKILL.md` are compact (~1.5k tokens). Supporting assets (`BRD_SCHEMA.md`, validator scripts) are read **just-in-time** only when entering Phase 5 (Compilation).
+- The `brd` skill instructions in `SKILL.md` are compact (~1.5k tokens). Supporting assets (`BRD_SCHEMA.md`, validator scripts) are read **just-in-time** only when entering Phase 5 (Compilation).
 
 ### 2. Subagent Context Isolation
-- **Problem**: Running document linters, inspecting raw regex outputs, or verifying cross-references directly in the main orchestrator pollutes conversation history with verbose logs.
-- **Solution**: The orchestrator spawns an ephemeral **Lightweight Subagent** (or runs `validate_brd.py --json` locally), which performs the audit in an isolated context window and returns only a compact diagnostic summary.
+- The orchestrator spawns an ephemeral **Lightweight Subagent** (or runs `validate_brd.py --json` locally), which performs the audit in an isolated context window and returns only a compact diagnostic summary.
 
 ```mermaid
 sequenceDiagram
@@ -130,21 +163,20 @@ sequenceDiagram
     participant Subagent as Validator Subagent (Lightweight Tier)
     participant FS as Local Filesystem
 
-    User->>Orchestrator: /brd Onboarding Platform Concept
+    User->>Orchestrator: /brd --mvp Onboarding Platform Concept
     Note over Orchestrator: Phases 1–3: Elicit Personas, ToT Domain Model, Use Cases
     Orchestrator->>FS: Write Draft BRD.md
-    Orchestrator->>Subagent: Run validate_brd.py --strict
+    Orchestrator->>Subagent: Run validate_brd.py --strict --scope mvp
     Note over Subagent: Isolated Context Window<br>(No Main Context Bloat)
     Subagent->>FS: Lint BRD.md
-    Subagent-->>Orchestrator: Clean Summary (e.g., 0 Errors, 1 Persona Warning)
+    Subagent-->>Orchestrator: Clean Summary (e.g., 0 Errors, 0 Warnings)
     Note over Orchestrator: Phase 4 & 5: Self-Correct & Baseline Final BRD.md
     Orchestrator-->>User: Present Final BRD.md + Walkthrough
 ```
 
 ### 3. Line-Bounded Slicing for Document Edits
-- Rather than dumping the entire 1,000+ line `BRD.md` file into context to modify a single use case:
-  - Use `view_file` with precise `StartLine` and `EndLine` parameters.
-  - Use targeted chunk replacements (`replace_file_content`) to update specific sections without reloading the entire document.
+- Use `view_file` with precise `StartLine` and `EndLine` parameters.
+- Use targeted chunk replacements (`replace_file_content`) to update specific sections without reloading the entire document.
 
 ### 4. Compact CLI Output Modes
 - The bundled validator [`validate_brd.py`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/scripts/validate_brd.py) supports `--quiet` and `--json` flags to emit concise machine-readable status reports rather than voluminous stack dumps.
@@ -156,41 +188,34 @@ sequenceDiagram
 ```mermaid
 flowchart LR
     P1["Phase 1: CoT<br>Persona Ecosystem & KPIs"] --> P2["Phase 2: ToT<br>Domain Decomposition"]
-    P2 --> P3["Phase 3: CoT + MoSCoW<br>Use Cases & MVP Isolation"]
+    P2 --> P3["Phase 3: CoT + MoSCoW<br>Use Cases & Scope Isolation"]
     P3 --> P4["Phase 4: ReAct Loop<br>Critique & Self-Healing"]
     P4 --> P5["Phase 5: Compilation<br>BABOK / IEEE 29148 BRD.md"]
 ```
 
 ### Phase 1: Chain of Thought (CoT) — Persona Ecosystem & Business Intent
-- **Strategic Intent Analysis**: Core problem statement, current state deficiencies, and market opportunity.
-- **Quantifiable KPIs**: Baseline vs. Target milestones with measurement methodologies.
-- **360° Persona Ecosystem**: Identifies all roles with IDs (`PER-001` .. `PER-00N`):
-  - *Primary External Users* (Customers / End-Users)
-  - *Internal Operations* (Back-office, reviewers)
-  - *Customer Support* (Tier-1/2 support, dispute resolvers)
-  - *Risk & Compliance* (Auditors, legal, compliance officers)
-  - *Platform Administrators* (Tenant / Org admins)
+- **Strategic Intent Analysis**: Problem statement and market opportunity.
+- **Quantifiable KPIs**: Calibrated baseline vs. target milestones based on scope.
+- **Persona Ecosystem**: Tailored persona count (1–2 for Prototype, 3–4 for MVP, 5+ for Full).
 
 ### Phase 2: Tree of Thoughts (ToT) — Domain Decomposition
-- Synthesizes 2–3 competing domain models (Workflow-driven vs. Role-driven vs. Capability-driven).
-- Evaluates functional coupling and selects the model with maximum functional cohesion and clean regulatory isolation.
-- Establishes L1 Capabilities and nested L2 Business Modules.
+- Synthesizes 2–3 competing domain models (Workflow vs Role vs Capability).
+- Selects the path with maximum cohesion and isolates scope boundaries.
+- Establishes L1 Capabilities and L2 Business Modules matching the target scope level.
 
 ### Phase 3: CoT & MoSCoW Scoping — Use Cases & MVP Isolation
-- Authors exhaustive business use cases (`UC-101` .. `UC-NNN`) mapping to declared personas.
-- Details **Nominal Business Flows (Happy Path)** step-by-step.
-- Details **Alternate & Exception Flows** (`E1`, `E2`, etc.) for edge cases and authorization failures.
-- Formulates formal **Given-When-Then** acceptance criteria in Gherkin format.
-- Implements strict **MoSCoW Prioritization** (Must Have, Should Have, Could Have, Won't Have) protecting Phase 1 MVP boundaries.
+- Authors use cases (`UC-101` .. `UC-NNN`) mapped to declared personas.
+- Details Nominal flows, Alternate/Exception flows, and Gherkin acceptance criteria.
+- Implements scope-specific MoSCoW feature allocation.
 
 ### Phase 4: ReAct Critique Loop — Autonomous Self-Healing
-- **Persona Orphan Check**: Confirms 100% of declared `PER-xxx` personas appear in at least one use case.
-- **Technical Leakage Check**: Identifies and removes accidental technical terminology (SQL, REST, Docker, AWS, React, etc.).
-- **Exception Completeness Check**: Verifies all business edge cases and rejection states are handled.
-- **MVP Guardrail Check**: Verifies out-of-scope capabilities have clear rationale.
+- **Persona Orphan Check**: Confirms 100% of declared `PER-xxx` personas appear in use cases.
+- **Technical Leakage Check**: Identifies and removes accidental technical terminology.
+- **Scope Boundary Check**: Confirms requirements do not bleed across scope limits.
+- **Exception Completeness Check**: Verifies all business edge cases are accounted for.
 
 ### Phase 5: Markdown Compilation
-- Generates the complete, publication-ready `BRD.md` strictly following [`BRD_SCHEMA.md`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/assets/BRD_SCHEMA.md).
+- Emits publication-ready `BRD.md` with explicit `Scope Level` header attribute.
 
 ---
 
@@ -227,62 +252,67 @@ The generated document adheres to the structure in [`assets/BRD_SCHEMA.md`](file
 
 ### Installing the Skill
 
-From the repository root, install the `brd` skill across all or specific agent runtimes:
-
 ```bash
 # Install 'brd' across all runtimes (Antigravity, Claude Code, Codex)
 ./install.sh --skill brd
 
-# Install 'brd' for Google Antigravity only
+# Targeted runtime installations
 ./install.sh --skill brd --target antigravity
-
-# Install 'brd' for Claude Code only
 ./install.sh --skill brd --target claude
-
-# Install 'brd' for OpenAI Codex only
 ./install.sh --skill brd --target codex
 ```
 
-### Activation Triggers
+### Activation Triggers by Scope
 
-Invoke the skill within your AI agent runtime:
+Invoke the skill within your AI agent runtime with your desired scope boundary:
 
+#### 1. Prototype Scope Invocation
 ```text
-/brd Create an enterprise employee onboarding and identity verification platform
+/brd --scope prototype Create a quick interactive prototype for expense receipt snapping
 ```
 or
 ```text
-generate brd for an automated expense reconciliation workflow
+generate prototype brd for customer onboarding flow
+```
+
+#### 2. MVP Scope Invocation (Default)
+```text
+/brd --scope mvp Create a production MVP for automated expense reconciliation
 ```
 or
 ```text
-draft business requirements document for multi-tenant subscription billing
+/brd Create an automated expense reconciliation workflow
+```
+
+#### 3. Full Enterprise Scope Invocation
+```text
+/brd --scope full Create a complete enterprise billing and multi-tenant subscription platform
+```
+or
+```text
+generate full enterprise brd for multi-tenant subscription billing
 ```
 
 ---
 
 ## 🔍 Automated Verification & Linting
 
-The skill includes a standalone, zero-dependency Python 3 validator [`validate_brd.py`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/scripts/validate_brd.py) to programmatically check any `BRD.md` against BABOK and IEEE 29148 standards.
+Validate any generated `BRD.md` against BABOK, IEEE 29148, and Scope Boundaries using [`validate_brd.py`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/scripts/validate_brd.py):
 
 ### Usage
 
 ```bash
-# Standard validation (can be run locally or via lightweight model)
+# Standard validation (auto-detects scope from document metadata)
 python3 skills/brd/scripts/validate_brd.py path/to/BRD.md
 
-# Strict validation (fails with non-zero exit code on technical scope leakage or warnings)
-python3 skills/brd/scripts/validate_brd.py path/to/BRD.md --strict
+# Strict validation with explicit scope enforcement
+python3 skills/brd/scripts/validate_brd.py path/to/BRD.md --strict --scope prototype
+python3 skills/brd/scripts/validate_brd.py path/to/BRD.md --strict --scope mvp
+python3 skills/brd/scripts/validate_brd.py path/to/BRD.md --strict --scope full
 
 # Machine-readable JSON output for CI/CD integration
 python3 skills/brd/scripts/validate_brd.py path/to/BRD.md --json
 ```
-
-### Checks Performed
-- **Section Integrity**: Verifies presence and ordering of all 7 mandatory sections.
-- **Technical Scope Leakage**: Detects SQL patterns, database engines, HTTP routes, payload terms, cloud infra, and code snippets.
-- **Persona Traceability**: Detects orphaned personas (`PER-xxx`) that are declared but never referenced in any use case.
-- **Gherkin Acceptance Criteria**: Validates that all use cases contain formal `Scenario:` and `Given...When...Then` specifications.
 
 ---
 

@@ -70,7 +70,7 @@ Each skill in the catalog is self-contained and documented with its own dedicate
 
 | Skill | Version | Description | Target Runtimes | Cost & Context Profile | Dedicated Documentation |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) that generates pure BABOK v3 & IEEE 29148 compliant Business Requirements Documents. | Antigravity, Claude, Codex | Tiered Routing + Progressive Loading | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
+| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) supporting **Prototype**, **MVP**, and **Full Enterprise** scope boundaries to produce pure BABOK v3 & IEEE 29148 compliant BRDs. | Antigravity, Claude, Codex | Multi-Scope + Tiered Routing + Progressive Loading | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
 
 *(Additional skills can be authored and added following the [Contribution Guide](#-authoring--contributing-skills).)*
 
@@ -251,7 +251,22 @@ The catalog maintains a centralized, machine-readable manifest at [`registry.jso
 
 ## 🧪 Testing & Quality Assurance
 
-All skills, registry schemas, and validators within the catalog are tested to ensure continuous reliability:
+All skills, registry schemas, and validators within the catalog are tested and linted. You can use the **`uv` package manager** or standard Python:
+
+### Using `uv` (Recommended)
+
+```bash
+# Run full test suite with pytest via uv
+uv run pytest
+
+# Run fast code linting via ruff
+uv run ruff check .
+
+# Run native unittest discovery via uv
+uv run python -m unittest discover tests
+```
+
+### Using Native Python CLI
 
 ```bash
 # Run all unit test suites across the catalog

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for registry.json, model tiering, and context window optimization configurations.
+Unit tests for registry.json, model tiering, scope boundaries, and context window optimization configurations.
 """
 
 import json
@@ -37,7 +37,7 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
             self.assertIsNotNone(skill_name, "Skill entry missing 'name'")
 
             # Check required fields
-            for field in ["name", "version", "path", "entrypoint", "readme", "triggers", "runtimes", "models", "context_optimization"]:
+            for field in ["name", "version", "path", "entrypoint", "readme", "triggers", "runtimes", "scopes", "models", "context_optimization"]:
                 self.assertIn(field, skill, f"Skill '{skill_name}' missing field '{field}'")
 
             # Check paths exist
@@ -57,6 +57,17 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
             if "validator" in skill:
                 validator_path = skill_dir / skill["validator"]
                 self.assertTrue(validator_path.is_file(), f"Skill validator not found: {validator_path}")
+
+    def test_scope_configuration(self):
+        skills = self.registry.get("skills", [])
+        for skill in skills:
+            skill_name = skill.get("name")
+            scopes = skill.get("scopes", {})
+            self.assertIn("supported", scopes, f"Skill '{skill_name}' missing scopes.supported")
+            self.assertIn("default", scopes, f"Skill '{skill_name}' missing scopes.default")
+            self.assertEqual(scopes["default"], "mvp")
+            for expected_scope in ["prototype", "mvp", "full"]:
+                self.assertIn(expected_scope, scopes["supported"])
 
     def test_model_tiering_configuration(self):
         skills = self.registry.get("skills", [])
@@ -81,13 +92,15 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
             entrypoint_path = REPO_ROOT / skill["path"] / skill["entrypoint"]
             content = entrypoint_path.read_text(encoding="utf-8")
 
-            # Check that frontmatter exists and contains models and context definitions
+            # Check that frontmatter exists and contains models, context, and scopes definitions
             self.assertTrue(content.startswith("---"), f"{entrypoint_path} does not start with YAML frontmatter")
             self.assertIn("models:", content, f"{entrypoint_path} frontmatter missing 'models:' section")
             self.assertIn("reasoning_tier:", content, f"{entrypoint_path} frontmatter missing 'reasoning_tier:'")
             self.assertIn("lightweight_tier:", content, f"{entrypoint_path} frontmatter missing 'lightweight_tier:'")
             self.assertIn("context_optimization:", content, f"{entrypoint_path} frontmatter missing 'context_optimization:'")
+            self.assertIn("scopes:", content, f"{entrypoint_path} frontmatter missing 'scopes:' section")
             self.assertIn("Directive 4: Strict Context Window Optimization", content, f"{entrypoint_path} missing Directive 4")
+            self.assertIn("Directive 5: Strict Scope Boundary Control", content, f"{entrypoint_path} missing Directive 5")
 
 
 if __name__ == "__main__":

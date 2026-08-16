@@ -15,6 +15,7 @@ Every BRD markdown file must begin with the following metadata header table:
 | :--- | :--- |
 | **Document Version** | `1.0.0` (or semantic version) |
 | **Status** | `Draft` \| `In Review` \| `Approved` \| `Baselined` |
+| **Scope Level** | `Prototype` \| `MVP` \| `Full` |
 | **Author / Lead AI-PO** | Principal Requirements Engineer (`brd` skill) |
 | **Business Sponsor / Owner** | [Target Business Unit / Executive Sponsor] |
 | **Last Updated** | [YYYY-MM-DD] |

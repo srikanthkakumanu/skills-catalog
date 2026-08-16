@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Unit tests for validate_brd.py
+Unit tests for validate_brd.py supporting scope levels (prototype, mvp, full).
 """
 
+import json
 import subprocess
 import tempfile
 import unittest
@@ -14,6 +15,7 @@ SAMPLE_VALID_BRD = """# Business Requirements Document: Automated Expense Reconc
 | :--- | :--- |
 | **Document Version** | `1.0.0` |
 | **Status** | `Approved` |
+| **Scope Level** | `MVP` |
 | **Author / Lead AI-PO** | Principal Requirements Engineer (`brd` skill) |
 | **Business Sponsor** | Finance Operations Group |
 | **Last Updated** | 2026-08-16 |
@@ -58,93 +60,107 @@ Domain: Expense Lifecycle
 
 ### 3.2 Business In-Scope vs. Out-of-Scope Guardrails
 
-| Scope Area | In-Scope (Business Obligations) | Out-of-Scope (Strict Boundaries) | Strategic Rationale |
+| Capability Area | Phase 1 MVP (In-Scope) | Future Releases (Out-of-Scope) | Strategic Rationale |
 | :--- | :--- | :--- | :--- |
-| **Functional Bounds** | Digital receipt intake, automated policy evaluation | Physical check printing | Focus on digital disbursements |
+| Receipt Upload | JPG, PNG, PDF receipts up to 25MB | Multi-currency real-time FX hedging | Maintain focus on core domestic expense flows |
+| Policy Rules | Automated per-diem and spending cap limits | ML-driven fraud prediction scoring | Core deterministic business rules sufficient for MVP |
 
 ## 4. Comprehensive Business Use Case Catalog
 
-### UC-101: Submit Expense Claim
+### UC-101: Submit Digital Expense Claim
+- **Primary Persona**: `PER-001` (Employee Claimant)
+- **Preconditions**: Claimant has valid active employment status.
+- **Postconditions**: Expense claim is stored in `SUBMITTED` state and routed for validation.
 
-| Attribute | Specification |
-| :--- | :--- |
-| **Use Case ID** | `UC-101` |
-| **L1 / L2 Domain** | Claim Intake -> Receipt Ingestion |
-| **Primary Actor** | `PER-001` (Employee Claimant) |
-| **Secondary Actors** | `PER-002` (Expense Auditor) |
-| **Business Priority** | `Must Have` |
+#### Nominal Business Flow
+1. Claimant creates a new expense claim draft.
+2. Claimant uploads receipt item and inputs category, merchant, amount, and date.
+3. Claimant submits claim for policy verification.
 
-#### A. Nominal Business Flow
-1. The `PER-001` submits an expense receipt with category and amount.
-2. The system verifies claim eligibility against per-diem limits.
-3. The claim transitions to `Approved` or routes to `PER-002` if thresholds exceed policy.
+#### Alternate & Exception Flows
+- **E1: Incomplete Claim Data**: System rejects submission and prompts claimant for missing fields.
 
-#### B. Given-When-Then Acceptance Criteria
-
+#### Acceptance Criteria (Gherkin Format)
 ```gherkin
-Feature: UC-101 - Submit Expense Claim
-  Scenario: Claimant submits compliant claim within limits
-    Given Claimant PER-001 is an active corporate employee
-    And The receipt total is under the single-item policy limit
-    When The claimant submits the expense report
-    Then The system records the claim in Pending Approval status
+Scenario: Successful expense claim submission
+  Given an authenticated Employee Claimant "PER-001"
+  When they submit an expense claim with valid receipt and amount under threshold
+  Then the claim state transitions to "PENDING_AUDIT"
+  And an acknowledgement notification is dispatched to "PER-001"
 ```
 
-### UC-102: Conduct Audit Review & Exception Approval
+### UC-102: Audit Flagged Expense Claim
+- **Primary Persona**: `PER-002` (Expense Auditor)
+- **Supporting Persona**: `PER-003` (Finance Supervisor)
+- **Preconditions**: Claim has been flagged for manual auditor review.
+- **Postconditions**: Claim is approved, rejected with reason, or escalated to `PER-003`.
 
-| Attribute | Specification |
-| :--- | :--- |
-| **Use Case ID** | `UC-102` |
-| **L1 / L2 Domain** | Audit Workflow -> Policy Rule Evaluation |
-| **Primary Actor** | `PER-002` (Expense Auditor) |
-| **Secondary Actors** | `PER-003` (Finance Supervisor) |
-| **Business Priority** | `Must Have` |
+#### Nominal Business Flow
+1. Auditor opens audit queue and selects flagged claim.
+2. Auditor verifies receipt details against submitted line items.
+3. Auditor approves claim for reimbursement dispatch.
 
-#### A. Nominal Business Flow
-1. `PER-002` reviews flagged items and approves or escalates to `PER-003`.
-2. `PER-003` provides final executive authorization.
+#### Alternate & Exception Flows
+- **E1: Policy Violation**: Auditor rejects claim with mandatory justification comments.
+- **E2: High-Value Exception**: Auditor escalates claim to Finance Supervisor `PER-003`.
 
-#### B. Given-When-Then Acceptance Criteria
-
+#### Acceptance Criteria (Gherkin Format)
 ```gherkin
-Feature: UC-102 - Conduct Audit Review
-  Scenario: Auditor resolves policy discrepancy
-    Given A claim submitted by PER-001 has been flagged for audit
-    When Auditor PER-002 reviews and approves the exception with supervisor PER-003
-    Then The claim status is updated to Cleared For Payment
+Scenario: Auditor approves compliant claim
+  Given an Expense Auditor "PER-002" reviewing a flagged claim
+  When they confirm receipt items match policy rules and submit approval
+  Then the claim state changes to "APPROVED"
 ```
 
 ## 5. MVP Scoping & Phased Rollout Matrix
 
 ### 5.1 MoSCoW Feature Allocation Table
 
-| Requirement ID | Capability Description | Persona Beneficiary | MoSCoW Tier | Target Milestone |
-| :--- | :--- | :--- | :--- | :--- |
-| `REQ-101` | Receipt intake and OCR extraction | `PER-001` | **Must Have** | Phase 1 (MVP) |
-| `REQ-102` | Automated policy boundary checking | `PER-002` | **Must Have** | Phase 1 (MVP) |
+| MoSCoW Level | Functional Capability | Target Release Milestone | Business Value Impact |
+| :--- | :--- | :--- | :--- |
+| **Must Have** | Digital claim creation & receipt upload (`UC-101`) | Phase 1 MVP | Eliminates paper receipts |
+| **Must Have** | Policy validation & auditor approval workflow (`UC-102`) | Phase 1 MVP | Protects company expense policy |
+| **Should Have**| Bulk receipt batch upload | Phase 2 | Improves high-volume traveler efficiency |
+| **Could Have** | Integrated corporate travel booking sync | Phase 3 | Convenience integration |
+| **Won't Have**  | Cryptocurrency corporate reimbursement | Out of Scope | Not compliant with financial policy |
+
+### 5.2 Phase 1 MVP Kickstart Release Guardrails
+- **Scope Boundary**: Restricted to single-currency claims under standard employee policies.
+- **Operational Rollout**: Limited initial pilot to 500 internal employees before global organization rollout.
 
 ## 6. Business Constraints & Governance Guardrails
 
-### 6.1 Regulatory & Compliance Constraints
-- Adherence to SOX financial auditing and corporate taxation compliance.
+### 6.1 Regulatory, Privacy & Legal Constraints
+- All expense data and receipt records must be archived for 7 fiscal years to comply with statutory financial auditing regulations.
+- Personally Identifiable Information (PII) must be masked in compliance with data privacy standards.
 
-### 6.2 Risk Management & Mitigation Matrix
+### 6.2 Business Operational Constraints & SLAs
+- **Standard Claim Processing SLA**: 95% of compliant claims processed within 48 business hours.
+- **High-Priority Escalation SLA**: 100% of escalated exception claims resolved within 24 business hours.
 
-| Risk ID | Identified Business Risk | Severity | Probability | Mitigation Strategy |
+### 6.3 Risk Management & Mitigation Matrix
+
+| Risk Identifier | Risk Description | Likelihood | Impact | Business Mitigation Strategy |
 | :--- | :--- | :--- | :--- | :--- |
-| `RSK-001` | Inaccurate receipt data extraction | Medium | Low | Human-in-the-loop manual review for ambiguous receipts |
+| `RSK-001` | Duplicate claim submission across different expense periods | Medium | High | Automated hash check and receipt timestamp duplicate detection rule |
+| `RSK-002` | Delays in manager approval causing SLA breaches | Medium | Medium | Automated escalation alerts dispatched after 24 hours of inactivity |
 
 ## 7. Refinement & Validation Changelog
 
-### 7.1 Traceability & Persona Coverage Validation
-- 100% persona traceability confirmed across all defined use cases.
+### 7.1 Traceability & Persona Coverage Audit
+- `PER-001` (Employee Claimant) -> Mapped to `UC-101`
+- `PER-002` (Expense Auditor) -> Mapped to `UC-102`
+- `PER-003` (Finance Supervisor) -> Mapped to `UC-102` (E2 escalation flow)
 
 ### 7.2 Version Changelog
 
-| Revision | Date | Author | Summary | Approved By |
-| :--- | :--- | :--- | :--- | :--- |
-| `1.0.0` | 2026-08-16 | AI-PO (`brd` skill) | Baselined pure business requirements document | Product Council |
+| Version | Release Date | Author / AI-PO | Summary of Changes |
+| :--- | :--- | :--- | :--- |
+| `1.0.0` | 2026-08-16 | Principal Requirements Engineer | Initial baseline of pure business requirements document for Phase 1 MVP |
 """
+
+
+SAMPLE_PROTOTYPE_BRD = SAMPLE_VALID_BRD.replace("| **Scope Level** | `MVP` |", "| **Scope Level** | `Prototype` |")
 
 
 class TestBRDValidator(unittest.TestCase):
@@ -163,6 +179,46 @@ class TestBRDValidator(unittest.TestCase):
                 text=True,
             )
             self.assertEqual(result.returncode, 0, f"Validator failed: {result.stdout} {result.stderr}")
+            data = json.loads(result.stdout)
+            self.assertEqual(data["status"], "PASSED")
+            self.assertEqual(data["scope"]["effective_scope"], "mvp")
+        finally:
+            Path(temp_path).unlink()
+
+    def test_prototype_scope_validation(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(SAMPLE_PROTOTYPE_BRD)
+            temp_path = f.name
+
+        try:
+            result = subprocess.run(
+                ["python3", str(self.script_path), temp_path, "--strict", "--scope", "prototype", "--json"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, f"Validator failed: {result.stdout} {result.stderr}")
+            data = json.loads(result.stdout)
+            self.assertEqual(data["status"], "PASSED")
+            self.assertEqual(data["scope"]["effective_scope"], "prototype")
+        finally:
+            Path(temp_path).unlink()
+
+    def test_full_scope_validation(self):
+        full_brd = SAMPLE_VALID_BRD.replace("| **Scope Level** | `MVP` |", "| **Scope Level** | `Full` |")
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(full_brd)
+            temp_path = f.name
+
+        try:
+            result = subprocess.run(
+                ["python3", str(self.script_path), temp_path, "--strict", "--scope", "full", "--json"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, f"Validator failed: {result.stdout} {result.stderr}")
+            data = json.loads(result.stdout)
+            self.assertEqual(data["status"], "PASSED")
+            self.assertEqual(data["scope"]["effective_scope"], "full")
         finally:
             Path(temp_path).unlink()
 

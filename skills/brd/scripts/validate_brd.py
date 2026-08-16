@@ -3,11 +3,17 @@
 validate_brd.py - Production-Grade Business Requirements Document (BRD) Validator
 Compliant with BABOK Guide v3 and IEEE 29148:2018 Standards.
 
+Supports Scope Boundaries:
+- prototype: Rapid concept feasibility & happy path validation
+- mvp: Production-ready Day-1 viable scope (Default)
+- full: Comprehensive enterprise multi-phase specification
+
 Verifies:
 1. Presence of all 7 mandatory BRD sections.
 2. Zero technical scope leakage (detects SQL, REST endpoints, cloud infra, code constructs).
 3. Persona-to-UseCase traceability (identifies orphaned personas).
 4. Formal Given-When-Then acceptance criteria in use cases.
+5. Adherence to selected scope boundaries (prototype, mvp, full).
 """
 
 import argparse
@@ -15,7 +21,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set
 
 # ANSI color escape sequences
 COLOR_RED = "\033[91m"
@@ -50,12 +56,16 @@ TECHNICAL_LEAKAGE_PATTERNS = [
 PERSONA_DECLARATION_PATTERN = re.compile(r"`?(PER-[A-Za-z0-9_-]+)`?", re.IGNORECASE)
 USE_CASE_HEADER_PATTERN = re.compile(r"###\s+(UC-[A-Za-z0-9_-]+)[:\s]+(.+)", re.IGNORECASE)
 GHERKIN_SCENARIO_PATTERN = re.compile(r"\bScenario:\s*(.+)", re.IGNORECASE)
+SCOPE_HEADER_PATTERN = re.compile(r"\|\s*\*{0,2}Scope\s+Level\*{0,2}\s*\|\s*`?([A-Za-z0-9_-]+)`?", re.IGNORECASE)
 
 
 class BRDValidator:
-    def __init__(self, file_path: Path, strict: bool = False):
+    def __init__(self, file_path: Path, strict: bool = False, scope: Optional[str] = None):
         self.file_path = file_path
         self.strict = strict
+        self.requested_scope = scope.lower() if scope else None
+        self.detected_scope: Optional[str] = None
+        self.effective_scope: str = "mvp"
         self.raw_content = ""
         self.lines: List[str] = []
         self.errors: List[str] = []
@@ -77,6 +87,24 @@ class BRDValidator:
         except Exception as e:
             self.errors.append(f"Failed to read file {self.file_path}: {str(e)}")
             return False
+
+    def extract_scope(self) -> None:
+        """Detect scope level from document metadata or fall back to requested/default scope."""
+        match = SCOPE_HEADER_PATTERN.search(self.raw_content)
+        if match:
+            self.detected_scope = match.group(1).lower()
+
+        if self.requested_scope:
+            self.effective_scope = self.requested_scope
+            if self.detected_scope and self.detected_scope != self.requested_scope:
+                self.warnings.append(
+                    f"Scope Mismatch: Document metadata specifies Scope Level '{self.detected_scope.capitalize()}', "
+                    f"but validation was executed with '--scope {self.requested_scope}'."
+                )
+        elif self.detected_scope in ["prototype", "mvp", "full"]:
+            self.effective_scope = self.detected_scope
+        else:
+            self.effective_scope = "mvp"
 
     def validate_mandatory_sections(self) -> None:
         """Ensure all 7 mandatory sections exist in the document."""
@@ -125,7 +153,6 @@ class BRDValidator:
 
     def extract_personas_and_use_cases(self) -> None:
         """Extract declared personas in Section 2 and use case mappings in Section 4."""
-        # Determine boundary of Section 2
         sec2_line = self.section_matches.get(2, 0)
         sec3_line = self.section_matches.get(3, len(self.lines))
         sec4_line = self.section_matches.get(4, 0)
@@ -137,7 +164,7 @@ class BRDValidator:
             sec2_text = "\n".join(self.lines[sec2_line - 1 : end_line])
             for match in PERSONA_DECLARATION_PATTERN.finditer(sec2_text):
                 p_id = match.group(1).upper()
-                if p_id != "PER-XXX" and p_id != "PER-YYY" and p_id != "PER-ZZZ":
+                if p_id not in ("PER-XXX", "PER-YYY", "PER-ZZZ", "PER-00N", "PER-NNN"):
                     self.declared_personas.add(p_id)
 
         # Extract use cases and referenced personas from Section 4 lines
@@ -164,7 +191,7 @@ class BRDValidator:
                     # Scan for persona references
                     for p_match in PERSONA_DECLARATION_PATTERN.finditer(line):
                         p_id = p_match.group(1).upper()
-                        if p_id != "PER-XXX" and p_id != "PER-YYY" and p_id != "PER-ZZZ":
+                        if p_id not in ("PER-XXX", "PER-YYY", "PER-ZZZ", "PER-00N", "PER-NNN"):
                             current_uc["personas"].add(p_id)
                             self.referenced_personas.add(p_id)
 
@@ -196,16 +223,51 @@ class BRDValidator:
                     f"Use Case '{uc['id']}' (Line {uc['start_line']}): Missing formal Given-When-Then acceptance criteria."
                 )
 
+    def validate_scope_boundaries(self) -> None:
+        """Verify the document matches the expectations of the effective scope level."""
+        persona_count = len(self.declared_personas)
+        use_case_count = len(self.use_cases)
+
+        if self.effective_scope == "prototype":
+            if persona_count == 0:
+                self.warnings.append("Prototype Scope: At least 1 core persona should be declared in Section 2.")
+            elif persona_count > 3:
+                self.warnings.append(
+                    f"Prototype Scope Boundary Note: {persona_count} personas declared. Prototypes typically focus on 1-2 core user personas."
+                )
+            if use_case_count == 0:
+                self.errors.append("Prototype Scope: At least 1 happy-path use case must be defined in Section 4.")
+        elif self.effective_scope == "mvp":
+            if persona_count < 2:
+                self.warnings.append(
+                    f"MVP Scope: Found {persona_count} declared personas. An MVP typically defines at least 2-3 core operational personas (End-User, Ops, Admin)."
+                )
+            if use_case_count < 2:
+                self.warnings.append(
+                    f"MVP Scope: Found {use_case_count} use cases. MVP releases typically define at least 2-3 core functional use cases."
+                )
+        elif self.effective_scope == "full":
+            if persona_count < 3:
+                self.warnings.append(
+                    f"Full Enterprise Scope: Found only {persona_count} declared personas. Full enterprise specifications should define a comprehensive 360° ecosystem (4+ personas including Support, Risk/Compliance, Admin)."
+                )
+            if use_case_count < 2:
+                self.warnings.append(
+                    f"Full Enterprise Scope: Found {use_case_count} use cases. Full enterprise releases typically require comprehensive L1/L2 capability use case catalogs."
+                )
+
     def run_all(self) -> bool:
         """Execute full validation suite and return True if passed."""
         if not self.load_file():
             return False
 
+        self.extract_scope()
         self.validate_mandatory_sections()
         self.validate_technical_leakage()
         self.extract_personas_and_use_cases()
         self.validate_persona_traceability()
         self.validate_use_cases()
+        self.validate_scope_boundaries()
 
         return len(self.errors) == 0
 
@@ -214,6 +276,11 @@ class BRDValidator:
             "file": str(self.file_path),
             "status": "PASSED" if len(self.errors) == 0 else "FAILED",
             "strict_mode": self.strict,
+            "scope": {
+                "effective_scope": self.effective_scope,
+                "detected_in_document": self.detected_scope,
+                "requested_by_user": self.requested_scope,
+            },
             "summary": {
                 "errors_count": len(self.errors),
                 "warnings_count": len(self.warnings),
@@ -243,8 +310,9 @@ class BRDValidator:
 
     def print_text_report(self) -> None:
         print(f"\n{COLOR_BOLD}{COLOR_BLUE}=== Business Requirements Document (BRD) Linter ==={COLOR_RESET}")
-        print(f"Target File: {COLOR_BOLD}{self.file_path}{COLOR_RESET}")
-        print(f"Strict Mode: {'Enabled' if self.strict else 'Disabled'}\n")
+        print(f"Target File:    {COLOR_BOLD}{self.file_path}{COLOR_RESET}")
+        print(f"Scope Boundary: {COLOR_BOLD}{COLOR_CYAN}{self.effective_scope.upper()}{COLOR_RESET}" + (" (Detected in document)" if self.detected_scope else " (Default)"))
+        print(f"Strict Mode:    {'Enabled' if self.strict else 'Disabled'}\n")
 
         # Mandatory Sections Check
         print(f"{COLOR_BOLD}1. Mandatory Sections (BABOK & IEEE 29148):{COLOR_RESET}")
@@ -283,7 +351,7 @@ class BRDValidator:
         # Final Result Banner
         print("\n" + "=" * 60)
         if len(self.errors) == 0:
-            print(f"{COLOR_BOLD}{COLOR_GREEN}✓ VALIDATION PASSED: The document is a verified, pure Business Requirements Document.{COLOR_RESET}")
+            print(f"{COLOR_BOLD}{COLOR_GREEN}✓ VALIDATION PASSED: The document is a verified, pure Business Requirements Document [{self.effective_scope.upper()} Scope].{COLOR_RESET}")
         else:
             print(f"{COLOR_BOLD}{COLOR_RED}✗ VALIDATION FAILED: {len(self.errors)} blocking issue(s) detected.{COLOR_RESET}")
         print("=" * 60 + "\n")
@@ -294,6 +362,7 @@ def main():
         description="Validate Business Requirements Documents (BRD) against BABOK and IEEE 29148 standards."
     )
     parser.add_argument("file_path", type=str, help="Path to the BRD markdown file to validate")
+    parser.add_argument("--scope", choices=["prototype", "mvp", "full"], help="Target scope boundary to validate against (prototype, mvp, full)")
     parser.add_argument("--strict", action="store_true", help="Enable strict mode (fails on technical leakage warnings)")
     parser.add_argument("--json", action="store_true", help="Output machine-readable JSON report")
     parser.add_argument("--quiet", action="store_true", help="Suppress non-error text output")
@@ -301,7 +370,7 @@ def main():
     args = parser.parse_args()
     target_path = Path(args.file_path).resolve()
 
-    validator = BRDValidator(target_path, strict=args.strict)
+    validator = BRDValidator(target_path, strict=args.strict, scope=args.scope)
     passed = validator.run_all()
 
     if args.json:
