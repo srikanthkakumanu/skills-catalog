@@ -3,11 +3,11 @@
 [![Standard](https://img.shields.io/badge/Standard-BABOK%20v3%20%7C%20IEEE%2029148-blue.svg)](https://www.iiba.org/standards-and-resources/babok/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](file:///Users/skakumanu/practice/skills-catalog/LICENSE)
 [![Runtimes](https://img.shields.io/badge/Runtimes-Antigravity%20%7C%20Claude%20%7C%20Codex-purple.svg)](file:///Users/skakumanu/practice/skills-catalog/README.md)
-[![Scope Support](https://img.shields.io/badge/Scopes-Prototype%20%7C%20MVP%20%7C%20Full-blueviolet.svg)](#-scope-boundaries-prototype-mvp-full)
+[![Scope Support](https://img.shields.io/badge/Scopes-Simple%20%7C%20Prototype%20%7C%20MVP%20%7C%20Full-blueviolet.svg)](#-scope-boundaries-simple-prototype-mvp-full)
 [![Cost Profile](https://img.shields.io/badge/Cost%20Tiering-Optimized%20Routing-brightgreen.svg)](#-model-selection--cost-optimization)
 [![Context Management](https://img.shields.io/badge/Context%20Budget-Progressive%20Loading-orange.svg)](#-context-window-management--token-efficiency)
 
-Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**. It transforms unstructured product concepts, stakeholder notes, and strategic goals into verified, authoritative, and pure **Business Requirements Documents (`BRD.md`)** tailored to your desired delivery boundary (**`prototype`**, **`mvp`**, or **`full`**) while strictly adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
+Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**. It transforms unstructured product concepts, stakeholder notes, and strategic goals into verified, authoritative, and pure **Business Requirements Documents (`BRD.md`)** tailored to your desired delivery boundary (**`simple`**, **`prototype`**, **`mvp`**, or **`full`**) while strictly adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
 
 ---
 
@@ -16,7 +16,7 @@ Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for
 - [Overview & Role](#-overview--role)
 - [Skill Structure](#-skill-structure)
 - [Core Directives](#-core-directives)
-- [🎯 Scope Boundaries: Prototype, MVP, Full](#-scope-boundaries-prototype-mvp-full)
+- [🎯 Scope Boundaries: Simple, Prototype, MVP, Full](#-scope-boundaries-simple-prototype-mvp-full)
 - [⚡ Model Selection & Cost Optimization](#-model-selection--cost-optimization)
 - [🧠 Context Window Management & Token Efficiency](#-context-window-management--token-efficiency)
 - [Five-Phase Cognitive Protocol](#-five-phase-cognitive-protocol)
@@ -33,7 +33,7 @@ Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for
 When activated, the AI agent assumes the persona of a **Principal Product Owner & Lead Requirements Engineer (AI-PO)**. 
 
 ### Key Objectives
-1. **Calibrate Output to Delivery Target**: Understands and strictly bounds requirements according to your selected scope: **`prototype`**, **`mvp`**, or **`full`**.
+1. **Calibrate Output to Delivery Target**: Understands and strictly bounds requirements according to your selected scope: **`simple`**, **`prototype`**, **`mvp`**, or **`full`**.
 2. **Bridge the Business-to-Engineering Chasm**: Produce crisp, unambiguous functional requirements that serve as the single source of truth for engineering, architecture, QA, and executive stakeholders.
 3. **Enforce Pure Functional Neutrality**: Isolate business logic, workflows, user personas, and governance from implementation specifics (databases, API contracts, cloud infrastructure).
 4. **Execute Structured Cognitive Reasoning**: Leverage Chain-of-Thought (CoT), Tree-of-Thoughts (ToT), and ReAct self-critique loops before generating final artifacts.
@@ -47,7 +47,8 @@ skills/brd/
 ├── SKILL.md                 # Agent instructions, persona directives, and cognitive protocol
 ├── README.md                # Dedicated skill documentation, model guide, and context specs
 ├── assets/
-│   └── BRD_SCHEMA.md        # Standard 7-section BABOK/IEEE 29148 BRD template & specification
+│   ├── BRD_SCHEMA.md        # Standard 7-section BABOK/IEEE 29148 BRD template & specification
+│   └── BRD_SCHEMA_SIMPLE.md # Lightweight 4-section simple scope BRD template
 └── scripts/
     └── validate_brd.py      # Zero-dependency Python 3 BRD compliance linter and validator
 ```
@@ -75,37 +76,40 @@ The agent must avoid invoking expensive, high-reasoning models randomly for low-
 ### Directive 4: Context Window Optimization & Progressive Loading
 The agent must keep the active context window clean and unburdened by applying progressive loading, subagent delegation, and line-sliced file operations.
 
-### Directive 5: Strict Scope Boundary Control (`prototype` | `mvp` | `full`)
+### Directive 5: Strict Scope Boundary Control (`simple` | `prototype` | `mvp` | `full`)
 The agent must strictly calibrate the depth, personas, use cases, and governance constraints to the selected scope boundary.
 
 ---
 
-## 🎯 Scope Boundaries: Prototype, MVP, Full
+## 🎯 Scope Boundaries: Simple, Prototype, MVP, Full
 
-The `brd` skill natively understands three delivery targets and tailors its cognitive reasoning and documentation depth accordingly:
+The `brd` skill natively understands four delivery targets and tailors its cognitive reasoning and documentation depth accordingly:
 
 ```mermaid
 flowchart LR
     subgraph Scopes["BRD Scope Boundaries"]
+        S["Simple<br>Lightweight Minimal"]
         P["Prototype<br>Feasibility & Concept UX"]
         M["MVP (Default)<br>Day-1 Production Viability"]
         F["Full<br>Enterprise Multi-Phase Spec"]
     end
+    S --> P
     P --> M
     M --> F
 ```
 
 ### Scope Comparison Matrix
 
-| Feature Dimension | 🧪 Prototype Scope | 🚀 MVP Scope (Default) | 🏢 Full Enterprise Scope |
-| :--- | :--- | :--- | :--- |
-| **Primary Objective** | Validate concept feasibility, key assumptions, and core user journey | Deliver leanest standalone viable release delivering real business value | Comprehensive multi-tenant platform with long-term roadmap |
-| **Stakeholder Ecosystem** | 1–2 essential actors (`PER-001` End User, `PER-002` basic Admin/Reviewer) | 3–4 core operational actors (End-User, Ops Specialist, Admin/Support) | Full 360° ecosystem (5+ actors including Risk, Compliance, Tier-1/2 Support, Tenant Admins) |
-| **Domain Decomposition** | 1 focused core capability flow | 2–3 core L1 capabilities isolating the MVP module cut-line | Exhaustive hierarchy of all L1 capabilities and nested L2 business modules |
-| **Use Case Granularity** | 1–2 happy path nominal flows (`UC-101`, `UC-102`) + basic input errors | Full nominal flows + primary exception flows (`E1`, `E2`) + Given-When-Then criteria | Complete use case catalog covering all nominal, alternate, edge, and disaster recovery flows |
-| **MoSCoW Matrix** | 100% focused on Prototype validation slice | Strict Must-Haves (Phase 1) vs Should/Could Haves (Phase 2+) | Multi-phased release roadmap (Phase 1 MVP, Phase 2 Scaling, Phase 3 Enterprise, Horizon) |
-| **Governance & Constraints** | Lightweight assumptions; DR and heavy regulatory compliance deferred | Core privacy/legal constraints and Day-1 operational SLAs | Comprehensive regulatory matrices (GDPR, HIPAA, SOC2), enterprise SLAs (99.9x%, RTO/RPO) |
-| **Metadata Header** | `**Scope Level** \| `Prototype`` | `**Scope Level** \| `MVP`` | `**Scope Level** \| `Full`` |
+| Feature Dimension | 📋 Simple Scope | 🧪 Prototype Scope | 🚀 MVP Scope (Default) | 🏢 Full Enterprise Scope |
+| :--- | :--- | :--- | :--- | :--- |
+| **Primary Objective** | Rapid, throwaway requirements for quick validation | Validate concept feasibility, key assumptions, and core user journey | Deliver leanest standalone viable release delivering real business value | Comprehensive multi-tenant platform with long-term roadmap |
+| **Stakeholder Ecosystem** | 1–2 essential roles (minimal detail) | 1–2 essential actors (`PER-001` End User, `PER-002` basic Admin/Reviewer) | 3–4 core operational actors (End-User, Ops Specialist, Admin/Support) | Full 360° ecosystem (5+ actors including Risk, Compliance, Tier-1/2 Support, Tenant Admins) |
+| **Domain Decomposition** | Lightweight tree (Domains → Modules → Submodules, no L1/L2 formality) | 1 focused core capability flow | 2–3 core L1 capabilities isolating the MVP module cut-line | Exhaustive hierarchy of all L1 capabilities and nested L2 business modules |
+| **Use Case Structure** | 1–2 flows with Workflow, Happy Path, Exception Paths, Gherkin | 1–2 happy path nominal flows (`UC-101`, `UC-102`) + basic input errors | Full nominal flows + primary exception flows (`E1`, `E2`) + Given-When-Then criteria | Complete use case catalog covering all nominal, alternate, edge, and disaster recovery flows |
+| **Prioritization & Roadmap** | Mapping Matrix only (no MoSCoW) | 100% focused on Prototype validation slice | Strict Must-Haves (Phase 1) vs Should/Could Haves (Phase 2+) | Multi-phased release roadmap (Phase 1 MVP, Phase 2 Scaling, Phase 3 Enterprise, Horizon) |
+| **Governance & Constraints** | N/A — excluded by design | Lightweight assumptions; DR and heavy regulatory compliance deferred | Core privacy/legal constraints and Day-1 operational SLAs | Comprehensive regulatory matrices (GDPR, HIPAA, SOC2), enterprise SLAs (99.9x%, RTO/RPO) |
+| **Section Count & Schema** | 4-section lightweight (Domain & Module Taxonomy, Personas, Use Cases, Mapping Matrix) | 7-section BABOK/IEEE (full structure) | 7-section BABOK/IEEE (full structure) | 7-section BABOK/IEEE (full structure) |
+| **Metadata Header** | `**Scope Level** \| `Simple`` | `**Scope Level** \| `Prototype`` | `**Scope Level** \| `MVP`` | `**Scope Level** \| `Full`` |
 
 ---
 
@@ -195,18 +199,18 @@ flowchart LR
 
 ### Phase 1: Chain of Thought (CoT) — Persona Ecosystem & Business Intent
 - **Strategic Intent Analysis**: Problem statement and market opportunity.
-- **Quantifiable KPIs**: Calibrated baseline vs. target milestones based on scope.
-- **Persona Ecosystem**: Tailored persona count (1–2 for Prototype, 3–4 for MVP, 5+ for Full).
+- **Quantifiable KPIs**: Calibrated baseline vs. target milestones based on scope (simple scope skips KPIs).
+- **Persona Ecosystem**: Tailored persona count (1–2 for Simple/Prototype, 3–4 for MVP, 5+ for Full).
 
 ### Phase 2: Tree of Thoughts (ToT) — Domain Decomposition
-- Synthesizes 2–3 competing domain models (Workflow vs Role vs Capability).
+- Synthesizes 2–3 competing domain models (Workflow vs Role vs Capability), or simplified for simple scope.
 - Selects the path with maximum cohesion and isolates scope boundaries.
-- Establishes L1 Capabilities and L2 Business Modules matching the target scope level.
+- Establishes L1 Capabilities and L2 Business Modules (or lightweight Domain & Module tree for simple scope).
 
 ### Phase 3: CoT & MoSCoW Scoping — Use Cases & MVP Isolation
 - Authors use cases (`UC-101` .. `UC-NNN`) mapped to declared personas.
 - Details Nominal flows, Alternate/Exception flows, and Gherkin acceptance criteria.
-- Implements scope-specific MoSCoW feature allocation.
+- Implements scope-specific MoSCoW feature allocation (or Mapping Matrix for simple scope).
 
 ### Phase 4: ReAct Critique Loop — Autonomous Self-Healing
 - **Persona Orphan Check**: Confirms 100% of declared `PER-xxx` personas appear in use cases.
@@ -266,7 +270,16 @@ The generated document adheres to the structure in [`assets/BRD_SCHEMA.md`](file
 
 Invoke the skill within your AI agent runtime with your desired scope boundary:
 
-#### 1. Prototype Scope Invocation
+#### 1. Simple Scope Invocation
+```text
+/brd --scope simple Quick workflow for internal team expense tracking
+```
+or
+```text
+generate simple brd for employee feedback collection
+```
+
+#### 2. Prototype Scope Invocation
 ```text
 /brd --scope prototype Create a quick interactive prototype for expense receipt snapping
 ```
@@ -275,7 +288,7 @@ or
 generate prototype brd for customer onboarding flow
 ```
 
-#### 2. MVP Scope Invocation (Default)
+#### 3. MVP Scope Invocation (Default)
 ```text
 /brd --scope mvp Create a production MVP for automated expense reconciliation
 ```
@@ -284,7 +297,7 @@ or
 /brd Create an automated expense reconciliation workflow
 ```
 
-#### 3. Full Enterprise Scope Invocation
+#### 4. Full Enterprise Scope Invocation
 ```text
 /brd --scope full Create a complete enterprise billing and multi-tenant subscription platform
 ```

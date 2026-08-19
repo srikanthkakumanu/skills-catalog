@@ -35,13 +35,16 @@
       "description": "Autonomous Principal Product Owner skill for Antigravity 2.x, Claude Code, and Codex that transforms raw concepts into verified, pure Business Requirements Documents (BRD.md) using CoT, ToT, and ReAct critique loops.",
       "triggers": [
         "/brd",
+        "/brd --scope simple",
         "/brd --scope prototype",
         "/brd --scope mvp",
         "/brd --scope full",
+        "/brd --simple",
         "/brd --prototype",
         "/brd --mvp",
         "/brd --full",
         "generate brd",
+        "generate simple brd",
         "generate prototype brd",
         "generate mvp brd",
         "generate full enterprise brd",
@@ -52,9 +55,9 @@
       ],
       "runtimes": ["antigravity", "claude", "codex"],
       "scopes": {
-        "supported": ["prototype", "mvp", "full"],
+        "supported": ["simple", "prototype", "mvp", "full"],
         "default": "mvp",
-        "description": "Supports calibrating requirements to Prototype (feasibility), MVP (Day-1 production release), or Full (enterprise multi-phase platform) boundaries."
+        "description": "Supports calibrating requirements to Simple (lightweight minimal), Prototype (feasibility), MVP (Day-1 production release), or Full (enterprise multi-phase platform) boundaries."
       },
       "tags": [
         "requirements-engineering",
@@ -63,6 +66,7 @@
         "ieee-29148",
         "business-analysis",
         "pure-functional-spec",
+        "simple-scoping",
         "mvp-scoping",
         "prototype-scoping",
         "enterprise-spec"

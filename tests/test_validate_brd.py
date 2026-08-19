@@ -162,6 +162,126 @@ Scenario: Auditor approves compliant claim
 
 SAMPLE_PROTOTYPE_BRD = SAMPLE_VALID_BRD.replace("| **Scope Level** | `MVP` |", "| **Scope Level** | `Prototype` |")
 
+SAMPLE_SIMPLE_BRD = """# Business Requirements Document: Quick Expense Tracking
+
+| Document Attribute | Specification Value |
+| :--- | :--- |
+| **Document Version** | `1.0.0` |
+| **Status** | `Draft` |
+| **Scope Level** | `Simple` |
+| **Author / Lead AI-PO** | Principal Requirements Engineer (`brd` skill) |
+| **Business Sponsor** | Finance Team |
+| **Last Updated** | 2026-08-20 |
+| **Standard Compliance** | BABOK v3, IEEE 29148:2018 (Lightweight Mode) |
+| **Scope Boundary** | Pure Functional & Business Scope (Zero Technical Leakage) |
+
+## 1. Domain & Module Taxonomy
+
+```text
+Domain: Expense Management
+├── Module 1: Claim Submission
+│   └── Submodule 1.1: Receipt Upload
+└── Module 2: Approval
+    └── Submodule 2.1: Review & Confirm
+```
+
+## 2. Personas
+
+| Persona ID | Persona Name | Role | Jobs-To-Be-Done | Pain Points | Authority Level |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `PER-001` | Employee | Primary | Submit expense claims | Slow reimbursement | Standard |
+| `PER-002` | Manager | Reviewer | Approve claims | Manual review effort | Management |
+
+## 3. Use Case Catalog
+
+### UC-101: Submit Expense Claim
+
+| Attribute | Specification |
+| :--- | :--- |
+| **Use Case ID** | `UC-101` |
+| **Primary Actor** | `PER-001` (Employee) |
+| **Module** | Claim Submission → Receipt Upload |
+
+#### Workflow
+1. Employee navigates to expense portal
+2. Employee uploads receipt
+3. System processes and stores receipt
+4. System confirms receipt acceptance
+
+#### Happy Path
+1. Employee logs in with valid credentials
+2. Employee selects "New Claim"
+3. Employee uploads valid receipt (JPG/PNG, <25MB)
+4. System extracts receipt metadata
+5. Employee confirms details and submits
+6. System displays confirmation message
+
+#### Exception Paths
+- **E1: Invalid File Format** — System rejects non-image files and prompts for JPG/PNG
+- **E2: Oversized File** — System rejects files >25MB and displays message
+
+#### Acceptance Criteria
+
+```gherkin
+Feature: UC-101 - Submit Expense Claim
+
+  Scenario: Employee successfully submits claim
+    Given an authenticated employee "PER-001"
+    When they upload a valid receipt image
+    Then the system stores the receipt
+    And a confirmation message is displayed
+
+  Scenario: Employee attempts invalid file
+    Given an authenticated employee "PER-001"
+    When they upload a PDF instead of JPG/PNG
+    Then the system rejects the upload
+    And an error message is shown
+```
+
+### UC-102: Approve Expense Claim
+
+| Attribute | Specification |
+| :--- | :--- |
+| **Use Case ID** | `UC-102` |
+| **Primary Actor** | `PER-002` (Manager) |
+| **Module** | Approval → Review & Confirm |
+
+#### Workflow
+1. Manager views submitted claims
+2. Manager reviews claim details
+3. Manager approves or rejects
+4. System records decision
+
+#### Happy Path
+1. Manager logs in
+2. Manager navigates to approval queue
+3. Manager reviews claim amount and receipt
+4. Manager clicks "Approve"
+5. System updates claim status and notifies employee
+
+#### Exception Paths
+- **E1: Incomplete Details** — Manager cannot approve; system prompts for comment
+
+#### Acceptance Criteria
+
+```gherkin
+Feature: UC-102 - Approve Expense Claim
+
+  Scenario: Manager approves compliant claim
+    Given a manager "PER-002" viewing pending claims
+    When they click approve on a valid claim
+    Then the claim status becomes "APPROVED"
+    And the employee is notified
+```
+
+## 4. Mapping Matrix
+
+| Domain / Module | Persona ID | Persona Name | Primary Use Case | Coverage Note |
+| :--- | :--- | :--- | :--- | :--- |
+| Claim Submission | `PER-001` | Employee | `UC-101` | Submission workflow |
+| Approval | `PER-002` | Manager | `UC-102` | Review & approval |
+"""
+
 
 class TestBRDValidator(unittest.TestCase):
     def setUp(self):
@@ -253,6 +373,67 @@ class TestBRDValidator(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 1)
             self.assertIn("technical scope leakage", result.stdout.lower())
+        finally:
+            Path(temp_path).unlink()
+
+    def test_simple_scope_validation(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(SAMPLE_SIMPLE_BRD)
+            temp_path = f.name
+
+        try:
+            result = subprocess.run(
+                ["python3", str(self.script_path), temp_path, "--strict", "--scope", "simple", "--json"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, f"Validator failed: {result.stdout} {result.stderr}")
+            data = json.loads(result.stdout)
+            self.assertEqual(data["status"], "PASSED")
+            self.assertEqual(data["scope"]["effective_scope"], "simple")
+            self.assertEqual(data["summary"]["mandatory_sections_required"], 4)
+        finally:
+            Path(temp_path).unlink()
+
+    def test_simple_scope_detected_without_flag(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(SAMPLE_SIMPLE_BRD)
+            temp_path = f.name
+
+        try:
+            result = subprocess.run(
+                ["python3", str(self.script_path), temp_path, "--strict", "--json"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, f"Validator failed: {result.stdout} {result.stderr}")
+            data = json.loads(result.stdout)
+            self.assertEqual(data["status"], "PASSED")
+            self.assertEqual(data["scope"]["effective_scope"], "simple", "Scope should be detected from document metadata")
+        finally:
+            Path(temp_path).unlink()
+
+    def test_simple_scope_missing_mapping_matrix(self):
+        # Remove the Mapping Matrix section completely
+        lines = SAMPLE_SIMPLE_BRD.split('\n')
+        filtered_lines = [line for line in lines if not line.startswith("## 4. Mapping Matrix") and "Domain / Module" not in line]
+        # Remove blank lines at the end
+        while filtered_lines and not filtered_lines[-1].strip():
+            filtered_lines.pop()
+        simple_no_matrix = '\n'.join(filtered_lines)
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(simple_no_matrix)
+            temp_path = f.name
+
+        try:
+            result = subprocess.run(
+                ["python3", str(self.script_path), temp_path, "--scope", "simple", "--json"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("Missing mandatory section", result.stdout)
         finally:
             Path(temp_path).unlink()
 

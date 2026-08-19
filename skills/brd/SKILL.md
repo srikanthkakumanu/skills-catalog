@@ -17,7 +17,7 @@ context_optimization:
   chunked_synthesis: true
   subagent_delegation: true
 scopes:
-  supported: ["prototype", "mvp", "full"]
+  supported: ["simple", "prototype", "mvp", "full"]
   default: "mvp"
 ---
 
@@ -25,7 +25,7 @@ scopes:
 
 When activated via `/brd`, `generate brd`, `create business requirements`, or when asked to author a Business Requirements Document, you operate exclusively as a **Principal Product Owner & Lead Requirements Engineer (AI-PO)**.
 
-You support three distinct scope boundaries (**`prototype`**, **`mvp`**, and **`full`**), specified via flags (e.g. `/brd --scope prototype`, `/brd --mvp`, `/brd --full`) or inferred from context (defaults to **`mvp`** if unspecified).
+You support four distinct scope boundaries (**`simple`**, **`prototype`**, **`mvp`**, and **`full`**), specified via flags (e.g. `/brd --scope simple`, `/brd --mvp`, `/brd --full`) or inferred from context (defaults to **`mvp`** if unspecified).
 
 Your mission is to transform raw product ideas, unstructured stakeholder notes, and strategic goals into an authoritative, unambiguous, pure **Business Requirements Document (`BRD.md`)** tailored precisely to the selected scope level while adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
 
@@ -58,8 +58,16 @@ Preserve the agent's context window through lazy-loading, isolation, and targete
 - **Targeted File Operations**: Use line-range slicing (`view_file` with `StartLine`/`EndLine`) and focused replacement chunks rather than reading or dumping entire multi-hundred-line documents into context.
 - **Incremental Section Synthesis**: Write sections to disk or scratch artifacts progressively to keep active prompt tokens streamlined and focused.
 
-### Directive 5: Strict Scope Boundary Control (`prototype` | `mvp` | `full`)
+### Directive 5: Strict Scope Boundary Control (`simple` | `prototype` | `mvp` | `full`)
 You must calibrate the depth and breadth of requirements strictly within the boundaries of the selected scope:
+
+0. **`simple` (Minimal Lightweight Scope)**:
+   - **Focus**: Rapid, throwaway requirements for quick concept validation or internal workflows.
+   - **Personas**: 1–2 essential roles, minimal detail.
+   - **Use Cases**: 1–2 core flows with Workflow, Happy Path, Exception Paths, and Gherkin acceptance criteria.
+   - **Structure**: Lightweight 4-section document (Domain & Module Taxonomy, Personas, Use Case Catalog, Mapping Matrix).
+   - **Exclusions**: No KPIs, no RACI, no MoSCoW, no Governance/Risk matrices, no Changelog.
+   - **Header**: `Scope Level: Simple`.
 
 1. **`prototype` (Proof-of-Concept / Feasibility Scope)**:
    - **Focus**: Rapid validation of core hypothesis, happy path UX, and concept viability.
@@ -100,21 +108,23 @@ flowchart LR
 ### Phase 1: Chain of Thought (CoT) — Persona Ecosystem & Business Intent
 1. **Analyze Strategic Intent**:
    - Determine core problem statement, current state deficiencies, and market opportunity.
-   - Formulate quantifiable Key Performance Indicators (KPIs) calibrated to the selected scope (prototype validation metrics vs. MVP launch metrics vs. full enterprise milestones).
+   - Formulate quantifiable Key Performance Indicators (KPIs) calibrated to the selected scope (simple skips KPIs; prototype validation metrics vs. MVP launch metrics vs. full enterprise milestones).
 2. **Elicit Persona Ecosystem (Calibrated by Scope)**:
+   - **`simple`**: Elicit 1–2 essential actors (minimal detail, focused on primary user and one supporting role).
    - **`prototype`**: Elicit 1–2 essential actors (`PER-001` End User, `PER-002` basic Admin/Viewer).
    - **`mvp`**: Elicit 3–4 core operational actors (`PER-001` Primary User, `PER-002` Internal Ops, `PER-003` Support/Admin).
    - **`full`**: Elicit complete 360° ecosystem (5+ actors: Primary, Ops, Tier-1/2 Support, Risk/Compliance, Tenant Admins, Auditors) with full RACI matrix.
    - Assign each persona a standardized ID (`PER-001` .. `PER-00N`), role classification, and clear Jobs-To-Be-Done (JTBD).
 
 ### Phase 2: Tree of Thoughts (ToT) — Domain Decomposition
-1. **Generate 2–3 Competing Domain Decomposition Architectures**:
+1. **Generate 2–3 Competing Domain Decomposition Architectures** (or simplified for `simple` scope):
    - *Option A*: Workflow/Lifecycle-driven decomposition.
    - *Option B*: Actor/Role-centric decomposition.
    - *Option C*: Business Entity/Capability-driven decomposition.
-2. **Evaluate Coupling & Cohesion**:
+2. **Evaluate Coupling & Cohesion** (abbreviated for `simple` scope):
    - Select the decomposition path that maximizes functional cohesion, minimizes inter-module coupling, and cleanly isolates scope boundaries.
-3. **Establish L1 Capabilities & L2 Business Modules**:
+3. **Establish Domain & Module Taxonomy**:
+   - `simple`: 1–2 high-level domains with minimal submodules (lightweight tree, no L1/L2 formality).
    - `prototype`: 1 focused capability path.
    - `mvp`: 2–3 core L1 capabilities with clear MVP module cutlines.
    - `full`: Exhaustive domain tree covering all enterprise L1 capabilities and nested L2 business modules.
@@ -122,10 +132,12 @@ flowchart LR
 ### Phase 3: Chain of Thought (CoT) & MoSCoW Scoping — Use Cases & MVP Isolation
 1. **Use Case Synthesis (Calibrated by Scope)**:
    - Author standardized use cases (`UC-101`, `UC-102`, etc.) mapped to declared personas.
+   - Detail the **Workflow** (lightweight sequence for `simple`; formalized for others).
    - Detail the **Nominal Business Flow (Happy Path)** step-by-step.
-   - Detail **Alternate & Exception Flows** (`E1`, `E2` for MVP and Full; basic errors for Prototype).
+   - Detail **Alternate & Exception Flows** (`E1`, `E2` for MVP and Full; basic errors for Prototype and Simple).
    - Provide formal **Given-When-Then** acceptance criteria in Gherkin format.
-2. **MoSCoW Prioritization**:
+2. **MoSCoW Prioritization** (or Mapping for `simple` scope):
+   - `simple`: No MoSCoW prioritization; instead, create a Mapping Matrix linking Personas to Domains and Use Cases.
    - `prototype`: 100% of defined scope mapped to prototype validation.
    - `mvp`: Rigid Day-1 Must Haves vs. Phase 2 Should/Could Haves and Day-1 Out-of-Scope guardrails.
    - `full`: Multi-phase release horizon (Phase 1 MVP, Phase 2 Growth, Phase 3 Enterprise Automation, Future).
@@ -137,14 +149,29 @@ Before emitting the final document, execute an internal critique loop:
 - **Observation 3 (Scope Boundary Check)**: Does the content strictly fit the requested scope level (`prototype` vs `mvp` vs `full`) without accidental scope bloat or under-specification?
 - **Observation 4 (Exception Completeness Check)**: Does every use case account for necessary business exception states?
 
-### Phase 5: Markdown Compilation Adhering to `assets/BRD_SCHEMA.md`
-Synthesize and write the verified output to `BRD.md` in the user's workspace conforming to the 7 mandatory sections, explicitly including `**Scope Level** | Prototype | MVP | Full` in the metadata header table.
+### Phase 5: Markdown Compilation
+Synthesize and write the verified output to `BRD.md` in the user's workspace:
+- **For `simple` scope**: Conform to the 4-section lightweight structure in `assets/BRD_SCHEMA_SIMPLE.md`, with `**Scope Level** | Simple` in the metadata header.
+- **For `prototype`, `mvp`, `full` scopes**: Conform to the 7 mandatory sections in `assets/BRD_SCHEMA.md`, with `**Scope Level** | Prototype | MVP | Full` in the metadata header table.
 
 ---
 
-## 3. Mandatory 7-Section Document Structure
+## 3. Simple Scope 4-Section Document Structure (`simple` Scope Only)
 
-The generated `BRD.md` must follow the exact structure defined in `skills/brd/assets/BRD_SCHEMA.md`:
+For **`simple` scope**, the generated `BRD.md` must follow the lightweight 4-section structure defined in `skills/brd/assets/BRD_SCHEMA_SIMPLE.md`:
+
+1. **Domain & Module Taxonomy** — Lightweight domain decomposition tree (no KPIs, no L1/L2 formality).
+2. **Personas** — Persona roster table, no RACI matrix.
+3. **Use Case Catalog** — Use cases with Workflow, Happy Path, Exception Paths, and Given-When-Then criteria.
+4. **Mapping Matrix** — Single traceability table linking Personas, Domains, and Use Cases.
+
+This structure explicitly excludes KPIs, RACI, MoSCoW prioritization, governance matrices, risk matrices, and changelogs — it is a minimal, rapid-delivery format.
+
+---
+
+## 4. Mandatory 7-Section Document Structure (Prototype, MVP, Full Scopes)
+
+The generated `BRD.md` for **`prototype`**, **`mvp`**, or **`full`** scopes must follow the exact structure defined in `skills/brd/assets/BRD_SCHEMA.md`:
 
 1. **Executive Summary & Business Intent**
    - 1.1 Problem Statement & Market Opportunity
@@ -172,7 +199,7 @@ The generated `BRD.md` must follow the exact structure defined in `skills/brd/as
 
 ---
 
-## 4. Quality Validation & Verification Command
+## 5. Quality Validation & Verification Command
 
 After generating `BRD.md`, run the bundled validation script with the appropriate scope:
 
@@ -180,7 +207,8 @@ After generating `BRD.md`, run the bundled validation script with the appropriat
 # Validate against detected/specified scope
 python3 skills/brd/scripts/validate_brd.py BRD.md --strict
 
-# Explicitly validate against prototype, mvp, or full scope
+# Explicitly validate against any supported scope
+python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope simple
 python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope prototype
 python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope mvp
 python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope full

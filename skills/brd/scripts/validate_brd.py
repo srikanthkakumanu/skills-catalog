@@ -43,6 +43,13 @@ MANDATORY_SECTIONS = [
     (7, r"7\.\s*Refinement\s+&\s+Validation\s+Changelog", "7. Refinement & Validation Changelog"),
 ]
 
+MANDATORY_SECTIONS_SIMPLE = [
+    (1, r"1\.\s*Domain\s+&\s+Module\s+Taxonomy", "1. Domain & Module Taxonomy"),
+    (2, r"2\.\s*Personas", "2. Personas"),
+    (3, r"3\.\s*Use\s+Case\s+Catalog", "3. Use Case Catalog"),
+    (4, r"4\.\s*Mapping\s+Matrix", "4. Mapping Matrix"),
+]
+
 # Patterns representing technical implementation details that violate pure functional scope
 TECHNICAL_LEAKAGE_PATTERNS = [
     (r"\b(SELECT\s+[\w\*,\s]+\s+FROM|INSERT\s+INTO\s+\w+|UPDATE\s+\w+\s+SET|DELETE\s+FROM\s+\w+|FOREIGN\s+KEY|PRIMARY\s+KEY)\b", "SQL Query / Schema DDL", "Database operations violate functional neutrality"),
@@ -101,7 +108,7 @@ class BRDValidator:
                     f"Scope Mismatch: Document metadata specifies Scope Level '{self.detected_scope.capitalize()}', "
                     f"but validation was executed with '--scope {self.requested_scope}'."
                 )
-        elif self.detected_scope in ["prototype", "mvp", "full"]:
+        elif self.detected_scope in ["simple", "prototype", "mvp", "full"]:
             self.effective_scope = self.detected_scope
         else:
             self.effective_scope = "mvp"
@@ -109,6 +116,19 @@ class BRDValidator:
     def validate_mandatory_sections(self) -> None:
         """Ensure all 7 mandatory sections exist in the document."""
         for sec_id, pattern, display_name in MANDATORY_SECTIONS:
+            regex = re.compile(r"^#{1,3}\s+" + pattern, re.MULTILINE | re.IGNORECASE)
+            found = False
+            for idx, line in enumerate(self.lines):
+                if regex.search(line):
+                    self.section_matches[sec_id] = idx + 1
+                    found = True
+                    break
+            if not found:
+                self.errors.append(f"Missing mandatory section: '{display_name}'")
+
+    def validate_mandatory_sections_simple(self) -> None:
+        """Ensure all 4 mandatory sections exist in a simple-scope document."""
+        for sec_id, pattern, display_name in MANDATORY_SECTIONS_SIMPLE:
             regex = re.compile(r"^#{1,3}\s+" + pattern, re.MULTILINE | re.IGNORECASE)
             found = False
             for idx, line in enumerate(self.lines):
@@ -202,6 +222,56 @@ class BRDValidator:
             if current_uc:
                 self.use_cases.append(current_uc)
 
+    def extract_personas_and_use_cases_simple(self) -> None:
+        """Extract declared personas in Section 2 and use case mappings in Section 3 (simple scope)."""
+        sec2_line = self.section_matches.get(2, 0)
+        sec3_line = self.section_matches.get(3, len(self.lines))
+        sec4_line = self.section_matches.get(4, len(self.lines))
+
+        # Extract declared personas from Section 2 lines
+        if sec2_line > 0:
+            end_line = sec3_line if sec3_line > sec2_line else len(self.lines)
+            sec2_text = "\n".join(self.lines[sec2_line - 1 : end_line])
+            for match in PERSONA_DECLARATION_PATTERN.finditer(sec2_text):
+                p_id = match.group(1).upper()
+                if p_id not in ("PER-XXX", "PER-YYY", "PER-ZZZ", "PER-00N", "PER-NNN"):
+                    self.declared_personas.add(p_id)
+
+        # Extract use cases and referenced personas from Section 3 lines (simple scope)
+        if sec3_line > 0:
+            end_line = sec4_line if sec4_line > sec3_line else len(self.lines)
+            current_uc = None
+
+            for line_idx in range(sec3_line - 1, end_line):
+                line = self.lines[line_idx]
+                uc_match = USE_CASE_HEADER_PATTERN.search(line)
+                if uc_match:
+                    if current_uc:
+                        self.use_cases.append(current_uc)
+                    current_uc = {
+                        "id": uc_match.group(1).upper(),
+                        "title": uc_match.group(2).strip(),
+                        "start_line": line_idx + 1,
+                        "has_given_when_then": False,
+                        "personas": set(),
+                    }
+                    continue
+
+                if current_uc:
+                    # Scan for persona references
+                    for p_match in PERSONA_DECLARATION_PATTERN.finditer(line):
+                        p_id = p_match.group(1).upper()
+                        if p_id not in ("PER-XXX", "PER-YYY", "PER-ZZZ", "PER-00N", "PER-NNN"):
+                            current_uc["personas"].add(p_id)
+                            self.referenced_personas.add(p_id)
+
+                    # Check for Given/When/Then or Gherkin scenarios
+                    if ("Given " in line or "When " in line or "Then " in line or GHERKIN_SCENARIO_PATTERN.search(line)):
+                        current_uc["has_given_when_then"] = True
+
+            if current_uc:
+                self.use_cases.append(current_uc)
+
     def validate_persona_traceability(self) -> None:
         """Ensure no declared persona is orphaned without an associated use case."""
         orphaned = self.declared_personas - self.referenced_personas
@@ -223,12 +293,52 @@ class BRDValidator:
                     f"Use Case '{uc['id']}' (Line {uc['start_line']}): Missing formal Given-When-Then acceptance criteria."
                 )
 
+    def validate_use_cases_simple(self) -> None:
+        """Validate use cases in simple scope (Section 3) contain acceptance criteria."""
+        if self.section_matches.get(3) and len(self.use_cases) == 0:
+            self.errors.append("Section 3 (Use Case Catalog) is present but contains no identifiable use cases (expected format: '### UC-101: Title')")
+            return
+
+        for uc in self.use_cases:
+            if not uc["has_given_when_then"]:
+                self.warnings.append(
+                    f"Use Case '{uc['id']}' (Line {uc['start_line']}): Missing formal Given-When-Then acceptance criteria."
+                )
+
+    def validate_mapping_matrix_simple(self) -> None:
+        """Validate that the Mapping Matrix (Section 4) references personas and use cases."""
+        if not self.section_matches.get(4):
+            return
+
+        sec4_line = self.section_matches.get(4, 0)
+        end_line = len(self.lines)
+
+        has_mapping_refs = False
+        for line_idx in range(sec4_line, end_line):
+            line = self.lines[line_idx]
+            # Check if line contains both a persona reference and a use case reference
+            has_per = any(ref in line.upper() for ref in self.declared_personas)
+            has_uc = any(f"UC-{uc['id'].split('-')[1]}" in line for uc in self.use_cases)
+            if has_per and has_uc:
+                has_mapping_refs = True
+                break
+
+        if not has_mapping_refs and self.declared_personas and self.use_cases:
+            self.warnings.append(
+                "Section 4 (Mapping Matrix): Expected to find at least one row linking a persona and a use case."
+            )
+
     def validate_scope_boundaries(self) -> None:
         """Verify the document matches the expectations of the effective scope level."""
         persona_count = len(self.declared_personas)
         use_case_count = len(self.use_cases)
 
-        if self.effective_scope == "prototype":
+        if self.effective_scope == "simple":
+            if persona_count == 0:
+                self.warnings.append("Simple Scope: At least 1 persona should be declared in Section 2.")
+            if use_case_count == 0:
+                self.errors.append("Simple Scope: At least 1 use case must be defined in Section 3.")
+        elif self.effective_scope == "prototype":
             if persona_count == 0:
                 self.warnings.append("Prototype Scope: At least 1 core persona should be declared in Section 2.")
             elif persona_count > 3:
@@ -262,16 +372,29 @@ class BRDValidator:
             return False
 
         self.extract_scope()
-        self.validate_mandatory_sections()
-        self.validate_technical_leakage()
-        self.extract_personas_and_use_cases()
-        self.validate_persona_traceability()
-        self.validate_use_cases()
-        self.validate_scope_boundaries()
+
+        if self.effective_scope == "simple":
+            # Simple scope validation path
+            self.validate_mandatory_sections_simple()
+            self.validate_technical_leakage()
+            self.extract_personas_and_use_cases_simple()
+            self.validate_persona_traceability()
+            self.validate_use_cases_simple()
+            self.validate_mapping_matrix_simple()
+            self.validate_scope_boundaries()
+        else:
+            # Original 7-section validation path (prototype/mvp/full)
+            self.validate_mandatory_sections()
+            self.validate_technical_leakage()
+            self.extract_personas_and_use_cases()
+            self.validate_persona_traceability()
+            self.validate_use_cases()
+            self.validate_scope_boundaries()
 
         return len(self.errors) == 0
 
     def generate_json_report(self) -> str:
+        mandatory_sections_for_scope = MANDATORY_SECTIONS_SIMPLE if self.effective_scope == "simple" else MANDATORY_SECTIONS
         data = {
             "file": str(self.file_path),
             "status": "PASSED" if len(self.errors) == 0 else "FAILED",
@@ -285,7 +408,7 @@ class BRDValidator:
                 "errors_count": len(self.errors),
                 "warnings_count": len(self.warnings),
                 "mandatory_sections_found": len(self.section_matches),
-                "mandatory_sections_required": len(MANDATORY_SECTIONS),
+                "mandatory_sections_required": len(mandatory_sections_for_scope),
                 "personas_declared": len(self.declared_personas),
                 "personas_mapped": len(self.referenced_personas),
                 "use_cases_count": len(self.use_cases),
@@ -315,8 +438,10 @@ class BRDValidator:
         print(f"Strict Mode:    {'Enabled' if self.strict else 'Disabled'}\n")
 
         # Mandatory Sections Check
-        print(f"{COLOR_BOLD}1. Mandatory Sections (BABOK & IEEE 29148):{COLOR_RESET}")
-        for sec_id, _, name in MANDATORY_SECTIONS:
+        mandatory_sections_for_scope = MANDATORY_SECTIONS_SIMPLE if self.effective_scope == "simple" else MANDATORY_SECTIONS
+        section_header = "Mandatory Sections (Simple Scope - 4 Sections):" if self.effective_scope == "simple" else "Mandatory Sections (BABOK & IEEE 29148 - 7 Sections):"
+        print(f"{COLOR_BOLD}1. {section_header}{COLOR_RESET}")
+        for sec_id, _, name in mandatory_sections_for_scope:
             if sec_id in self.section_matches:
                 line_no = self.section_matches[sec_id]
                 print(f"  {COLOR_GREEN}✓{COLOR_RESET} Section {sec_id}: {name} (Line {line_no})")
@@ -362,7 +487,7 @@ def main():
         description="Validate Business Requirements Documents (BRD) against BABOK and IEEE 29148 standards."
     )
     parser.add_argument("file_path", type=str, help="Path to the BRD markdown file to validate")
-    parser.add_argument("--scope", choices=["prototype", "mvp", "full"], help="Target scope boundary to validate against (prototype, mvp, full)")
+    parser.add_argument("--scope", choices=["simple", "prototype", "mvp", "full"], help="Target scope boundary to validate against (simple, prototype, mvp, full)")
     parser.add_argument("--strict", action="store_true", help="Enable strict mode (fails on technical leakage warnings)")
     parser.add_argument("--json", action="store_true", help="Output machine-readable JSON report")
     parser.add_argument("--quiet", action="store_true", help="Suppress non-error text output")
