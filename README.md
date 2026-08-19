@@ -1,10 +1,10 @@
 # Agent Skills Catalog (`skills-catalog`)
 
-[![Standard](https://img.shields.io/badge/Standard-Agent%20Skills%20Spec-blue.svg)](file:///Users/skakumanu/practice/skills-catalog/registry.json)
-[![Runtimes](https://img.shields.io/badge/Runtimes-Antigravity%20%7C%20Claude%20%7C%20Codex-purple.svg)](#-runtime-compatibility-matrix)
-[![Cost Optimization](https://img.shields.io/badge/Model%20Routing-Cost%20Tiered-brightgreen.svg)](#-model-selection--cost-optimization-framework)
-[![Context Management](https://img.shields.io/badge/Context%20Window-Optimized%20Budget-orange.svg)](#-context-window-management--token-efficiency-standard)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](file:///Users/skakumanu/practice/skills-catalog/LICENSE)
+[![Standard](<https://img.shields.io/badge/Standard-Agent%20Skills%20Spec-blue.svg>)](file:///Users/skakumanu/practice/skills-catalog/registry.json)
+[![Runtimes](<https://img.shields.io/badge/Runtimes-Antigravity%20%7C%20Claude%20%7C%20Codex-purple.svg>)](#-runtime-compatibility-matrix)
+[![Cost Optimization](<https://img.shields.io/badge/Model%20Routing-Cost%20Tiered-brightgreen.svg>)](#-model-selection--cost-optimization-framework)
+[![Context Management](<https://img.shields.io/badge/Context%20Window-Optimized%20Budget-orange.svg>)](#-context-window-management--token-efficiency-standard)
+[![License](<https://img.shields.io/badge/License-Apache%202.0-green.svg>)](file:///Users/skakumanu/practice/skills-catalog/LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](#-testing--quality-assurance)
 
 A curated, production-grade monorepo of modular **Agent Skills** engineered for cross-runtime execution across **Google Antigravity 2.x**, **Claude Code**, and **OpenAI Codex**, complying with the open **Agent Skills Standard**.
@@ -13,16 +13,16 @@ A curated, production-grade monorepo of modular **Agent Skills** engineered for 
 
 ## 📑 Table of Contents
 
-- [Overview & Architecture](#-overview--architecture)
+- [Overview &amp; Architecture](#-overview--architecture)
 - [Runtime Compatibility Matrix](#-runtime-compatibility-matrix)
 - [Available Skills](#-available-skills)
-- [⚡ Model Selection & Cost Optimization Framework](#-model-selection--cost-optimization-framework)
-- [🧠 Context Window Management & Token Efficiency Standard](#-context-window-management--token-efficiency-standard)
-- [Installation & Deployment](#-installation--deployment)
+- [⚡ Model Selection &amp; Cost Optimization Framework](#-model-selection--cost-optimization-framework)
+- [🧠 Context Window Management &amp; Token Efficiency Standard](#-context-window-management--token-efficiency-standard)
+- [Installation &amp; Deployment](#-installation--deployment)
 - [Agent Skills Standard Specification](#-agent-skills-standard-specification)
 - [Central Registry (`registry.json`)](#-central-registry-registryjson)
-- [Testing & Quality Assurance](#-testing--quality-assurance)
-- [Authoring & Contributing Skills](#-authoring--contributing-skills)
+- [Testing &amp; Quality Assurance](#-testing--quality-assurance)
+- [Authoring &amp; Contributing Skills](#-authoring--contributing-skills)
 - [License](#-license)
 
 ---
@@ -55,12 +55,12 @@ skills-catalog/
 
 All skills in this catalog are designed for zero-friction cross-runtime compatibility:
 
-| Runtime Environment | Target Installation Path | Discovery & Trigger Mechanism | Status |
-| :--- | :--- | :--- | :--- |
-| **Google Antigravity 2.x** | `~/.antigravity/skills/<skill>/` or `.agents/skills/<skill>/` | Slash commands (`/<skill>`), Natural Language, Auto-Discovery | **Tier 1 Supported** |
-| **Claude Code** | `~/.claude/skills/<skill>/` | Slash commands (`/<skill>`), Prompt Invocation | **Tier 1 Supported** |
-| **OpenAI Codex** | `~/.codex/skills/<skill>/` | Slash commands (`/<skill>`), Prompt Invocation | **Tier 1 Supported** |
-| **Standalone / CI** | Native CLI (`python3`) | Direct script execution, GitHub Actions / CI runners | **Supported (Python >= 3.9)** |
+| Runtime Environment              | Target Installation Path                                          | Discovery & Trigger Mechanism                                   | Status                              |
+| :------------------------------- | :---------------------------------------------------------------- | :-------------------------------------------------------------- | :---------------------------------- |
+| **Google Antigravity 2.x** | `~/.antigravity/skills/<skill>/` or `.agents/skills/<skill>/` | Slash commands (`/<skill>`), Natural Language, Auto-Discovery | **Tier 1 Supported**          |
+| **Claude Code**            | `~/.claude/skills/<skill>/`                                     | Slash commands (`/<skill>`), Prompt Invocation                | **Tier 1 Supported**          |
+| **OpenAI Codex**           | `~/.codex/skills/<skill>/`                                      | Slash commands (`/<skill>`), Prompt Invocation                | **Tier 1 Supported**          |
+| **Standalone / CI**        | Native CLI (`python3`)                                          | Direct script execution, GitHub Actions / CI runners            | **Supported (Python >= 3.9)** |
 
 ---
 
@@ -68,9 +68,9 @@ All skills in this catalog are designed for zero-friction cross-runtime compatib
 
 Each skill in the catalog is self-contained and documented with its own dedicated `README.md`:
 
-| Skill | Version | Description | Target Runtimes | Cost & Context Profile | Dedicated Documentation |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) supporting **Prototype**, **MVP**, and **Full Enterprise** scope boundaries to produce pure BABOK v3 & IEEE 29148 compliant BRDs. | Antigravity, Claude, Codex | Multi-Scope + Tiered Routing + Progressive Loading | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
+| Skill                                                                 | Version   | Description                                                                                                                                                                                                             | Target Runtimes            | Cost & Context Profile                             | Dedicated Documentation                                                                                   |
+| :-------------------------------------------------------------------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------- | :------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- |
+| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) supporting **Prototype**, **MVP**, and **Full Enterprise** scope boundaries to produce pure BABOK v3 & IEEE 29148 compliant BRDs. | Antigravity, Claude, Codex | Multi-Scope + Tiered Routing + Progressive Loading | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
 
 *(Additional skills can be authored and added following the [Contribution Guide](#-authoring--contributing-skills).)*
 
@@ -82,10 +82,10 @@ To prevent unnecessary token expenditure, all skills in this catalog enforce a *
 
 ### 1. Model Tiering Taxonomy
 
-| Tier | Complexity & Task Types | Google Antigravity / Gemini | Anthropic Claude | OpenAI Codex / GPT | Cost Profile |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Reasoning Tier** | • Multi-phase cognitive reasoning (CoT, ToT)<br>• 360° Persona elicitation & RACI modeling<br>• Domain decomposition & cohesion analysis<br>• Comprehensive document authoring<br>• ReAct self-critique & boundary audits | `gemini-2.5-pro`<br>`gemini-3.7-flash` (High) | `claude-3-7-sonnet`<br>`claude-3-5-sonnet`<br>`claude-3-opus` | `gpt-4o`<br>`o3-mini`<br>`o1` | Standard / High Intelligence |
-| **Lightweight Tier** | • Standalone script execution (e.g. `validate_brd.py`)<br>• Schema syntax & header linting<br>• Table formatting & Markdown alignment<br>• Persona ID / Regex pattern audits<br>• Simple diffing & typo corrections | `gemini-2.5-flash`<br>`gemini-2.0-flash-lite` | `claude-3-5-haiku`<br>`claude-3-haiku` | `gpt-4o-mini`<br>`codex-mini` | **Ultra-Low Cost (~10-20x cheaper)** |
+| Tier                       | Complexity & Task Types                                                                                                                                                                                         | Google Antigravity / Gemini               | Anthropic Claude                                        | OpenAI Codex / GPT        | Cost Profile                               |
+| :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------- | :------------------------------------------------------ | :------------------------ | :----------------------------------------- |
+| **Reasoning Tier**   | • Multi-phase cognitive reasoning (CoT, ToT)• 360° Persona elicitation & RACI modeling• Domain decomposition & cohesion analysis• Comprehensive document authoring• ReAct self-critique & boundary audits | `gemini-2.5-progemini-3.7-flash` (High) | `claude-3-7-sonnetclaude-3-5-sonnet``claude-3-opus` | `gpt-4oo3-mini``o1`   | Standard / High Intelligence               |
+| **Lightweight Tier** | • Standalone script execution (e.g.`validate_brd.py`)• Schema syntax & header linting• Table formatting & Markdown alignment• Persona ID / Regex pattern audits• Simple diffing & typo corrections       | `gemini-2.5-flashgemini-2.0-flash-lite` | `claude-3-5-haikuclaude-3-haiku`                      | `gpt-4o-minicodex-mini` | **Ultra-Low Cost (~10-20x cheaper)** |
 
 ### 2. Core Economic Principles for Skills
 
@@ -111,12 +111,12 @@ flowchart TD
     end
 ```
 
-| Context Strategy | Anti-Pattern (Wasteful) | Best Practice (Optimized) | Impact |
-| :--- | :--- | :--- | :--- |
-| **Asset Loading** | Inlining 500-line schemas into `SKILL.md` or preloading them on launch | Loading `assets/*.md` just-in-time when entering compilation phases | ~70% reduction in initial discovery prompt tokens |
-| **Verification** | Running verbose linters directly in the main orchestrator conversation | Spawning isolated subagents or running quiet CLI scripts | Prevents log clutter and retains clean reasoning history |
-| **Document Refinement** | Rewriting or re-reading entire 1,000-line files for single-line changes | Using line slicing (`view_file` Start/End lines) and chunk diff replacements | Eliminates redundant context churn during iterative editing |
-| **State Tracking** | Accumulating sprawling chat logs over multi-phase workflows | Checkpointing intermediate results to disk files or structured markdown sections | Retains tight focus on active phase requirements |
+| Context Strategy              | Anti-Pattern (Wasteful)                                                 | Best Practice (Optimized)                                                        | Impact                                                      |
+| :---------------------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------- | :---------------------------------------------------------- |
+| **Asset Loading**       | Inlining 500-line schemas into`SKILL.md` or preloading them on launch | Loading`assets/*.md` just-in-time when entering compilation phases             | ~70% reduction in initial discovery prompt tokens           |
+| **Verification**        | Running verbose linters directly in the main orchestrator conversation  | Spawning isolated subagents or running quiet CLI scripts                         | Prevents log clutter and retains clean reasoning history    |
+| **Document Refinement** | Rewriting or re-reading entire 1,000-line files for single-line changes | Using line slicing (`view_file` Start/End lines) and chunk diff replacements   | Eliminates redundant context churn during iterative editing |
+| **State Tracking**      | Accumulating sprawling chat logs over multi-phase workflows             | Checkpointing intermediate results to disk files or structured markdown sections | Retains tight focus on active phase requirements            |
 
 ---
 
@@ -158,13 +158,13 @@ Deploy skills from this catalog to your local AI agent runtimes using the automa
 
 ### CLI Installer Options Reference
 
-| Flag | Argument | Description | Default |
-| :--- | :--- | :--- | :--- |
-| `-t`, `--target` | `antigravity` \| `claude` \| `codex` \| `all` | Target runtime environment | `all` |
-| `-m`, `--mode` | `symlink` \| `copy` | Installation method | `symlink` |
-| `-s`, `--skill` | `<skill_name>` \| `all` | Specific skill to deploy | `all` |
-| `-f`, `--force` | (None) | Overwrite existing skill directories in target runtime | `false` |
-| `-h`, `--help` | (None) | Display help and usage information | |
+| Flag                 | Argument                                              | Description                                            | Default     |
+| :------------------- | :---------------------------------------------------- | :----------------------------------------------------- | :---------- |
+| `-t`, `--target` | `antigravity` \| `claude` \| `codex` \| `all` | Target runtime environment                             | `all`     |
+| `-m`, `--mode`   | `symlink` \| `copy`                               | Installation method                                    | `symlink` |
+| `-s`, `--skill`  | `<skill_name>` \| `all`                           | Specific skill to deploy                               | `all`     |
+| `-f`, `--force`  | (None)                                                | Overwrite existing skill directories in target runtime | `false`   |
+| `-h`, `--help`   | (None)                                                | Display help and usage information                     |             |
 
 ---
 

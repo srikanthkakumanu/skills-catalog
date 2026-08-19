@@ -50,17 +50,9 @@
         "business requirements document",
         "requirements analysis"
       ],
-      "runtimes": [
-        "antigravity",
-        "claude",
-        "codex"
-      ],
+      "runtimes": ["antigravity", "claude", "codex"],
       "scopes": {
-        "supported": [
-          "prototype",
-          "mvp",
-          "full"
-        ],
+        "supported": ["prototype", "mvp", "full"],
         "default": "mvp",
         "description": "Supports calibrating requirements to Prototype (feasibility), MVP (Day-1 production release), or Full (enterprise multi-phase platform) boundaries."
       },
@@ -96,6 +88,69 @@
         },
         "lightweight_tier": {
           "description": "Low-cost/fast trivial tasks: linter execution, validation checks, formatting, minor text fixes, metadata audits",
+          "recommended": {
+            "gemini": "gemini-2.5-flash / gemini-2.0-flash-lite",
+            "claude": "claude-3-5-haiku",
+            "codex": "gpt-4o-mini"
+          }
+        }
+      }
+    },
+    {
+      "name": "robinhood",
+      "version": "1.0.0",
+      "path": "skills/robinhood",
+      "entrypoint": "SKILL.md",
+      "readme": "README.md",
+      "description": "Find official direct links and access options for ebooks, movies, videos, audio, music, papers, and other named resources.",
+      "triggers": [
+        "/robinhood",
+        "find access",
+        "where can I watch",
+        "where can I read",
+        "find open access",
+        "find public domain",
+        "find direct link",
+        "find download",
+        "find download",
+        "resource access options"
+      ],
+      "runtimes": ["antigravity", "claude", "codex"],
+      "scopes": {
+        "supported": ["quick", "standard", "deep"],
+        "default": "standard",
+        "description": "Supports quick, standard, and deep direct-link and access searches for named books, media, papers, and other resources."
+      },
+      "tags": [
+        "resource-discovery",
+        "legal-access",
+        "public-domain",
+        "open-access",
+        "libraries",
+        "books",
+        "movies",
+        "music",
+        "media"
+      ],
+      "license": "Apache-2.0",
+      "context_optimization": {
+        "progressive_loading": true,
+        "chunked_synthesis": false,
+        "subagent_delegation": false,
+        "token_budget_profile": "standard",
+        "description": "Keeps the skill entrypoint concise and loads the source guide only for nuanced or multi-format direct-link and resource lookups."
+      },
+      "models": {
+        "reasoning_tier": {
+          "description": "Resource disambiguation, direct-link validation, multi-source comparison, and nuanced access synthesis",
+          "recommended": {
+            "gemini": "gemini-2.5-pro / gemini-3.7-flash",
+            "claude": "claude-3-7-sonnet / claude-3-5-sonnet",
+            "codex": "gpt-4o / o3-mini"
+          }
+        },
+        "lightweight_tier": {
+          "description": "Simple metadata formatting, checklist application, and short access summaries",
           "recommended": {
             "gemini": "gemini-2.5-flash / gemini-2.0-flash-lite",
             "claude": "claude-3-5-haiku",

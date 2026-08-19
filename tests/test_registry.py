@@ -65,9 +65,14 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
             scopes = skill.get("scopes", {})
             self.assertIn("supported", scopes, f"Skill '{skill_name}' missing scopes.supported")
             self.assertIn("default", scopes, f"Skill '{skill_name}' missing scopes.default")
-            self.assertEqual(scopes["default"], "mvp")
-            for expected_scope in ["prototype", "mvp", "full"]:
-                self.assertIn(expected_scope, scopes["supported"])
+            self.assertIsInstance(scopes["supported"], list, f"Skill '{skill_name}' scopes.supported should be a list")
+            self.assertGreater(len(scopes["supported"]), 0, f"Skill '{skill_name}' should declare at least one supported scope")
+            self.assertIn(scopes["default"], scopes["supported"], f"Skill '{skill_name}' default scope should be supported")
+
+            if skill_name == "brd":
+                self.assertEqual(scopes["default"], "mvp")
+                for expected_scope in ["prototype", "mvp", "full"]:
+                    self.assertIn(expected_scope, scopes["supported"])
 
     def test_model_tiering_configuration(self):
         skills = self.registry.get("skills", [])
