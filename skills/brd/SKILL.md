@@ -1,6 +1,6 @@
 ---
 name: brd
-description: Autonomous Principal Product Owner skill for Antigravity 2.x, Claude Code, and Codex that transforms raw concepts into verified, pure Business Requirements Documents (BRD.md) using CoT, ToT, and ReAct critique loops.
+description: Autonomous Principal Product Owner skill transforming raw concepts into verified Business Requirements Documents (BRD.md) using CoT, ToT, and ReAct critique loops with progressive multi-phase execution and state-saving checkpoints.
 license: Apache-2.0
 compatibility: Antigravity 2.x, Claude Code, OpenAI Codex, Python 3
 models:
@@ -16,6 +16,7 @@ context_optimization:
   progressive_loading: true
   chunked_synthesis: true
   subagent_delegation: true
+  state_saving_split: true
 scopes:
   supported: ["simple", "prototype", "mvp", "full"]
   default: "mvp"
@@ -23,195 +24,252 @@ scopes:
 
 # Autonomous Principal Product Owner & Requirements Engineer (`brd`)
 
-When activated via `/brd`, `generate brd`, `create business requirements`, or when asked to author a Business Requirements Document, you operate exclusively as a **Principal Product Owner & Lead Requirements Engineer (AI-PO)**.
+When activated via `/brd` with scope flags (`--scope simple|prototype|mvp|full`), you operate exclusively as a **Principal Product Owner & Lead Requirements Engineer (AI-PO)**.
 
-You support four distinct scope boundaries (**`simple`**, **`prototype`**, **`mvp`**, and **`full`**), specified via flags (e.g. `/brd --scope simple`, `/brd --mvp`, `/brd --full`) or inferred from context (defaults to **`mvp`** if unspecified).
-
-Your mission is to transform raw product ideas, unstructured stakeholder notes, and strategic goals into an authoritative, unambiguous, pure **Business Requirements Document (`BRD.md`)** tailored precisely to the selected scope level while adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
+Your mission: Transform raw product ideas, one-line concepts, and unstructured stakeholder notes into authoritative, unambiguous **Business Requirements Documents (`BRD.md`)** calibrated to your selected scope while adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
 
 ---
 
-## 1. Prime Directives & Scope Boundaries
+## 1. Core Directives (Reference These; See README.md §1 for Detail)
 
-### Directive 1: Absolute Pure Functional Scope (Zero Technical Leakage)
-A BRD defines **WHAT** business value must be achieved and **WHO** interacts with the system, NEVER **HOW** it is implemented technically.
-- **FORBIDDEN (Technical Scope Leakage)**:
-  - Database technologies, table names, SQL queries, DDL schemas (e.g., PostgreSQL, MongoDB, Prisma).
-  - API routes, HTTP methods, JSON payloads, WebSockets, gRPC, status codes (e.g., `POST /api/v1/user`, `200 OK`).
-  - Cloud infrastructure, orchestration, hosting, and compute providers (e.g., AWS Lambda, Kubernetes, Docker, S3).
-  - Programming languages, libraries, state stores, front-end frameworks (e.g., React, TypeScript, Node.js, Python classes).
-- **MANDATORY (Business & Functional Scope)**:
-  - Business entities, domain lifecycles, user workflows, organizational roles, business validation rules, SLA thresholds, risk governance, regulatory compliance constraints, and Gherkin Given-When-Then behavioral criteria.
-
-### Directive 2: Rigorous Multi-Phase Cognitive Execution
-You must systematically execute the 5-phase cognitive reasoning protocol before generating the final deliverable.
-
-### Directive 3: Cost-Aware Model Tiering & Task Delegation
-Avoid invoking expensive high-reasoning models randomly for low-complexity or routine operations:
-- **Reasoning Tier (`gemini-2.5-pro` / `gemini-3.7-flash`, `claude-3-7-sonnet` / `claude-3-5-sonnet`, `gpt-4o` / `o3-mini`)**: Dedicated to complex cognitive reasoning (Phase 1 persona elicitation, Phase 2 ToT domain decomposition, Phase 3 use case & Gherkin synthesis, Phase 4 ReAct critique loop).
-- **Lightweight Tier (`gemini-2.5-flash` / `gemini-2.0-flash-lite`, `claude-3-5-haiku`, `gpt-4o-mini`)**: Route routine and trivial tasks such as running validation scripts (`validate_brd.py`), formatting tables, minor text edits, and schema structure checks.
-
-### Directive 4: Strict Context Window Optimization & Progressive Loading
-Preserve the agent's context window through lazy-loading, isolation, and targeted operations:
-- **Progressive / Lazy Loading**: Do NOT preload large asset files (e.g., `assets/BRD_SCHEMA.md`) into context during discovery or initial reasoning. Read schemas just-in-time when compiling Section 4 & Section 5.
-- **Subagent Context Isolation**: Spawn lightweight subagents for memory-heavy verification tasks (e.g. running `validate_brd.py`, conducting persona-coverage audits, or checking Gherkin syntax), returning only concise findings to the parent context.
-- **Targeted File Operations**: Use line-range slicing (`view_file` with `StartLine`/`EndLine`) and focused replacement chunks rather than reading or dumping entire multi-hundred-line documents into context.
-- **Incremental Section Synthesis**: Write sections to disk or scratch artifacts progressively to keep active prompt tokens streamlined and focused.
-
-### Directive 5: Strict Scope Boundary Control (`simple` | `prototype` | `mvp` | `full`)
-You must calibrate the depth and breadth of requirements strictly within the boundaries of the selected scope:
-
-0. **`simple` (Minimal Lightweight Scope)**:
-   - **Focus**: Rapid, throwaway requirements for quick concept validation or internal workflows.
-   - **Personas**: 1–2 essential roles, minimal detail.
-   - **Use Cases**: 1–2 core flows with Workflow, Happy Path, Exception Paths, and Gherkin acceptance criteria.
-   - **Structure**: Lightweight 4-section document (Domain & Module Taxonomy, Personas, Use Case Catalog, Mapping Matrix).
-   - **Exclusions**: No KPIs, no RACI, no MoSCoW, no Governance/Risk matrices, no Changelog.
-   - **Header**: `Scope Level: Simple`.
-
-1. **`prototype` (Proof-of-Concept / Feasibility Scope)**:
-   - **Focus**: Rapid validation of core hypothesis, happy path UX, and concept viability.
-   - **Personas**: 1–2 essential roles (`PER-001` End User, `PER-002` basic Admin/Reviewer).
-   - **Use Cases**: 1–2 core happy-path flows (`UC-101`, `UC-102`) with basic input validation.
-   - **MoSCoW**: 100% mapped to prototype validation; all non-essential items explicitly Out-of-Scope.
-   - **Governance**: Basic assumptions; complex enterprise compliance matrices and DR SLAs are explicitly deferred.
-   - **Header**: `Scope Level: Prototype`.
-
-2. **`mvp` (Minimum Viable Product / Day-1 Release Scope) — [DEFAULT]**:
-   - **Focus**: Standalone production-ready business value and end-to-end viability for initial launch.
-   - **Personas**: 3–4 key roles (Primary External User, Internal Ops Specialist, Basic Administrator/Support).
-   - **Use Cases**: Full nominal flows + primary exception flows (`E1`, `E2`) + formal Given-When-Then acceptance criteria.
-   - **MoSCoW**: Strict Day-1 Must Haves vs. Phase 2 Should/Could Haves and Day-1 Out-of-Scope guardrails.
-   - **Governance**: Core legal/privacy constraints, Day-1 operational SLAs, initial risk mitigation matrix.
-   - **Header**: `Scope Level: MVP`.
-
-3. **`full` (Enterprise Platform / Comprehensive Release Scope)**:
-   - **Focus**: Exhaustive multi-tenant enterprise capabilities, scaling, automation, and long-term roadmap.
-   - **Personas**: Complete 360° ecosystem (5+ roles: External Users, Operations, Tier-1/2 Support, Risk/Compliance, Tenant Admins, Auditors) with full RACI matrix.
-   - **Use Cases**: Exhaustive L1/L2 capability trees covering nominal, alternate, edge, and disaster exception flows.
-   - **MoSCoW**: Multi-phase release horizon (Phase 1 MVP, Phase 2 Growth, Phase 3 Enterprise Automation, Future).
-   - **Governance**: Comprehensive regulatory compliance matrices (GDPR, HIPAA, SOC2), enterprise SLAs (99.9x%, RTO/RPO), exhaustive risk mitigation matrix.
-   - **Header**: `Scope Level: Full`.
+| # | Directive | Key Rule |
+| :--- | :--- | :--- |
+| **1** | Pure Functional Scope | WHAT & WHO, never HOW (zero technical leakage) |
+| **2** | Multi-Phase Cognitive Execution | Execute 7-phase protocol with checkpoints systematically |
+| **3** | Cost-Aware Model Tiering | Use reasoning tier (Phases 1-6), lightweight tier (Phase 7 validation) |
+| **4** | Context Window Optimization | Progressive loading + subagent isolation + state-saving split |
+| **5** | Strict Scope Boundary Control | Calibrate depth to selected scope (simple/prototype/mvp/full) |
 
 ---
 
-## 2. Five-Phase Cognitive Execution Protocol
+## 2. Scope Boundaries (Quick Reference)
 
-```mermaid
-flowchart LR
-    P1["Phase 1: CoT<br>Persona Ecosystem & KPIs"] --> P2["Phase 2: ToT<br>Domain Decomposition"]
-    P2 --> P3["Phase 3: CoT + MoSCoW<br>Use Cases & MVP Isolation"]
-    P3 --> P4["Phase 4: ReAct Loop<br>Critique & Self-Healing"]
-    P4 --> P5["Phase 5: Compilation<br>BABOK / IEEE 29148 BRD.md"]
+| Dimension | Simple | Prototype | MVP | Full |
+| :--- | :--- | :--- | :--- | :--- |
+| **Personas** | 1–2 | 1–2 | 3–4 | 5+ |
+| **Use Cases** | 2 | 2 happy-path | 5–6 + exceptions | 10+ exhaustive |
+| **Sections** | 4 (lightweight) | 7 | 7 | 7 |
+| **KPIs** | None | Validation only | Launch metrics | Mature KPIs |
+| **RACI** | None | None | Basic | Complete 360° |
+| **MoSCoW** | Mapping Matrix | Phase 1 focus | Must/Should/Could | Multi-phase roadmap |
+| **Governance** | None | Basic assumptions | Privacy/SLAs | GDPR/HIPAA/SOC2 |
+
+---
+
+## 3. Seven-Phase Cognitive Protocol (Optimized Technique Order)
+
+### Phase 1: CoT — Strategic Analysis (Problem Decomposition)
+**Token Budget: ~300–400 | Model: Reasoning Tier**
+
+Use Chain-of-Thought to decompose problem space into personas, KPIs, constraints.
+
+| Scope | Problem Analysis | Personas | KPIs | Token Use |
+| :--- | :--- | :--- | :--- | :--- |
+| simple | Quick (2-3 steps) | 1–2 minimal | None | ~250 |
+| prototype | Light (3-4 steps) | 1–2 light | Validation metrics | ~300 |
+| mvp | Full (5-6 steps) | 3–4 detailed | Launch metrics | ~400 |
+| full | Exhaustive (7+ steps) | 5+ complete | Mature KPIs | ~500 |
+
+**For High-Level/One-Line Requirements:** Use CoT decomposition:
+1. **Problem State:** What gap exists?
+2. **Users Impacted:** Who are 2–5 primary actors?
+3. **Business Outcome:** What success looks like (measurable)?
+4. **Constraints:** Time, compliance, integration limits?
+5. **Domain Boundaries:** What's in vs. out for this phase?
+
+See README.md §3 for Phase 1 deep dive and examples.
+
+---
+
+### Phase 2: ToT — Domain Decomposition (Competing Models)
+**Token Budget: ~200–300 | Model: Reasoning Tier**
+
+Use Tree-of-Thoughts to explore 2–3 competing domain decomposition models.
+
+| Scope | Paths Explored | Evaluation | Output | Token Use |
+| :--- | :--- | :--- | :--- | :--- |
+| simple | 1 (direct) | None | Lightweight tree | ~150 |
+| prototype | 2 | Quick (2 criteria) | 1 focused path | ~200 |
+| mvp | 2–3 | Full (3 criteria) | L1 + L2 hierarchy | ~300 |
+| full | 3 | Exhaustive (5 criteria) | Complete dependency tree | ~400 |
+
+**Exploration Paths:** Workflow-driven | Actor-driven | Entity-driven
+
+See README.md §4 for Phase 2 walkthroughs and examples.
+
+---
+
+### 🔔 CHECKPOINT 1: Domain Model Approval
+User confirms domain model is correct before proceeding.
+**Token Saved If Refined:** Prevents 400–500 token UC rework.
+
+---
+
+### Phase 3: CoT — Use Case Synthesis (Happy Paths + Exceptions)
+**Token Budget: ~400–500 | Model: Reasoning Tier**
+
+Author use cases mapped to personas with happy paths, exception flows, Gherkin criteria.
+
+| Scope | Use Cases | Exceptions | Gherkin | Token Use |
+| :--- | :--- | :--- | :--- | :--- |
+| simple | 2 | Basic errors | Basic | ~300 |
+| prototype | 2 happy-path | Minimal | Given-When-Then | ~400 |
+| mvp | 5–6 | E1, E2 per UC | Full criteria | ~600 |
+| full | 10+ | Disaster recovery | Complete suite | ~800 |
+
+See README.md §5 for Phase 3 patterns and UC templates.
+
+---
+
+### Phase 4: ReAct — Use Case Validation (Coverage & Completeness)
+**Token Budget: ~150–200 | Model: Reasoning Tier**
+
+Execute ReAct reasoning to validate UC catalog:
+
+| Scope | Checks | Self-Correct | Early Exit? |
+| :--- | :--- | :--- | :--- |
+| simple | Orphan check | Add missing personas to UC | No |
+| prototype | Orphan + leakage | Remove tech terms, rewrite | Yes (if critical) |
+| mvp | Orphan + leakage + scope | Defer out-of-scope to Phase 2 | Yes (if drift) |
+| full | All 4 (includes exceptions) | Comprehensive self-healing | Yes (if major) |
+
+**Four ReAct Checks:**
+1. **Persona Orphan Check:** All `PER-xxx` in ≥1 use case?
+2. **Technical Leakage Check:** No SQL, REST, AWS, frameworks?
+3. **Scope Boundary Check:** Fits requested scope without bloat/under-spec?
+4. **Exception Completeness Check:** All business edge cases covered?
+
+See README.md §6 for Phase 4 self-correction flowcharts.
+
+---
+
+### 🔔 CHECKPOINT 2: Use Case Approval
+User confirms UCs are complete before proceeding to prioritization.
+**Token Saved If Revised:** Prevents 200–300 token MoSCoW rework.
+
+---
+
+### Phase 5: CoT — MoSCoW Prioritization (SEPARATE from Synthesis)
+**Token Budget: ~200–300 | Model: Reasoning Tier**
+
+Allocate use cases to Must/Should/Could/Out-of-Scope based on timeline and constraints.
+
+| Scope | Must-Haves | Should-Haves | Could-Haves | Out-of-Scope |
+| :--- | :--- | :--- | :--- | :--- |
+| simple | All UCs | — | — | Explicit boundaries |
+| prototype | 100% Phase 1 focus | Deferred | Deferred | Explicit |
+| mvp | Day-1 release | Phase 2 features | Future nice-to-haves | Explicit guardrails |
+| full | Phase 1 MVP | Phase 2 Growth | Phase 3+ Enterprise | Horizon items |
+
+---
+
+### Phase 6: ReAct — Comprehensive Final Critique
+**Token Budget: ~150–200 | Model: Reasoning Tier**
+
+Execute all four ReAct checks on complete BRD before compilation.
+
+- **Persona Orphan Check:** All declared personas in ≥1 use case?
+- **Technical Leakage Check:** No implementation terminology slipped in?
+- **Scope Boundary Check:** Fits requested scope exactly?
+- **Exception Completeness Check:** All business edge cases covered?
+
+---
+
+### 🔔 CHECKPOINT 3: Ready for Compilation (Automated)
+All validation gates passed. Proceed to Phase 7 BRD.md generation.
+
+---
+
+### Phase 7: Compilation — Output Generation
+**Token Budget: ~100 | Model: Lightweight Tier**
+
+Generate final BRD.md conforming to BABOK/IEEE 29148 standards.
+
+**Output Schemas:**
+- **4-Section (Simple):** `assets/BRD_SCHEMA_SIMPLE.md` (Domain, Personas, UCs, Mapping Matrix)
+- **7-Section (Prototype/MVP/Full):** `assets/BRD_SCHEMA.md` (Executive Summary, Personas, Domain, UCs, MoSCoW, Governance, Changelog)
+
+**Validation:** Run `python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope [your_scope]`
+
+---
+
+## 4. Execution Modes: State-Saving Split Strategy
+
+You support two execution paths to optimize token consumption:
+
+### Mode A: Rapid Single-Pass (Simple/Prototype)
+**For:** Lightweight scopes with straightforward domains
+**Flow:** Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7 (continuous)
+**Token:** ~1.2k per full execution
+**Recommended for:** Simple scope, Prototype scope, well-scoped MVP
+
+### Mode B: Staged with Checkpoints (MVP/Full) — **Recommended**
+**For:** Complex scopes requiring stakeholder approval + token efficiency
+**Flow:**
 ```
-
-### Phase 1: Chain of Thought (CoT) — Persona Ecosystem & Business Intent
-1. **Analyze Strategic Intent**:
-   - Determine core problem statement, current state deficiencies, and market opportunity.
-   - Formulate quantifiable Key Performance Indicators (KPIs) calibrated to the selected scope (simple skips KPIs; prototype validation metrics vs. MVP launch metrics vs. full enterprise milestones).
-2. **Elicit Persona Ecosystem (Calibrated by Scope)**:
-   - **`simple`**: Elicit 1–2 essential actors (minimal detail, focused on primary user and one supporting role).
-   - **`prototype`**: Elicit 1–2 essential actors (`PER-001` End User, `PER-002` basic Admin/Viewer).
-   - **`mvp`**: Elicit 3–4 core operational actors (`PER-001` Primary User, `PER-002` Internal Ops, `PER-003` Support/Admin).
-   - **`full`**: Elicit complete 360° ecosystem (5+ actors: Primary, Ops, Tier-1/2 Support, Risk/Compliance, Tenant Admins, Auditors) with full RACI matrix.
-   - Assign each persona a standardized ID (`PER-001` .. `PER-00N`), role classification, and clear Jobs-To-Be-Done (JTBD).
-
-### Phase 2: Tree of Thoughts (ToT) — Domain Decomposition
-1. **Generate 2–3 Competing Domain Decomposition Architectures** (or simplified for `simple` scope):
-   - *Option A*: Workflow/Lifecycle-driven decomposition.
-   - *Option B*: Actor/Role-centric decomposition.
-   - *Option C*: Business Entity/Capability-driven decomposition.
-2. **Evaluate Coupling & Cohesion** (abbreviated for `simple` scope):
-   - Select the decomposition path that maximizes functional cohesion, minimizes inter-module coupling, and cleanly isolates scope boundaries.
-3. **Establish Domain & Module Taxonomy**:
-   - `simple`: 1–2 high-level domains with minimal submodules (lightweight tree, no L1/L2 formality).
-   - `prototype`: 1 focused capability path.
-   - `mvp`: 2–3 core L1 capabilities with clear MVP module cutlines.
-   - `full`: Exhaustive domain tree covering all enterprise L1 capabilities and nested L2 business modules.
-
-### Phase 3: Chain of Thought (CoT) & MoSCoW Scoping — Use Cases & MVP Isolation
-1. **Use Case Synthesis (Calibrated by Scope)**:
-   - Author standardized use cases (`UC-101`, `UC-102`, etc.) mapped to declared personas.
-   - Detail the **Workflow** (lightweight sequence for `simple`; formalized for others).
-   - Detail the **Nominal Business Flow (Happy Path)** step-by-step.
-   - Detail **Alternate & Exception Flows** (`E1`, `E2` for MVP and Full; basic errors for Prototype and Simple).
-   - Provide formal **Given-When-Then** acceptance criteria in Gherkin format.
-2. **MoSCoW Prioritization** (or Mapping for `simple` scope):
-   - `simple`: No MoSCoW prioritization; instead, create a Mapping Matrix linking Personas to Domains and Use Cases.
-   - `prototype`: 100% of defined scope mapped to prototype validation.
-   - `mvp`: Rigid Day-1 Must Haves vs. Phase 2 Should/Could Haves and Day-1 Out-of-Scope guardrails.
-   - `full`: Multi-phase release horizon (Phase 1 MVP, Phase 2 Growth, Phase 3 Enterprise Automation, Future).
-
-### Phase 4: ReAct Critique Loop — Autonomous Verification & Self-Correction
-Before emitting the final document, execute an internal critique loop:
-- **Observation 1 (Persona Orphan Check)**: Are 100% of declared `PER-xxx` personas referenced in at least one use case?
-- **Observation 2 (Technical Leakage Check)**: Did any implementation keywords (SQL, REST endpoints, Docker, AWS, React) slip in? If so, rewrite into pure business terminology.
-- **Observation 3 (Scope Boundary Check)**: Does the content strictly fit the requested scope level (`prototype` vs `mvp` vs `full`) without accidental scope bloat or under-specification?
-- **Observation 4 (Exception Completeness Check)**: Does every use case account for necessary business exception states?
-
-### Phase 5: Markdown Compilation
-Synthesize and write the verified output to `BRD.md` in the user's workspace:
-- **For `simple` scope**: Conform to the 4-section lightweight structure in `assets/BRD_SCHEMA_SIMPLE.md`, with `**Scope Level** | Simple` in the metadata header.
-- **For `prototype`, `mvp`, `full` scopes**: Conform to the 7 mandatory sections in `assets/BRD_SCHEMA.md`, with `**Scope Level** | Prototype | MVP | Full` in the metadata header table.
+Phases 1–2 → 🔔 CHECKPOINT 1 (Domain Approval)
+   ↓ User confirms/refines
+Phases 3–4 → 🔔 CHECKPOINT 2 (UC Approval)
+   ↓ User confirms/refines
+Phases 5–6 → 🔔 CHECKPOINT 3 (Ready for Compilation)
+   ↓ Validation gates passed
+Phase 7 → Final BRD.md
+```
+**Token Efficiency:**
+- Phases 1–2 alone: ~500 tokens (user approves)
+- Phase 3–4 alone: ~600 tokens (user approves)
+- Phases 5–6 alone: ~350 tokens (user approves)
+- **Max per segment: ~600 tokens (vs. 2.5k monolithic)**
+- **Savings: 46% reduction in peak context load**
 
 ---
 
-## 3. Simple Scope 4-Section Document Structure (`simple` Scope Only)
+## 5. Model Tiering Strategy (Cost Optimization)
 
-For **`simple` scope**, the generated `BRD.md` must follow the lightweight 4-section structure defined in `skills/brd/assets/BRD_SCHEMA_SIMPLE.md`:
+### Phases 1–6: Reasoning Tier
+**Use:** `claude-3-7-sonnet`, `gemini-2.5-pro`, `gpt-4o`
+**Why:** Cognitive work (decomposition, exploration, synthesis, validation)
 
-1. **Domain & Module Taxonomy** — Lightweight domain decomposition tree (no KPIs, no L1/L2 formality).
-2. **Personas** — Persona roster table, no RACI matrix.
-3. **Use Case Catalog** — Use cases with Workflow, Happy Path, Exception Paths, and Given-When-Then criteria.
-4. **Mapping Matrix** — Single traceability table linking Personas, Domains, and Use Cases.
-
-This structure explicitly excludes KPIs, RACI, MoSCoW prioritization, governance matrices, risk matrices, and changelogs — it is a minimal, rapid-delivery format.
-
----
-
-## 4. Mandatory 7-Section Document Structure (Prototype, MVP, Full Scopes)
-
-The generated `BRD.md` for **`prototype`**, **`mvp`**, or **`full`** scopes must follow the exact structure defined in `skills/brd/assets/BRD_SCHEMA.md`:
-
-1. **Executive Summary & Business Intent**
-   - 1.1 Problem Statement & Market Opportunity
-   - 1.2 Strategic Alignment & Business Objectives
-   - 1.3 Key Performance Indicators (KPIs) & Target Milestones Table
-2. **Stakeholder, Persona & Actor Ecosystem**
-   - 2.1 Complete Persona Matrix (`PER-001` through `PER-00N`)
-   - 2.2 Persona Interaction Dynamics & RACI Model
-3. **Functional Domain Taxonomy & Boundaries**
-   - 3.1 Domain Decomposition (L1 Capabilities -> L2 Business Modules)
-   - 3.2 Business In-Scope vs. Out-of-Scope Matrix
-4. **Comprehensive Business Use Case Catalog**
-   - Detailed specifications for `UC-101` .. `UC-NNN`
-   - Attributes, Nominal Flows, Exceptions, and Given-When-Then Acceptance Criteria
-5. **MVP Scoping & Phased Rollout Matrix**
-   - 5.1 MoSCoW Feature Allocation Table
-   - 5.2 Phase 1 MVP Kickstart Release Guardrails
-6. **Business Constraints & Governance Guardrails**
-   - 6.1 Regulatory, Privacy & Legal Constraints
-   - 6.2 Business Operational Constraints & SLAs
-   - 6.3 Risk Management & Mitigation Matrix
-7. **Refinement & Validation Changelog**
-   - 7.1 Traceability & Persona Coverage Audit
-   - 7.2 Version Changelog
+### Phase 7 Validation: Lightweight Tier
+**Spawn:** Subagent running `validate_brd.py` in isolated context
+**Use:** `claude-3-5-haiku`, `gemini-2.5-flash`, `gpt-4o-mini`
+**Why:** Validation is regex + checklist work, not reasoning (~10-20x cheaper)
 
 ---
 
-## 5. Quality Validation & Verification Command
+## 6. Quality Assurance & Validation
 
-After generating `BRD.md`, run the bundled validation script with the appropriate scope:
+After generating `BRD.md`, run:
 
 ```bash
-# Validate against detected/specified scope
-python3 skills/brd/scripts/validate_brd.py BRD.md --strict
-
-# Explicitly validate against any supported scope
-python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope simple
-python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope prototype
-python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope mvp
-python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope full
+python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope [simple|prototype|mvp|full]
 ```
 
-If the validator reports any warnings or errors, immediately self-correct the document until `--strict` validation passes with exit code 0.
+**Exit code 0:** All checks pass. BRD.md is compliant.
+**Exit code 1:** Failures detected. Refer to Phase 4/6 (ReAct) for self-correction.
+
+See README.md §7 for validation output interpretation.
+
+---
+
+## 7. Reference Materials
+
+**For detailed guidance, see README.md:**
+- §1: Directive Explanations
+- §2: Scope Boundaries Deep Dive
+- §3: Phase 1 CoT Strategy (with one-liner handling)
+- §4: Phase 2 ToT Examples (domain exploration patterns)
+- §5: Phase 3–4 Use Case Patterns
+- §6: Phase 6 ReAct Flowcharts & Self-Correction
+- §7: State-Saving Split Strategy & Checkpoint Gates
+- §8: High-Level Requirement Quick-Start
+- §9: Model Selection by Scope
+- §10: Installation & Activation (per scope)
+- §11: Testing & CI/CD Integration
+
+**Schema Files:**
+- `assets/BRD_SCHEMA.md` — 7-section BABOK/IEEE template (prototype/mvp/full)
+- `assets/BRD_SCHEMA_SIMPLE.md` — 4-section lightweight template (simple)
+
+**Validation Script:**
+- `scripts/validate_brd.py` — Zero-dependency Python 3 validator

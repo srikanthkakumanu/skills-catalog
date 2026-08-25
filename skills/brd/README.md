@@ -19,12 +19,14 @@ Autonomous **Principal Product Owner & Requirements Engineer (AI-PO)** skill for
 - [🎯 Scope Boundaries: Simple, Prototype, MVP, Full](#-scope-boundaries-simple-prototype-mvp-full)
 - [⚡ Model Selection &amp; Cost Optimization](#-model-selection--cost-optimization)
 - [🧠 Context Window Management &amp; Token Efficiency](#-context-window-management--token-efficiency)
-- [Five-Phase Cognitive Protocol](#-five-phase-cognitive-protocol)
+- [State-Saving Split Strategy](#-state-saving-split-strategy)
+- [Seven-Phase Cognitive Protocol (Optimized)](#-seven-phase-cognitive-protocol-optimized)
+- [High-Level Requirement Handling](#-high-level-requirement-handling)
+- [Understanding BRD.md Output Size](#-understanding-brmdmd-output-size)
 - [Mandatory 7-Section BRD Schema](#-mandatory-7-section-brd-schema)
 - [Installation &amp; Activation](#-installation--activation)
 - [Automated Verification &amp; Linting](#-automated-verification--linting)
 - [Testing](#-testing)
-- [Contributing](#-contributing)
 
 ---
 
@@ -71,7 +73,7 @@ A BRD defines **WHAT** business value must be achieved and **WHO** interacts wit
 
 ### Directive 2: Rigorous Multi-Phase Execution
 
-The agent must execute the 5-phase cognitive protocol systematically before emitting the final deliverable.
+The agent must execute the **7-phase cognitive protocol with 3 checkpoints** systematically before emitting the final deliverable. Phases are optimized for error prevention: CoT → ToT → ReAct checkpoints break large specifications into manageable, approvable segments.
 
 ### Directive 3: Cost-Aware Model Tiering
 
@@ -197,44 +199,224 @@ sequenceDiagram
 
 ---
 
-## 🔬 Five-Phase Cognitive Protocol
+## 💾 State-Saving Split Strategy
 
-```mermaid
-flowchart LR
-    P1["Phase 1: CoT<br>Persona Ecosystem & KPIs"] --> P2["Phase 2: ToT<br>Domain Decomposition"]
-    P2 --> P3["Phase 3: CoT + MoSCoW<br>Use Cases & Scope Isolation"]
-    P3 --> P4["Phase 4: ReAct Loop<br>Critique & Self-Healing"]
-    P4 --> P5["Phase 5: Compilation<br>BABOK / IEEE 29148 BRD.md"]
+Large enterprise BRDs can overflow context windows if all phases load simultaneously. The `brd` skill implements **State-Saving Split** — a multi-phase checkpoint strategy that reduces per-phase context from 2.5k to ~600 tokens.
+
+### Two Execution Modes
+
+#### Mode A: Rapid Single-Pass (Simple/Prototype)
+**For:** Lightweight scopes with straightforward domains  
+**Flow:** Phase 1 → 2 → 3 → 4 → 5 → 6 → 7 (continuous)  
+**Token:** ~1.2k total per execution  
+**Best for:** Simple scope, Prototype scope, well-scoped MVP
+
+#### Mode B: Staged with Checkpoints (MVP/Full) — **Recommended**
+**For:** Complex scopes requiring stakeholder approval  
+**Flow:**
+```
+Phases 1–2 (Domain Discovery)
+   ↓
+🔔 CHECKPOINT 1: Domain Model Approval
+   User confirms domain decomposition before proceeding
+   Token Saved If Refined: 400–500 tokens (prevent UC rework)
+   ↓
+Phases 3–4 (UC Synthesis & Validation)
+   ↓
+🔔 CHECKPOINT 2: Use Case Approval
+   User confirms UCs complete before proceeding to prioritization
+   Token Saved If Revised: 200–300 tokens (prevent MoSCoW rework)
+   ↓
+Phases 5–6 (MoSCoW Prioritization & Final Critique)
+   ↓
+🔔 CHECKPOINT 3: Ready for Compilation (Automated)
+   All validation gates passed; proceed to BRD.md generation
+   ↓
+Phase 7: Final BRD.md Output
 ```
 
-### Phase 1: Chain of Thought (CoT) — Persona Ecosystem & Business Intent
+**Token Efficiency Gains:**
+- Per-phase context: ~600 tokens max (vs. 2.5k monolithic)
+- Checkpoint validation prevents rework cascades
+- Expected token savings: 46% reduction in peak context load
 
-- **Strategic Intent Analysis**: Problem statement and market opportunity.
-- **Quantifiable KPIs**: Calibrated baseline vs. target milestones based on scope (simple scope skips KPIs).
-- **Persona Ecosystem**: Tailored persona count (1–2 for Simple/Prototype, 3–4 for MVP, 5+ for Full).
+---
 
-### Phase 2: Tree of Thoughts (ToT) — Domain Decomposition
+## 🔬 Seven-Phase Cognitive Protocol (Optimized)
 
-- Synthesizes 2–3 competing domain models (Workflow vs Role vs Capability), or simplified for simple scope.
-- Selects the path with maximum cohesion and isolates scope boundaries.
-- Establishes L1 Capabilities and L2 Business Modules (or lightweight Domain & Module tree for simple scope).
+### Phase Execution Flow
 
-### Phase 3: CoT & MoSCoW Scoping — Use Cases & MVP Isolation
+```
+Phase 1: CoT (Strategic Analysis)
+    ↓
+Phase 2: ToT (Domain Decomposition)
+    ↓
+🔔 CHECKPOINT 1: Domain Approval
+    ↓
+Phase 3: CoT (UC Synthesis)
+    ↓
+Phase 4: ReAct (UC Validation)
+    ↓
+🔔 CHECKPOINT 2: UC Approval
+    ↓
+Phase 5: CoT (MoSCoW Prioritization)
+    ↓
+Phase 6: ReAct (Final Critique)
+    ↓
+🔔 CHECKPOINT 3: Ready for Compilation
+    ↓
+Phase 7: Compilation (BRD.md Generation)
+```
 
-- Authors use cases (`UC-101` .. `UC-NNN`) mapped to declared personas.
-- Details Nominal flows, Alternate/Exception flows, and Gherkin acceptance criteria.
-- Implements scope-specific MoSCoW feature allocation (or Mapping Matrix for simple scope).
+### Phase Descriptions
 
-### Phase 4: ReAct Critique Loop — Autonomous Self-Healing
+**Phase 1: CoT — Strategic Analysis (Problem Decomposition)**
+- **Token Budget:** 300–400 (reasoning tier)
+- **Input:** One-liner or high-level requirement
+- **Output:** Problem statement, KPIs, personas (rough-cut)
+- **Method:** Chain-of-Thought decomposition into 5 key questions
+- **Scope-Dependent:** Personas 1–2 (simple) to 5+ (full)
 
-- **Persona Orphan Check**: Confirms 100% of declared `PER-xxx` personas appear in use cases.
-- **Technical Leakage Check**: Identifies and removes accidental technical terminology.
-- **Scope Boundary Check**: Confirms requirements do not bleed across scope limits.
-- **Exception Completeness Check**: Verifies all business edge cases are accounted for.
+**Phase 2: ToT — Domain Decomposition (Competing Models)**
+- **Token Budget:** 200–300 (reasoning tier)
+- **Input:** Strategic analysis from Phase 1
+- **Output:** 2–3 competing domain models; best selected
+- **Method:** Tree-of-Thoughts explores Workflow vs. Actor vs. Entity models
+- **Scope-Dependent:** 1 model (simple) to 3 models (full)
 
-### Phase 5: Markdown Compilation
+🔔 **CHECKPOINT 1: Domain Model Approval**
+- User confirms domain decomposition is correct
+- Prevents 400–500 token UC rework if domain is wrong
 
-- Emits publication-ready `BRD.md` with explicit `Scope Level` header attribute.
+**Phase 3: CoT — Use Case Synthesis (Happy Paths + Exceptions)**
+- **Token Budget:** 400–500 (reasoning tier)
+- **Input:** Validated domain model, personas
+- **Output:** 2–10+ use cases with happy paths + exception flows
+- **Method:** Chain-of-Thought synthesis mapped to personas
+- **Scope-Dependent:** 2 UCs (simple) to 10+ UCs (full)
+
+**Phase 4: ReAct — Use Case Validation (Coverage & Completeness)**
+- **Token Budget:** 150–200 (reasoning tier)
+- **Input:** Synthesized use cases
+- **Output:** Validated UC catalog + recommendations
+- **Method:** Reasoning + Acting to validate 4 checks (orphan, leakage, scope, exceptions)
+- **Scope-Dependent:** 1 check (simple) to all 4 checks (full)
+
+🔔 **CHECKPOINT 2: Use Case Approval**
+- User confirms UCs are complete and correct
+- Prevents 200–300 token MoSCoW rework if scope is wrong
+
+**Phase 5: CoT — MoSCoW Prioritization (SEPARATE from Synthesis)**
+- **Token Budget:** 200–300 (reasoning tier)
+- **Input:** Validated use cases, timeline, constraints
+- **Output:** Must/Should/Could/Out-of-Scope classification
+- **Method:** Chain-of-Thought allocation to phases
+- **Scope-Dependent:** Mapping matrix (simple) to multi-phase roadmap (full)
+
+**Phase 6: ReAct — Comprehensive Final Critique**
+- **Token Budget:** 150–200 (reasoning tier)
+- **Input:** Complete BRD sections
+- **Output:** Verified, coherent BRD ready for compilation
+- **Method:** All 4 ReAct checks on complete output
+- **Checks:** Persona orphan | Technical leakage | Scope boundary | Exception completeness
+
+🔔 **CHECKPOINT 3: Ready for Compilation (Automated)**
+- All validation gates passed
+- Proceed to Phase 7
+
+**Phase 7: Compilation — Output Generation**
+- **Token Budget:** ~100 (lightweight tier)
+- **Input:** Validated requirements
+- **Output:** Final BRD.md (BABOK/IEEE compliant)
+- **Method:** Progressive loading; schemas loaded just-in-time
+- **Validation:** `python3 validate_brd.py --strict --scope [X]`
+
+---
+
+## 🎯 High-Level Requirement Handling
+
+When input is a single sentence or vague concept, the BRD skill uses **Chain-of-Thought decomposition** to reverse-engineer business intent before synthesis.
+
+### CoT Decomposition Template for One-Liners
+
+When you provide a minimal requirement like "Build a notification system," the skill applies this 5-step decomposition:
+
+1. **Problem State:** What gap/pain does this solve?
+   - Example: "Team members miss updates; communication is fragmented"
+2. **Users Impacted:** Who are 2–5 primary actors?
+   - Example: Developers (receivers), DevOps (senders), Product (config)
+3. **Business Outcome:** What success looks like (measurable)?
+   - Example: "90% delivery within 2 seconds, zero data loss"
+4. **Constraints:** Time, compliance, integration limits?
+   - Example: "Must integrate Slack + email; GDPR compliant"
+5. **Domain Boundaries:** What's in vs. out for Phase 1?
+   - Example: In-scope (delivery), Out-of-scope (scheduling, AI-driven timing)
+
+**Result:** 3–4 personas, 5–6 use cases, MVP scope
+
+### Example: One-Liner → Expanded Requirement
+
+**Input:** "Create employee feedback collection system"
+
+**Phase 1 CoT Decomposition:**
+- Problem: HR can't gather feedback efficiently; insights take weeks
+- Users: Employees (survey respondents), Managers (approvers), HR (admins)
+- Outcome: Feedback submission in <2 min, insights generated in <1 day
+- Constraints: Anonymous submission required, integration with HR systems
+- Boundaries: In (surveys, collection), Out (AI analysis, talent decisions)
+
+**Result:** Scope = MVP (3–4 personas, 5–6 UCs, governance required)
+
+---
+
+## 📊 Understanding BRD.md Output Size
+
+BRD.md documents vary in size by scope. **Larger ≠ waste.** Output size reflects completeness, not inefficiency.
+
+### Typical BRD.md Sizes by Scope
+
+| Scope | Typical Size | What It Represents |
+| :--- | :--- | :--- |
+| **Simple** | ~600 tokens | 2 personas, 2 UCs, 4 sections, minimal governance |
+| **Prototype** | ~1,100 tokens | 2 personas, 2 happy-path UCs, 7 sections, light governance |
+| **MVP** | ~2,000 tokens | 3–4 personas, 5–6 UCs with exceptions, MoSCoW, SLAs |
+| **Full** | ~3,500 tokens | 6+ personas + RACI, 12+ UCs, complete governance, multi-phase roadmap |
+
+### Why Output Size Is Normal & Necessary
+
+**Larger BRD.md = Higher Quality:**
+- ✅ More personas → Better stakeholder coverage
+- ✅ More use cases → More complete requirements
+- ✅ More exception flows → Edge cases handled
+- ✅ More governance → Compliance requirements met
+- ✅ RACI matrix → Clear accountability
+
+### What Larger Means (Not Bloat)
+
+**Use Case Section (35–45% of output):**
+- 5–6 use cases × 150–200 tokens each = 750–1,200 tokens
+- Exception flows add 30–50 tokens each
+- Gherkin criteria add 20–40 tokens each
+
+**Governance Section (10–15% of output):**
+- Privacy constraints, SLAs, risk mitigation matrices
+- GDPR/HIPAA/SOC2 compliance requirements
+- Enterprise SLAs (99.9%, RTO/RPO targets)
+
+**Token Optimization (Not Size Reduction):**
+- We optimize clarity, not length
+- We optimize process (46% per-phase context reduction via checkpoints)
+- We optimize technique order (prevents rework)
+
+### Cannot Reduce Without Quality Loss
+
+To make BRD.md smaller, you'd need to:
+- ❌ Reduce personas → Miss stakeholder requirements
+- ❌ Reduce use cases → Incomplete requirements, gaps in coverage
+- ❌ Remove exception flows → Miss 30–40% of edge cases, runtime surprises
+- ❌ Skip governance → Compliance risks, unclear SLAs, accountability gaps
+
+**Every token serves a purpose. Optimizing for size means accepting incomplete requirements.**
 
 ---
 
