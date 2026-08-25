@@ -206,14 +206,17 @@ Large enterprise BRDs can overflow context windows if all phases load simultaneo
 ### Two Execution Modes
 
 #### Mode A: Rapid Single-Pass (Simple/Prototype)
-**For:** Lightweight scopes with straightforward domains  
-**Flow:** Phase 1 → 2 → 3 → 4 → 5 → 6 → 7 (continuous)  
-**Token:** ~1.2k total per execution  
+
+**For:** Lightweight scopes with straightforward domains
+**Flow:** Phase 1 → 2 → 3 → 4 → 5 → 6 → 7 (continuous)
+**Token:** ~1.2k total per execution
 **Best for:** Simple scope, Prototype scope, well-scoped MVP
 
 #### Mode B: Staged with Checkpoints (MVP/Full) — **Recommended**
-**For:** Complex scopes requiring stakeholder approval  
+
+**For:** Complex scopes requiring stakeholder approval
 **Flow:**
+
 ```
 Phases 1–2 (Domain Discovery)
    ↓
@@ -236,6 +239,7 @@ Phase 7: Final BRD.md Output
 ```
 
 **Token Efficiency Gains:**
+
 - Per-phase context: ~600 tokens max (vs. 2.5k monolithic)
 - Checkpoint validation prevents rework cascades
 - Expected token savings: 46% reduction in peak context load
@@ -271,6 +275,7 @@ Phase 7: Compilation (BRD.md Generation)
 ### Phase Descriptions
 
 **Phase 1: CoT — Strategic Analysis (Problem Decomposition)**
+
 - **Token Budget:** 300–400 (reasoning tier)
 - **Input:** One-liner or high-level requirement
 - **Output:** Problem statement, KPIs, personas (rough-cut)
@@ -278,6 +283,7 @@ Phase 7: Compilation (BRD.md Generation)
 - **Scope-Dependent:** Personas 1–2 (simple) to 5+ (full)
 
 **Phase 2: ToT — Domain Decomposition (Competing Models)**
+
 - **Token Budget:** 200–300 (reasoning tier)
 - **Input:** Strategic analysis from Phase 1
 - **Output:** 2–3 competing domain models; best selected
@@ -285,10 +291,12 @@ Phase 7: Compilation (BRD.md Generation)
 - **Scope-Dependent:** 1 model (simple) to 3 models (full)
 
 🔔 **CHECKPOINT 1: Domain Model Approval**
+
 - User confirms domain decomposition is correct
 - Prevents 400–500 token UC rework if domain is wrong
 
 **Phase 3: CoT — Use Case Synthesis (Happy Paths + Exceptions)**
+
 - **Token Budget:** 400–500 (reasoning tier)
 - **Input:** Validated domain model, personas
 - **Output:** 2–10+ use cases with happy paths + exception flows
@@ -296,6 +304,7 @@ Phase 7: Compilation (BRD.md Generation)
 - **Scope-Dependent:** 2 UCs (simple) to 10+ UCs (full)
 
 **Phase 4: ReAct — Use Case Validation (Coverage & Completeness)**
+
 - **Token Budget:** 150–200 (reasoning tier)
 - **Input:** Synthesized use cases
 - **Output:** Validated UC catalog + recommendations
@@ -303,10 +312,12 @@ Phase 7: Compilation (BRD.md Generation)
 - **Scope-Dependent:** 1 check (simple) to all 4 checks (full)
 
 🔔 **CHECKPOINT 2: Use Case Approval**
+
 - User confirms UCs are complete and correct
 - Prevents 200–300 token MoSCoW rework if scope is wrong
 
 **Phase 5: CoT — MoSCoW Prioritization (SEPARATE from Synthesis)**
+
 - **Token Budget:** 200–300 (reasoning tier)
 - **Input:** Validated use cases, timeline, constraints
 - **Output:** Must/Should/Could/Out-of-Scope classification
@@ -314,6 +325,7 @@ Phase 7: Compilation (BRD.md Generation)
 - **Scope-Dependent:** Mapping matrix (simple) to multi-phase roadmap (full)
 
 **Phase 6: ReAct — Comprehensive Final Critique**
+
 - **Token Budget:** 150–200 (reasoning tier)
 - **Input:** Complete BRD sections
 - **Output:** Verified, coherent BRD ready for compilation
@@ -321,10 +333,12 @@ Phase 7: Compilation (BRD.md Generation)
 - **Checks:** Persona orphan | Technical leakage | Scope boundary | Exception completeness
 
 🔔 **CHECKPOINT 3: Ready for Compilation (Automated)**
+
 - All validation gates passed
 - Proceed to Phase 7
 
 **Phase 7: Compilation — Output Generation**
+
 - **Token Budget:** ~100 (lightweight tier)
 - **Input:** Validated requirements
 - **Output:** Final BRD.md (BABOK/IEEE compliant)
@@ -359,6 +373,7 @@ When you provide a minimal requirement like "Build a notification system," the s
 **Input:** "Create employee feedback collection system"
 
 **Phase 1 CoT Decomposition:**
+
 - Problem: HR can't gather feedback efficiently; insights take weeks
 - Users: Employees (survey respondents), Managers (approvers), HR (admins)
 - Outcome: Feedback submission in <2 min, insights generated in <1 day
@@ -375,16 +390,17 @@ BRD.md documents vary in size by scope. **Larger ≠ waste.** Output size reflec
 
 ### Typical BRD.md Sizes by Scope
 
-| Scope | Typical Size | What It Represents |
-| :--- | :--- | :--- |
-| **Simple** | ~600 tokens | 2 personas, 2 UCs, 4 sections, minimal governance |
-| **Prototype** | ~1,100 tokens | 2 personas, 2 happy-path UCs, 7 sections, light governance |
-| **MVP** | ~2,000 tokens | 3–4 personas, 5–6 UCs with exceptions, MoSCoW, SLAs |
-| **Full** | ~3,500 tokens | 6+ personas + RACI, 12+ UCs, complete governance, multi-phase roadmap |
+| Scope               | Typical Size  | What It Represents                                                    |
+| :------------------ | :------------ | :-------------------------------------------------------------------- |
+| **Simple**    | ~600 tokens   | 2 personas, 2 UCs, 4 sections, minimal governance                     |
+| **Prototype** | ~1,100 tokens | 2 personas, 2 happy-path UCs, 7 sections, light governance            |
+| **MVP**       | ~2,000 tokens | 3–4 personas, 5–6 UCs with exceptions, MoSCoW, SLAs                 |
+| **Full**      | ~3,500 tokens | 6+ personas + RACI, 12+ UCs, complete governance, multi-phase roadmap |
 
 ### Why Output Size Is Normal & Necessary
 
 **Larger BRD.md = Higher Quality:**
+
 - ✅ More personas → Better stakeholder coverage
 - ✅ More use cases → More complete requirements
 - ✅ More exception flows → Edge cases handled
@@ -394,16 +410,19 @@ BRD.md documents vary in size by scope. **Larger ≠ waste.** Output size reflec
 ### What Larger Means (Not Bloat)
 
 **Use Case Section (35–45% of output):**
+
 - 5–6 use cases × 150–200 tokens each = 750–1,200 tokens
 - Exception flows add 30–50 tokens each
 - Gherkin criteria add 20–40 tokens each
 
 **Governance Section (10–15% of output):**
+
 - Privacy constraints, SLAs, risk mitigation matrices
 - GDPR/HIPAA/SOC2 compliance requirements
 - Enterprise SLAs (99.9%, RTO/RPO targets)
 
 **Token Optimization (Not Size Reduction):**
+
 - We optimize clarity, not length
 - We optimize process (46% per-phase context reduction via checkpoints)
 - We optimize technique order (prevents rework)
@@ -411,6 +430,7 @@ BRD.md documents vary in size by scope. **Larger ≠ waste.** Output size reflec
 ### Cannot Reduce Without Quality Loss
 
 To make BRD.md smaller, you'd need to:
+
 - ❌ Reduce personas → Miss stakeholder requirements
 - ❌ Reduce use cases → Incomplete requirements, gaps in coverage
 - ❌ Remove exception flows → Miss 30–40% of edge cases, runtime surprises
@@ -451,17 +471,77 @@ The generated document adheres to the structure in [`assets/BRD_SCHEMA.md`](file
 
 ## 🚀 Installation & Activation
 
-### Installing the Skill
+### Quick Install (All Agents)
 
 ```bash
-# Install 'brd' across all runtimes (Antigravity, Claude Code, Codex)
-./install.sh --skill brd
+cd /Users/skakumanu/practice/skills-catalog
 
-# Targeted runtime installations
-./install.sh --skill brd --target antigravity
-./install.sh --skill brd --target claude
-./install.sh --skill brd --target codex
+# Install to all agents (Antigravity, Claude Code, Codex)
+./install.sh --skill brd --target all
+
+# Or with short flags
+./install.sh -s brd -t all
 ```
+
+### Forceful Installation (Recommended for Updates)
+
+Use `--force` flag to overwrite existing installations and ensure all agents have the latest version:
+
+```Shell
+./install.sh --skill brd --target all --force --mode copy
+```
+
+#### Installation Mode Comparison
+
+| Mode              | Command                      | Use Case                                        | Auto-Updates |
+| ----------------- | ---------------------------- | ----------------------------------------------- | ------------ |
+| **Copy**    | `--mode copy`              | Independent copies (recommended for production) | ❌ No        |
+| **Symlink** | `--mode symlink` (default) | Link to catalog source                          | ✅ Yes       |
+
+### Installation Flags Reference
+
+| Flag                      | Purpose                                 | Example                                                     |
+| ------------------------- | --------------------------------------- | ----------------------------------------------------------- |
+| `-s, --skill <NAME>`    | Which skill to install                  | `-s brd` or `-s all`                                    |
+| `-t, --target <TARGET>` | Agent(s) to install to                  | `-t all`, `-t claude`, `-t antigravity`, `-t codex` |
+| `-f, --force`           | **Forcefully overwrite existing** | Forces reinstall even if already present                    |
+| `-m, --mode <MODE>`     | Installation method                     | `-m copy` or `-m symlink`                               |
+| `-h, --help`            | Show help message                       | `--help`                                                  |
+
+### Verify Installation Success
+
+```bash
+# Check all agents have BRD skill installed
+echo "=== Antigravity ===" && ls -la ~/.antigravity/skills/brd/SKILL.md && echo "✓ Installed"
+echo "=== Claude Code ===" && ls -la ~/.claude/skills/brd/SKILL.md && echo "✓ Installed"
+echo "=== Codex ===" && ls -la ~/.codex/skills/brd/SKILL.md && echo "✓ Installed"
+
+# Test skill availability in any agent
+/brd --help
+```
+
+### Targeted Installation Examples
+
+```bash
+# Install only to Claude Code (copy mode)
+./install.sh --skill brd --target claude --mode copy
+
+# Install all skills to Antigravity (force overwrite)
+./install.sh --target antigravity --force
+
+# Install specific skill with default settings
+./install.sh -s brd
+
+# View installation help
+./install.sh --help
+```
+
+### Safety Notes
+
+- **`--force` flag:** Removes existing installations and replaces with latest version (safe for updates)
+- **Symlink mode:** Updates in catalog automatically propagate to all agents (but breaks if catalog moves)
+- **Copy mode:** Independent installations don't auto-update (safer if you modify locally)
+- **Recommendation:** Use `--force --mode copy` for production environments
 
 ### Activation Triggers by Scope
 
