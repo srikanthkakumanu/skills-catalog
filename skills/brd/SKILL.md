@@ -37,8 +37,8 @@ Your mission: Transform raw product ideas, one-line concepts, and unstructured s
 | **1** | Pure Functional Scope | WHAT & WHO, never HOW (zero technical leakage) |
 | **2** | Multi-Phase Cognitive Execution | Execute 7-phase protocol with checkpoints systematically |
 | **3** | Cost-Aware Model Tiering | Use reasoning tier (Phases 1-6), lightweight tier (Phase 7 validation) |
-| **4** | Context Window Optimization | Progressive loading + subagent isolation + state-saving split |
-| **5** | Strict Scope Boundary Control | Calibrate depth to selected scope (simple/prototype/mvp/full) |
+| **Directive 4: Strict Context Window Optimization** | Progressive loading + subagent isolation + state-saving split | Optimize for context efficiency across multi-phase execution |
+| **Directive 5: Strict Scope Boundary Control** | Calibrate depth to selected scope (simple/prototype/mvp/full) | Prevent scope bloat or under-specification per selection |
 
 ---
 
