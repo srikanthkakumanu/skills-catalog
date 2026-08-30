@@ -69,13 +69,14 @@ A single markdown file: `req-nfr-analysis.md`
 |----|---------------------------------------|----------------|------------------|-----------------|
 | 1  | Performance                           | Inferred       | P1.2: 500ms SLA  | Hard Constraint |
 | 2  | Latency                               | Not evidenced  | —                | —               |
-| 3  | Scalability                           | Explicit       | UC-2: 100k users | Hard Constraint |
+| 3  | Scalability                           | Deferred (Quick Scope) | UC-2 implies 100k user scale; quick scope assumes single-instance deployment — deferred | — |
+| 4  | Availability                          | Explicit       | UC-2: 99.95% uptime | Hard Constraint |
 | 15 | Disaster Recovery/Business Continuity | Explicit (user-confirmed) | User confirmed: 4-hour RTO, 1-hour RPO | Hard Constraint |
 | ... | ...                                  | ...            | ...              | ...             |
 | 19 | Other/Uncategorized                  | Not evidenced  | —                | —               |
 ```
 
-All 19 rows appear in every output, even "Not evidenced." With `--ask-gaps`, resolved gap questions appear as `Explicit (user-confirmed)` rows in the table.
+All 19 rows appear in every output, even "Not evidenced." Quick scope may use `Deferred (Quick Scope)` for categories identified but outside the minimal essential set (one container per app/microservice, one DB, one AI agent per need). With `--ask-gaps`, resolved gap questions appear as `Explicit (user-confirmed)` rows in the table.
 
 **Section 3: Open Questions for Stakeholder**
 
@@ -155,7 +156,9 @@ Generate `req-nfr-analysis.md` with three sections in this exact order:
 ## Key Design Principles
 
 - **All 19 rows every time**: Even if an NFR category is "Not evidenced," it appears in the output. This makes gaps visible and prevents silent assumptions.
-- **No invented data**: If the BRD doesn't state an availability SLA, it is marked Inferred (with citation to the gap pattern), not Explicit. An open question is raised for the stakeholder.
+- **No invented data**: If the BRD doesn't state an availability SLA, it is marked Inferred (with citation to the gap pattern), not Explicit. An open question is raised for the stakeholder, except quick scope does not raise production-grade-hardening questions about categories outside its minimal essential set — those are marked `Deferred (Quick Scope)` instead.
+- **Scope-aware identification, not scope-aware silence**: Quick scope still identifies all 19 NFR categories and writes every identified one to the output file as `Deferred (Quick Scope)` or one of the standard statuses. The difference is which categories get prioritized and which get gap questions — not which ones appear in the file at all.
+- **Production-grade rigor at thorough scope**: Thorough scope expects real targets (SLA %, latency budgets, RTO/RPO, compliance frameworks) for categories that demand them, and surfaces cross-NFR dependencies explicitly (e.g., how a multi-region Availability SLA implies specific Disaster Recovery RTO/RPO).
 - **Separation of concerns**: Functional requirements are purely functional; NFR concerns are isolated and categorized.
 - **Traceability**: Every requirement and every inferred gap is tied back to a source (BRD section, gap pattern, or explicit question).
 - **Out of scope**: No architecture recommendations, technology choices, or design decisions. This skill is purely analytical.
@@ -278,10 +281,10 @@ echo "=== Codex ===" && ls -la ~/.codex/skills/req-nfr-analysis/SKILL.md && echo
 
 Invoke the skill within your AI agent runtime with your desired scope depth:
 
-#### 1. Quick Scope Invocation
+#### 1. Quick Scope Invocation (Default)
 
 ```text
-/req-nfr-analysis --scope quick Analyze BRD.md for the 5 key NFRs before we scope architecture
+/req-nfr-analysis Analyze BRD.md for a fully functional system at minimal deployment scale
 ```
 
 or
@@ -290,7 +293,9 @@ or
 extract nfr from BRD.md, quick pass
 ```
 
-#### 2. Standard Scope Invocation (Default)
+Quick scope identifies all 19 NFR categories but focuses only on the minimal essential set — one container per frontend app/microservice, one database, one AI agent per identified need. Categories outside this set are tagged as `Deferred (Quick Scope)` and do not receive production-grade-hardening questions.
+
+#### 2. Standard Scope Invocation
 
 ```text
 /req-nfr-analysis --scope standard Analyze BRD.md
@@ -299,13 +304,15 @@ extract nfr from BRD.md, quick pass
 or
 
 ```text
-/req-nfr-analysis Analyze our BRD for phase 1 requirements analysis
+/req-nfr-analysis --scope standard Analyze our BRD for phase 1 requirements analysis
 ```
+
+Standard scope walks all 19 NFR categories and generates applicable gap questions without quick scope's deferral concept or thorough scope's production-grade rigor.
 
 #### 3. Thorough Scope Invocation
 
 ```text
-/req-nfr-analysis --scope thorough Analyze BRD.md with full dependency reasoning across NFRs
+/req-nfr-analysis --scope thorough Analyze BRD.md with production-grade rigor across all NFRs
 ```
 
 or
@@ -313,6 +320,8 @@ or
 ```text
 do a thorough phase 1 requirements analysis on BRD.md before we move to architecture
 ```
+
+Thorough scope evaluates all 19 NFR categories at production-grade rigor — expecting real targets (SLA %, latency budgets, RTO/RPO, compliance frameworks) where the domain calls for one. Surfaces cross-NFR dependencies explicitly (e.g., multi-region Availability implies specific Disaster Recovery RTO/RPO). Never uses `Deferred (Quick Scope)` status.
 
 #### 4. Interactive Gap Resolution
 
@@ -374,6 +383,16 @@ These tests assert that:
 ---
 
 ## Version History
+
+**v1.3** (2026-08-31):
+
+- Redefined `quick` scope: minimal essential set (one container per frontend app/microservice, one DB, one AI agent per identified need), no production-grade-hardening questions for out-of-scope categories. Introduced `Deferred (Quick Scope)` status to distinguish identified-but-deferred NFRs from `Not evidenced` categories.
+- Redefined `thorough` scope: production-grade rigor across all 19 categories with real targets (SLA %, latency budgets, RTO/RPO, compliance frameworks) and explicit cross-NFR dependency surfacing.
+- Made `quick` the default scope (changed from `standard`).
+- Updated gap question generation rules: quick scope suppresses production-grade-hardening questions for deferred categories; thorough scope generates complete coverage with dependency implications called out; standard scope unchanged.
+- Reconciled "always ask" rules in Out of Scope and Key Design Principles sections to account for quick scope's selective question suppression while maintaining all 19 rows in output.
+- Cleaned up Core Directives table formatting (moved Directive 4–6 labels to consistent columns).
+- Dropped "Python 3" from compatibility line (no Python script in this skill).
 
 **v1.2** (2026-08-27):
 
