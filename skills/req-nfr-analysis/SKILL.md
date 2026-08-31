@@ -33,14 +33,14 @@ flags:
 
 ## Core Directives (Reference These)
 
-| #                                                         | Directive                                                                                                                                  | Key Rule                                                                                |
-| :-------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
-| **1**                                               | Pure Requirements Analysis                                                                                                                 | Extract functional requirements systematically; no architecture or tech recommendations |
-| **2**                                               | Five-Step Execution Protocol                                                                                                               | Execute steps 1–5 sequentially; none skipped or merged                                 |
-| **3**                                               | Complete NFR Coverage                                                                                                                      | All 19 categories in every output, even "Not evidenced" rows                            |
-| **4** | Strict Context Window Optimization | Progressive reference loading; inline only category names, reference taxonomy/patterns for details |
-| **5** | Strict Scope Boundary Control | Calibrate depth to scope: quick (minimal essential set, no production-grade-hardening questions for deferred categories), standard (all 19 NFRs + applicable questions), thorough (production-grade rigor across all 19, complete gap coverage, cross-NFR dependencies) |
-| **6** | Gap Resolution Invocation | `--ask-gaps` turns Step 4 from "list questions" into "ask, wait, resolve into NFR table"; omit flag for default static-question behavior |
+| #           | Directive                          | Key Rule                                                                                                                                                                                                                                                                |
+| :---------- | :--------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1** | Pure Requirements Analysis         | Extract functional requirements systematically; no architecture or tech recommendations                                                                                                                                                                                 |
+| **2** | Five-Step Execution Protocol       | Execute steps 1–5 sequentially; none skipped or merged                                                                                                                                                                                                                 |
+| **3** | Complete NFR Coverage              | All 19 categories in every output, even "Not evidenced" rows                                                                                                                                                                                                            |
+| **4** | Strict Context Window Optimization | Progressive reference loading; inline only category names, reference taxonomy/patterns for details                                                                                                                                                                      |
+| **5** | Strict Scope Boundary Control      | Calibrate depth to scope: quick (minimal essential set, no production-grade-hardening questions for deferred categories), standard (all 19 NFRs + applicable questions), thorough (production-grade rigor across all 19, complete gap coverage, cross-NFR dependencies) |
+| **6** | Gap Resolution Invocation          | `--ask-gaps` turns Step 4 from "list questions" into "ask, wait, resolve into NFR table"; omit flag for default static-question behavior                                                                                                                              |
 
 Note: **Directive 4: Strict Context Window Optimization** and **Directive 5: Strict Scope Boundary Control** guide progressive loading and scope calibration respectively; see their rows above for full details.
 
@@ -113,6 +113,7 @@ Build a short, specific batch of questions:
 - Not leading—ask what is genuinely missing
 
 **Scope-specific gap question filtering:**
+
 - **Quick scope:** Generate questions only for NFR categories inside the minimal essential set. Categories marked `Deferred (Quick Scope)` do not get gap questions — there's nothing to ask about something explicitly scoped out (asking production-grade-hardening questions would defeat quick scope's "build it quickly" objective).
 - **Thorough scope:** Every `Inferred` or `Not evidenced` category at production-grade rigor generates a gap question (complete coverage). Call out cross-NFR dependencies explicitly: where one category's production-grade target implies a requirement in another (e.g., a multi-region Availability SLA implies specific Disaster Recovery RTO/RPO), note that dependency in the question or evidence.
 - **Standard scope:** Keep existing behavior — applicable gap questions, no deferral concept.
@@ -142,7 +143,7 @@ Output a markdown file named `req-nfr-analysis.md` with the three sections above
 
 - Architecture recommendations or pattern selection
 - Technology stack suggestions
-- Design decisions or trade-off analysis (reserved for Phase 2)
+- Design decisions or trade-off analysis (reserved for next phase)
 - Assumption of missing information—always ask instead, except that quick scope does not raise production-grade-hardening questions (HA, scaling, DR targets, etc.) for NFR categories outside its minimal essential set; those categories are still identified and written to the output file as `Deferred (Quick Scope)`, just without an accompanying stakeholder question
 
 ## Success Criteria

@@ -254,6 +254,84 @@
           }
         }
       }
+    },
+    {
+      "name": "architecture-decisions",
+      "version": "1.0.0",
+      "path": "skills/architecture-decisions",
+      "entrypoint": "SKILL.md",
+      "readme": "README.md",
+      "description": "Phase 2 architecture decisioning skill that evaluates architecture styles (monolith, modular monolith, microservices, event-driven, serverless) and agentic-AI fitness (fit/partial-fit/not-fit) using hard constraints from req-nfr-analysis.md input, surfaces 1-2 alternatives at checkpoint, and produces MADR-formatted ADRs for both decisions with documented rationale. Mandatory checkpoint before lock-in.",
+      "triggers": [
+        "/architecture-decisions",
+        "/architecture-decisions --scope quick",
+        "/architecture-decisions --scope standard",
+        "/architecture-decisions --scope thorough",
+        "architecture decision",
+        "architecture decisions",
+        "should this be microservices",
+        "should this be a monolith",
+        "agentic ai fit",
+        "agentic-ai fitness",
+        "evaluate architecture",
+        "design decisions",
+        "phase 2 architecture",
+        "adr",
+        "generate adr"
+      ],
+      "runtimes": [
+        "antigravity",
+        "claude",
+        "codex"
+      ],
+      "scopes": {
+        "supported": [
+          "quick",
+          "standard",
+          "thorough"
+        ],
+        "default": "standard",
+        "description": "Supports quick (1 alternative + informal reasoning), standard (2 alternatives + rationale table), and thorough (3-style scoring matrix + cross-decision dependency analysis) evaluation depths."
+      },
+      "tags": [
+        "architecture-design",
+        "adr",
+        "decision-records",
+        "agentic-ai-fitness",
+        "phase-2-analysis",
+        "microservices",
+        "monolith",
+        "architecture-style",
+        "event-driven",
+        "serverless",
+        "modular-monolith"
+      ],
+      "license": "Apache-2.0",
+      "context_optimization": {
+        "progressive_loading": true,
+        "chunked_synthesis": false,
+        "subagent_delegation": false,
+        "token_budget_profile": "standard",
+        "description": "Progressively loads architecture style criteria and agentic-AI fitness dimensions on-demand; inlines only style/dimension names in core skill body to maintain optimal context utilization."
+      },
+      "models": {
+        "reasoning_tier": {
+          "description": "Multi-criteria scoring, architecture trade-off analysis, agentic-AI dimension evaluation, cross-dependency reasoning, ADR rationale synthesis",
+          "recommended": {
+            "gemini": "gemini-2.5-pro / gemini-3.7-flash",
+            "claude": "claude-3-7-sonnet / claude-3-5-sonnet",
+            "codex": "gpt-4o / o3-mini"
+          }
+        },
+        "lightweight_tier": {
+          "description": "Markdown ADR formatting, table structuring, reference citation, and output validation",
+          "recommended": {
+            "gemini": "gemini-2.5-flash / gemini-2.0-flash-lite",
+            "claude": "claude-3-5-haiku",
+            "codex": "gpt-4o-mini"
+          }
+        }
+      }
     }
   ]
 }

@@ -416,11 +416,11 @@ These tests assert that:
 
 ## Pipeline Context
 
-This skill is **Phase 1** of the BRD → PRD → Architecture pipeline:
+This skill is **Phase 1** of the BRD → Architecture → PRD pipeline:
 
 - **Phase 1 (this skill):** Normalize requirements, extract and prioritize NFRs, identify gaps
-- **Phase 2 (future):** Architecture & design phase; consume `req-nfr-analysis.md` output and make technology/pattern decisions
-- **Phase 3 (future):** PRD refinement or specification phase; detail user stories, API contracts, test plans
+- **Phase 2:** [`architecture-decisions`](../architecture-decisions/README.md) skill; consume `req-nfr-analysis.md` output and make architecture style + agentic-AI fitness decisions
+- **Phase 3 (future):** PRD refinement or specification phase; detail user stories, API contracts, test plans based on Phase 2 architecture decisions
 
 Each phase's output feeds into the next.
 
