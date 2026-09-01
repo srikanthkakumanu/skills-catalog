@@ -69,7 +69,7 @@ A single markdown file: `req-nfr-analysis.md`
 |----|---------------------------------------|----------------|------------------|-----------------|
 | 1  | Performance                           | Inferred       | P1.2: 500ms SLA  | Hard Constraint |
 | 2  | Latency                               | Not evidenced  | —                | —               |
-| 3  | Scalability                           | Deferred (Quick Scope) | UC-2 implies 100k user scale; quick scope assumes single-instance deployment — deferred | — |
+| 3  | Scalability                           | Deferred (Quick Scope) | UC-2: 100k-user scale implied — deferred | — |
 | 4  | Availability                          | Explicit       | UC-2: 99.95% uptime | Hard Constraint |
 | 15 | Disaster Recovery/Business Continuity | Explicit (user-confirmed) | User confirmed: 4-hour RTO, 1-hour RPO | Hard Constraint |
 | ... | ...                                  | ...            | ...              | ...             |

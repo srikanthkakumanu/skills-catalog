@@ -78,6 +78,7 @@ For every requirement, determine NFR classification across 18 named categories (
 **Rules:**
 - Never invent thresholds; mark "99.95% availability" as Inferred if unstated
 - Use "Other/Uncategorized" only for genuinely uncategorizable requirements (not a shortcut between close categories); one-line justification required
+- **Evidence field is a short phrase, not a sentence** — cap at ~12–15 words / one clause (e.g., `"UC-2: multi-region implied — deferred"`, not a full sentence). Cite the source tersely; don't restate reasoning in prose.
 - **Quick scope:** Mark production-grade-hardening categories (HA, scaling, DR) outside minimal essential set as `Deferred (Quick Scope)` with evidence
 - **Thorough scope:** All 19 resolve to Explicit/Inferred/Not evidenced; never defer
 
@@ -125,7 +126,7 @@ Identify patterns in the BRD suggesting missing requirements. Consult `reference
 Generate single file: `req-nfr-analysis.md` with three sections in order:
 
 1. **Normalized Functional Requirements** — Table: ID, Requirement, Source
-2. **NFR List** — Table: #, Category, Status, Evidence, Priority (always 19 rows)
+2. **NFR List** — Table: #, Category, Status, Evidence, Priority (always 19 rows; Evidence kept to a short phrase, not a full sentence)
 3. **Open Questions for Stakeholder** — Bulleted list tied to NFR rows or gap patterns
 
 With `--ask-gaps`: Section 2 includes `Explicit (user-confirmed)` rows; Section 3 contains only unresolved items (may be empty).
@@ -147,6 +148,7 @@ Single markdown file: `req-nfr-analysis.md` with three self-contained sections (
 - ✅ No invented thresholds or silent assumptions
 - ✅ Functional requirements are functional (no NFR language mixed in)
 - ✅ Priorities grounded in BRD or routed to stakeholder questions
+- ✅ Evidence citations are short phrases (~12–15 words), not full sentences
 - ✅ With `--ask-gaps`: Resolved NFRs show `Explicit (user-confirmed)` with evidence traceable to user answer
 - ✅ Quick scope: `Deferred (Quick Scope)` distinct from `Not evidenced`; all identified NFRs written to output; no production-grade questions for deferred categories
 - ✅ Thorough scope: Never uses `Deferred (Quick Scope)`; production-grade targets across all 19; cross-NFR dependencies surfaced
