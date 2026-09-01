@@ -31,128 +31,122 @@ flags:
 ---
 # Phase 1: Requirements & NFR Analysis
 
-## Core Directives (Reference These)
+## Core Directives
 
-| #           | Directive                          | Key Rule                                                                                                                                                                                                                                                                |
-| :---------- | :--------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1** | Pure Requirements Analysis         | Extract functional requirements systematically; no architecture or tech recommendations                                                                                                                                                                                 |
-| **2** | Five-Step Execution Protocol       | Execute steps 1–5 sequentially; none skipped or merged                                                                                                                                                                                                                 |
-| **3** | Complete NFR Coverage              | All 19 categories in every output, even "Not evidenced" rows                                                                                                                                                                                                            |
-| **4** | Strict Context Window Optimization | Progressive reference loading; inline only category names, reference taxonomy/patterns for details                                                                                                                                                                      |
-| **5** | Strict Scope Boundary Control      | Calibrate depth to scope: quick (minimal essential set, no production-grade-hardening questions for deferred categories), standard (all 19 NFRs + applicable questions), thorough (production-grade rigor across all 19, complete gap coverage, cross-NFR dependencies) |
-| **6** | Gap Resolution Invocation          | `--ask-gaps` turns Step 4 from "list questions" into "ask, wait, resolve into NFR table"; omit flag for default static-question behavior                                                                                                                              |
-
-Note: **Directive 4: Strict Context Window Optimization** and **Directive 5: Strict Scope Boundary Control** guide progressive loading and scope calibration respectively; see their rows above for full details.
+1. **Pure Requirements Analysis** — No architecture or tech recommendations
+2. **Five-Step Sequential Execution** — Steps 1–5 in order; none skipped or merged
+3. **Complete NFR Coverage** — All 19 categories in every output, even "Not evidenced"
+4. **Progressive Reference Loading** — Inline category names; reference taxonomy/patterns for details
+5. **Scope Boundary Control** — Calibrate depth: quick (minimal essential set, deferred categories), standard (all 19 + applicable questions), thorough (production-grade rigor, cross-NFR dependencies)
+6. **Gap Resolution** — `--ask-gaps` asks stakeholders and resolves into NFR table; omit for static questions
 
 ---
 
 ## Overview
 
-This skill systematically analyzes a completed Business Requirements Document (BRD) to extract, normalize, and prioritize functional and non-functional requirements. It serves as the bridge between requirements definition and architecture/design phases.
-
-**Important:** This skill **does not** recommend an architecture, pattern, or tech stack—that is out of scope and reserved for downstream phases that consume this output.
+Analyzes completed BRDs to extract, normalize, and prioritize functional and non-functional requirements. Serves as the bridge between requirements definition and architecture/design phases. **Does not recommend architecture, patterns, or tech stacks.**
 
 ## When to Use
 
-Invoke this skill when:
-
-- A BRD is provided and needs normalization or NFR extraction
-- User explicitly asks for "requirement analysis" or "requirements analysis"
-- User is ready to move from requirements into architecture/design
-- User declares BRD "done" and asks "what's next?" in a requirements→architecture pipeline
-- An incomplete BRD needs structured gap identification
+- BRD provided and needs normalization or NFR extraction
+- User asks for "requirement analysis" or declares BRD "done"
+- Incomplete BRD needs structured gap identification
 
 ## Execution Steps (Sequential—None Skipped or Merged)
 
 ### Step 1: Extract Functional Requirements
 
-Walk systematically through every use case, acceptance criterion, and requirement row in the provided BRD. For each one:
+Walk systematically through use cases, acceptance criteria, and requirement rows.
 
-- Write one normalized line per requirement
-- Use short imperative statements with source references (e.g., "UC-3.2: System shall validate user credentials against LDAP", source: UC-3)
-- Keep purely functional—do not mix in NFR language even if the BRD phrases a single sentence as both
-- Separate "System shall persist data" (functional) from "System shall persist data with 99.95% durability" (durability is Reliability/Resilience NFR)
+**Rules:**
+- One normalized imperative statement per requirement
+- Format: "System shall X" with source reference (e.g., UC-3.2, AC-5.1)
+- Functional only—separate from NFR language (split "persist data with 99.95% durability" into functional requirement + NFR tag)
 
-Output: A table with columns: **ID, Requirement, Source**
+**Output:** Table: ID, Requirement, Source
 
 ### Step 2: Tag Every NFR Across 19 Categories
 
-For every requirement (including inferred ones), determine its NFR classification:
+For every requirement, determine NFR classification across 18 named categories (see `references/nfr-taxonomy.md`) plus "Other/Uncategorized."
 
-- Classify across the 18 named categories listed in `references/nfr-taxonomy.md` (Performance, Latency, Scalability, Availability, Reliability, Resilience/Fault Tolerance, Security, Compliance/Regulatory, Data Privacy, Maintainability, Usability/Accessibility, Interoperability, Portability, Observability, Disaster Recovery/Business Continuity, Capacity/Resource Efficiency, Explainability/Transparency, AI Safety/Autonomy Control)
-- Tag each as one of: **Explicit** (stated clearly in BRD), **Inferred** (implied but never stated—see gap-patterns in references), **Not evidenced** (absent), or **Deferred (Quick Scope)** (identified as applicable to the system but falls outside quick scope's minimal essential set; quick scope only, never used at standard or thorough)
-- If a requirement is clearly NFR-shaped but does not fit the 18 categories, assign it to the 19th category **"Other/Uncategorized"** with a one-line justification of why it doesn't fit elsewhere (never as a shortcut between two close categories)
-- Never upgrade an Inferred NFR to Explicit by inventing a plausible number or threshold
-- **Scope-specific tagging:**
-  - **Quick scope:** Walk all 19 categories; mark those outside the minimal essential set (one container per app/microservice, one DB, one AI agent per need — no redundancy, HA, or scaling) as `Deferred (Quick Scope)`. Evidence explains what was identified and why it's deferred (e.g., "UC-2 implies multi-region reads, but quick scope assumes single-instance deployment — deferred").
-  - **Thorough scope:** Walk all 19 categories with **production-grade rigor** — assume multi-instance/redundant/HA deployment posture, and expect real targets (SLA %, latency budget, RTO/RPO, compliance framework) where the domain calls for one. Never use `Deferred (Quick Scope)` at thorough; every category resolves to `Explicit`, `Inferred`, or `Not evidenced`.
+**Tags:**
+- **Explicit** — Stated clearly in BRD
+- **Inferred** — Implied but not stated (cite gap pattern from `references/gap-patterns.md`)
+- **Not evidenced** — Absent
+- **Deferred (Quick Scope)** — Identified but outside minimal essential set (quick scope only)
 
-Output: A table with columns: **#, Category, Status (Explicit/Inferred/Not evidenced/Deferred (Quick Scope)), Evidence (cite BRD section), Priority** — always 19 rows, one per category
+**Rules:**
+- Never invent thresholds; mark "99.95% availability" as Inferred if unstated
+- Use "Other/Uncategorized" only for genuinely uncategorizable requirements (not a shortcut between close categories); one-line justification required
+- **Quick scope:** Mark production-grade-hardening categories (HA, scaling, DR) outside minimal essential set as `Deferred (Quick Scope)` with evidence
+- **Thorough scope:** All 19 resolve to Explicit/Inferred/Not evidenced; never defer
+
+**Output:** Table: #, Category, Status, Evidence, Priority — always 19 rows
 
 ### Step 3: Prioritize Each NFR
 
-For every NFR (all 19 categories), classify as either **Hard Constraint** or **Nice-to-Have**:
+Classify all 19 categories as **Hard Constraint** or **Nice-to-Have.**
 
-- Hard Constraint = system does not functionally work or fails a stated KPI without it; includes load-bearing Inferred NFRs
-- Nice-to-Have = improves experience/performance but system works without it; includes anything BRD explicitly defers
-- Spell out the reasoning rule for each decision
-- Where priority is genuinely unclear, route to "Open Questions" section instead of guessing
-- Document assumptions transparently
-- **Scope-specific rules:**
-  - **Quick scope:** `Deferred (Quick Scope)` rows get Priority `—` (same as `Not evidenced` rows). Only prioritize categories in the minimal essential set.
-  - **Thorough scope:** Categories like Disaster Recovery, Compliance, and Security are near-always Hard Constraint at production-grade rigor (consistent with the load-bearing Inferred NFRs rule), reflecting that a production system cannot ship without them even if the BRD is silent.
+**Definitions:**
+- **Hard Constraint** — System doesn't work, fails a KPI, or violates compliance without it; includes load-bearing Inferred NFRs
+- **Nice-to-Have** — Improves experience but system works without it
 
-### Step 4: Ask for Real Gaps (Not Assumptions)
+**Rules:**
+- Spell out reasoning for each priority decision
+- If priority is unclear, route to Open Questions instead of guessing
+- **Quick scope:** `Deferred (Quick Scope)` rows get Priority `—`. Only prioritize minimal essential set.
+- **Thorough scope:** Disaster Recovery, Compliance, Security are near-always Hard Constraint at production rigor
 
-Identify patterns in the BRD that suggest missing requirements or context. Consult `references/gap-patterns.md` for the specific tells—do not assume or invent.
+### Step 4: Ask for Real Gaps
 
-Build a short, specific batch of questions:
+Identify patterns in the BRD suggesting missing requirements. Consult `references/gap-patterns.md` (18 patterns) and build specific gap questions.
 
-- Only for patterns that actually apply to this BRD
-- Tied to specific sections or context
-- Not leading—ask what is genuinely missing
+**Rules:**
+- Only questions for patterns that actually apply
+- Tied to specific BRD sections
+- Not leading; ask what's genuinely missing
 
-**Scope-specific gap question filtering:**
+**Scope-specific filtering:**
+- **Quick scope:** Generate questions only for minimal essential set. Skip `Deferred (Quick Scope)` categories (don't ask production-grade questions about explicitly deferred items).
+- **Thorough scope:** Every `Inferred` or `Not evidenced` category gets a question (complete coverage). Call out cross-NFR dependencies (e.g., multi-region Availability implies specific Disaster Recovery RTO/RPO).
+- **Standard scope:** Applicable gap questions; no deferral concept.
 
-- **Quick scope:** Generate questions only for NFR categories inside the minimal essential set. Categories marked `Deferred (Quick Scope)` do not get gap questions — there's nothing to ask about something explicitly scoped out (asking production-grade-hardening questions would defeat quick scope's "build it quickly" objective).
-- **Thorough scope:** Every `Inferred` or `Not evidenced` category at production-grade rigor generates a gap question (complete coverage). Call out cross-NFR dependencies explicitly: where one category's production-grade target implies a requirement in another (e.g., a multi-region Availability SLA implies specific Disaster Recovery RTO/RPO), note that dependency in the question or evidence.
-- **Standard scope:** Keep existing behavior — applicable gap questions, no deferral concept.
+**Default (no `--ask-gaps`):** Route questions to "Open Questions for Stakeholder" section (Step 5). Do not ask user directly.
 
-**Default behavior (no `--ask-gaps` flag):** Route applicable questions into the "Open Questions for Stakeholder" output section (Step 5). Do not ask the user directly; do not block on a response.
-
-**With `--ask-gaps`:** Ask the batched questions to the user directly in the conversation, in one concise round. For each answer received:
-
-- Derive the NFR classification concisely: Status → `Explicit (user-confirmed)`, Evidence → one-line paraphrase of the user's answer (not a verbatim transcript), Priority → re-apply the Step 3 Hard Constraint / Nice-to-Have rule to the answer
-- Update that row directly in the Section 2 NFR table; remove it from Open Questions
-- If an answer is ambiguous, partial, or introduces a new gap, keep (or re-add) that item in Open Questions rather than forcing a resolution
-- Never invent an answer the user didn't give
+**With `--ask-gaps`:** Ask batched questions in one concise round. For each answer:
+- Status → `Explicit (user-confirmed)`
+- Evidence → one-line paraphrase (not verbatim)
+- Priority → re-apply Step 3 rule
+- Update Step 2 NFR table; remove from Open Questions
+- If answer is ambiguous/partial, keep in Open Questions rather than forcing resolution
 
 ### Step 5: Produce Structured Output
 
-Generate a single `req-nfr-analysis.md` file with exactly three sections in this order:
+Generate single file: `req-nfr-analysis.md` with three sections in order:
 
-1. **Normalized Functional Requirements** — Table: ID, Requirement, Source (all requirements from Step 1)
-2. **NFR List** — Table: #, Category, Status, Evidence, Priority (all 19 rows every time, even "Not evidenced"; with `--ask-gaps`, includes `Explicit (user-confirmed)` rows resolved from user answers)
-3. **Open Questions for Stakeholder** — Bulleted list, each tied to a specific NFR category row or gap pattern. With `--ask-gaps`, contains only items that remain unresolved after the user's answers (may be empty); without the flag, contains every applicable gap question as today
+1. **Normalized Functional Requirements** — Table: ID, Requirement, Source
+2. **NFR List** — Table: #, Category, Status, Evidence, Priority (always 19 rows)
+3. **Open Questions for Stakeholder** — Bulleted list tied to NFR rows or gap patterns
+
+With `--ask-gaps`: Section 2 includes `Explicit (user-confirmed)` rows; Section 3 contains only unresolved items (may be empty).
 
 ## Deliverable
 
-Output a markdown file named `req-nfr-analysis.md` with the three sections above. Each section is self-contained and can be reviewed independently.
+Single markdown file: `req-nfr-analysis.md` with three self-contained sections (see Step 5).
 
 ## Out of Scope
 
-- Architecture recommendations or pattern selection
-- Technology stack suggestions
-- Design decisions or trade-off analysis (reserved for next phase)
-- Assumption of missing information—always ask instead, except that quick scope does not raise production-grade-hardening questions (HA, scaling, DR targets, etc.) for NFR categories outside its minimal essential set; those categories are still identified and written to the output file as `Deferred (Quick Scope)`, just without an accompanying stakeholder question
+- Architecture recommendations, patterns, or technology stack suggestions
+- Design decisions or trade-off analysis (Phase 2+)
+- Inventing missing information (always ask stakeholders; except quick scope suppresses production-grade questions for deferred categories—they're still identified and written to output as `Deferred (Quick Scope)`, just without a stakeholder question)
 
 ## Success Criteria
 
-- All 19 NFR categories are present in the output, even if "Not evidenced"
-- Every Inferred NFR includes a clear citation of the gap pattern it comes from
-- No invented thresholds or assumptions are silently included
-- Functional requirements are truly functional (no NFR language mixed in)
-- Priorities are grounded in BRD content or explicitly routed to stakeholder questions
-- With `--ask-gaps`, every resolved NFR shows `Explicit (user-confirmed)` status with evidence traceable to the user's actual answer—never an invented value—and unresolved items remain in Open Questions
-- **Quick-scope success:** Output correctly distinguishes `Deferred (Quick Scope)` from `Not evidenced`, still writes every identified NFR to the output file, and never asks production-grade-hardening questions about deferred categories
-- **Thorough-scope success:** Output never uses `Deferred (Quick Scope)`, applies production-grade targets across all 19 categories, and surfaces cross-NFR dependencies where they exist
+- ✅ All 19 NFR categories present in output (even "Not evidenced")
+- ✅ Every Inferred NFR cites gap pattern from `gap-patterns.md`
+- ✅ No invented thresholds or silent assumptions
+- ✅ Functional requirements are functional (no NFR language mixed in)
+- ✅ Priorities grounded in BRD or routed to stakeholder questions
+- ✅ With `--ask-gaps`: Resolved NFRs show `Explicit (user-confirmed)` with evidence traceable to user answer
+- ✅ Quick scope: `Deferred (Quick Scope)` distinct from `Not evidenced`; all identified NFRs written to output; no production-grade questions for deferred categories
+- ✅ Thorough scope: Never uses `Deferred (Quick Scope)`; production-grade targets across all 19; cross-NFR dependencies surfaced
