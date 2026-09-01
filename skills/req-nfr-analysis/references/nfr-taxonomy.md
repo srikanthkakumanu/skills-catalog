@@ -159,7 +159,7 @@ This taxonomy defines the 19 non-functional requirement categories used in Phase
 
 **Definition:** Ease and intuitiveness of use for end users; accessibility for users with disabilities (WCAG compliance).
 
-**Scope:** User interface clarity, learnability, accessibility standards (screen readers, keyboard navigation, color contrast), mobile responsiveness, documentation quality.
+**Scope:** User interface clarity, learnability, accessibility standards (screen readers, keyboard navigation, color contrast), mobile responsiveness, user-facing documentation quality.
 
 **Examples:**
 - "UI shall be compliant with WCAG 2.1 AA accessibility standards"
@@ -167,7 +167,7 @@ This taxonomy defines the 19 non-functional requirement categories used in Phase
 - "Mobile UI shall be responsive and usable on devices 320px or wider"
 - "Error messages shall be clear and actionable to end users"
 
-**Does NOT include:** Usability research or UX design decisions (reserved for design phase), Performance.
+**Does NOT include:** Maintainability (code documentation, architecture clarity), Performance.
 
 ---
 
@@ -237,7 +237,7 @@ This taxonomy defines the 19 non-functional requirement categories used in Phase
 
 **Definition:** Optimal use of computational resources (CPU, memory, storage, network) to minimize cost and environmental impact while meeting performance targets.
 
-**Scope:** Resource utilization targets, memory efficiency, storage optimization, network bandwidth usage, power efficiency, cost efficiency.
+**Scope:** Resource utilization targets, memory efficiency, storage optimization, network bandwidth usage, power efficiency, cost-efficiency optimization.
 
 **Examples:**
 - "System shall run efficiently on standard cloud instances with 2 CPU cores and 4GB RAM"
@@ -245,7 +245,7 @@ This taxonomy defines the 19 non-functional requirement categories used in Phase
 - "Network bandwidth usage shall not exceed 1 Mbps per concurrent user"
 - "System shall reduce carbon footprint by 20% through efficient resource use"
 
-**Does NOT include:** Performance (speed), Scalability (growth), Cost (business decision).
+**Does NOT include:** Performance (speed), Scalability (growth), Maintainability (code efficiency).
 
 ---
 

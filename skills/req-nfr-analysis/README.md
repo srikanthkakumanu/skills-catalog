@@ -1,4 +1,4 @@
-# req-nfr-analysis Skill (v1.2)
+# req-nfr-analysis Skill (v2.0)
 
 **Phase 1 of the Requirements → PRD → Architecture Pipeline**
 
@@ -57,8 +57,8 @@ A single markdown file: `req-nfr-analysis.md`
 ```
 | ID  | Requirement                                  | Source     |
 |-----|----------------------------------------------|-----------|
-| F1  | System shall authenticate users via LDAP    | UC-3.2    |
-| F2  | System shall persist user preferences       | AC-5.1    |
+| F1  | System shall authenticate users via LDAP    | UC-101    |
+| F2  | System shall persist user preferences       | UC-102    |
 | ... |                                              |           |
 ```
 
@@ -67,16 +67,19 @@ A single markdown file: `req-nfr-analysis.md`
 ```
 | #  | Category                              | Status         | Evidence         | Priority        |
 |----|---------------------------------------|----------------|------------------|-----------------|
-| 1  | Performance                           | Inferred       | P1.2: 500ms SLA  | Hard Constraint |
-| 2  | Latency                               | Not evidenced  | —                | —               |
-| 3  | Scalability                           | Deferred (Quick Scope) | UC-2: 100k-user scale implied — deferred | — |
-| 4  | Availability                          | Explicit       | UC-2: 99.95% uptime | Hard Constraint |
-| 15 | Disaster Recovery/Business Continuity | Explicit (user-confirmed) | User confirmed: 4-hour RTO, 1-hour RPO | Hard Constraint |
+| 1  | Performance                           | I              | P1.2: 500ms SLA  | HC              |
+| 2  | Latency                               | NE             | —                | —               |
+| 3  | Scalability                           | DEF            | UC-2: 100k-user scale implied — deferred | — |
+| 4  | Availability                          | E              | UC-2: 99.95% uptime | HC              |
+| 15 | Disaster Recovery/Business Continuity | EC             | User confirmed: 4-hour RTO, 1-hour RPO | HC              |
 | ... | ...                                  | ...            | ...              | ...             |
-| 19 | Other/Uncategorized                  | Not evidenced  | —                | —               |
+| 19 | Other/Uncategorized                  | NE             | —                | —               |
+
+**Status codes:** E = Explicit, I = Inferred, NE = Not evidenced, DEF = Deferred (Minimal Scope), EC = Explicit (user-confirmed)  
+**Priority codes:** HC = Hard Constraint, NTH = Nice-to-Have, — = Deferred or absent
 ```
 
-All 19 rows appear in every output, even "Not evidenced." Quick scope may use `Deferred (Quick Scope)` for categories identified but outside the minimal essential set (one container per app/microservice, one DB, one AI agent per need). With `--ask-gaps`, resolved gap questions appear as `Explicit (user-confirmed)` rows in the table.
+All 19 rows appear in every output, even "Not evidenced." Minimal scope may use `DEF` for categories identified but outside the minimal essential set. With `--ask-gaps`, resolved gap questions appear as `EC` rows in the table. (See SKILL.md Scope Behavior Matrix for scope-conditional behavior.)
 
 **Section 3: Open Questions for Stakeholder**
 
@@ -95,7 +98,7 @@ All 19 rows appear in every output, even "Not evidenced." Quick scope may use `D
 The skill walks through the BRD section-by-section (use cases, acceptance criteria, requirements tables, etc.) and extracts every requirement into a normalized form:
 
 - **Short imperative statement**: "System shall X"
-- **Source reference**: Cite where it came from (e.g., "UC-3.2", "AC-5.1", "General Constraints")
+- **Source reference**: Cite where it came from (e.g., use case ID like "UC-101", section reference like "General Constraints", or the BRD's own requirement identifier)
 - **Functional only**: No NFR language mixed in (separate "persist data" from "persist data with 99.95% durability")
 
 If a single BRD sentence contains both functional and NFR concerns, they are split into separate rows.
@@ -156,8 +159,8 @@ Generate `req-nfr-analysis.md` with three sections in this exact order:
 ## Key Design Principles
 
 - **All 19 rows every time**: Even if an NFR category is "Not evidenced," it appears in the output. This makes gaps visible and prevents silent assumptions.
-- **No invented data**: If the BRD doesn't state an availability SLA, it is marked Inferred (with citation to the gap pattern), not Explicit. An open question is raised for the stakeholder, except quick scope does not raise production-grade-hardening questions about categories outside its minimal essential set — those are marked `Deferred (Quick Scope)` instead.
-- **Scope-aware identification, not scope-aware silence**: Quick scope still identifies all 19 NFR categories and writes every identified one to the output file as `Deferred (Quick Scope)` or one of the standard statuses. The difference is which categories get prioritized and which get gap questions — not which ones appear in the file at all.
+- **No invented data**: If the BRD doesn't state an availability SLA, it is marked I (with citation to the gap pattern), not E. An open question is raised for the stakeholder, except minimal scope does not raise production-grade-hardening questions about Deferred categories — those are marked DEF instead.
+- **Scope-aware identification, not scope-aware silence**: Minimal scope still identifies all 19 NFR categories and writes every identified one to the output file as DEF or one of the standard statuses (E/I/NE/EC). The difference is which categories get prioritized and which get gap questions — not which ones appear in the file at all.
 - **Production-grade rigor at thorough scope**: Thorough scope expects real targets (SLA %, latency budgets, RTO/RPO, compliance frameworks) for categories that demand them, and surfaces cross-NFR dependencies explicitly (e.g., how a multi-region Availability SLA implies specific Disaster Recovery RTO/RPO).
 - **Separation of concerns**: Functional requirements are purely functional; NFR concerns are isolated and categorized.
 - **Traceability**: Every requirement and every inferred gap is tied back to a source (BRD section, gap pattern, or explicit question).
@@ -281,7 +284,7 @@ echo "=== Codex ===" && ls -la ~/.codex/skills/req-nfr-analysis/SKILL.md && echo
 
 Invoke the skill within your AI agent runtime with your desired scope depth:
 
-#### 1. Quick Scope Invocation (Default)
+#### 1. Minimal Scope Invocation (Default)
 
 ```text
 /req-nfr-analysis Analyze BRD.md for a fully functional system at minimal deployment scale
@@ -290,10 +293,10 @@ Invoke the skill within your AI agent runtime with your desired scope depth:
 or
 
 ```text
-extract nfr from BRD.md, quick pass
+extract nfr from BRD.md, minimal pass
 ```
 
-Quick scope identifies all 19 NFR categories but focuses only on the minimal essential set — one container per frontend app/microservice, one database, one AI agent per identified need. Categories outside this set are tagged as `Deferred (Quick Scope)` and do not receive production-grade-hardening questions.
+Minimal scope identifies all 19 NFR categories but focuses only on the minimal essential set. Categories outside this set are tagged as DEF (Deferred) and do not receive production-grade-hardening questions. For detailed scope behavior across all three scopes, see SKILL.md's Scope Behavior Matrix.
 
 #### 2. Standard Scope Invocation
 
@@ -307,7 +310,7 @@ or
 /req-nfr-analysis --scope standard Analyze our BRD for phase 1 requirements analysis
 ```
 
-Standard scope walks all 19 NFR categories and generates applicable gap questions without quick scope's deferral concept or thorough scope's production-grade rigor.
+Standard scope walks all 19 NFR categories and generates applicable gap questions; no deferral concept.
 
 #### 3. Thorough Scope Invocation
 
@@ -321,7 +324,7 @@ or
 do a thorough phase 1 requirements analysis on BRD.md before we move to architecture
 ```
 
-Thorough scope evaluates all 19 NFR categories at production-grade rigor — expecting real targets (SLA %, latency budgets, RTO/RPO, compliance frameworks) where the domain calls for one. Surfaces cross-NFR dependencies explicitly (e.g., multi-region Availability implies specific Disaster Recovery RTO/RPO). Never uses `Deferred (Quick Scope)` status.
+Thorough scope evaluates all 19 NFR categories at production-grade rigor; expects real targets and surfaces cross-NFR dependencies. Never uses DEF status.
 
 #### 4. Interactive Gap Resolution
 
@@ -383,6 +386,29 @@ These tests assert that:
 ---
 
 ## Version History
+
+**v2.1** (2026-09-01):
+
+- Compacted SKILL.md: consolidated scope-conditional rules (previously scattered across Steps 2, 3, 4) into single Scope Behavior Matrix (no behavior change, improved scannability)
+- Introduced short Status/Priority codes: E/I/NE/DEF/EC for Status; HC/NTH for Priority (used in all generated output to compact NFR tables)
+- Deduplicated repeated rule restatements; trimmed Success Criteria from 11 to 6 focused bullets
+- Codified Open Questions bullet template in Step 5 for consistency
+- Updated README example tables and cross-references to use short codes and Scope Behavior Matrix
+- "Always 19 rows, even Not evidenced" guarantee unchanged — compaction via shorter cell content, not fewer rows
+
+**v2.0** (2026-09-01):
+
+- Renamed `quick` scope to `minimal` across registry.json, SKILL.md, and README.md — breaking change to the public scope identifier and default value
+- Renamed `Deferred (Quick Scope)` status literal to `Deferred (Minimal Scope)` accordingly
+- Fixed pre-existing sync bug: registry.json `scopes.default` was `"standard"`, now corrected to `"minimal"` to match SKILL.md's actual default
+- Scope-tier behavior and analysis depths unchanged; terminology-only update
+
+**v1.4** (2026-09-01):
+
+- Capped Evidence field length to short phrases (~12–15 words / one clause) instead of full sentences for consistency and conciseness in all output tables
+- Updated source-reference conventions: generalized from invented `AC-x.x` scheme to match BRD output (use case IDs like `UC-101` and acceptance criteria cited by parent use case or section reference)
+- Added `Explicit (user-confirmed)` to canonical Status tag list in Step 2 (result of `--ask-gaps` resolution)
+- Clarified that quick-scope's "minimal essential set" is a scoping heuristic for question depth, not an architecture recommendation
 
 **v1.3** (2026-08-31):
 

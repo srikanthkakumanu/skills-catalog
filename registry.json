@@ -182,18 +182,18 @@
     },
     {
       "name": "req-nfr-analysis",
-      "version": "1.2",
+      "version": "2.1",
       "path": "skills/req-nfr-analysis",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
       "description": "Phase 1 requirements analysis skill that normalizes functional requirements, extracts and tags every requirement across 19 NFR categories, flags inferred NFRs, and prioritizes each as hard constraint vs nice-to-have for downstream architecture/design phases.",
       "triggers": [
         "/req-nfr-analysis",
-        "/req-nfr-analysis --scope quick",
+        "/req-nfr-analysis --scope minimal",
         "/req-nfr-analysis --scope standard",
         "/req-nfr-analysis --scope thorough",
         "/req-nfr-analysis --ask-gaps",
-        "/req-nfr-analysis --scope quick --ask-gaps",
+        "/req-nfr-analysis --scope minimal --ask-gaps",
         "/req-nfr-analysis --scope standard --ask-gaps",
         "/req-nfr-analysis --scope thorough --ask-gaps",
         "analyze brd",
@@ -210,12 +210,12 @@
       ],
       "scopes": {
         "supported": [
-          "quick",
+          "minimal",
           "standard",
           "thorough"
         ],
-        "default": "standard",
-        "description": "Supports quick (5 key NFRs), standard (all 19 NFRs + 10-15 questions), and thorough (complete analysis + dependency reasoning) analysis depths."
+        "default": "minimal",
+        "description": "Supports minimal (5 key NFRs), standard (all 19 NFRs + 10-15 questions), and thorough (complete analysis + dependency reasoning) analysis depths."
       },
       "tags": [
         "requirements-engineering",
