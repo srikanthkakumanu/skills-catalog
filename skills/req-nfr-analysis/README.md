@@ -163,12 +163,23 @@ Invoke this skill when:
 ```bash
 cd /Users/skakumanu/practice/skills-catalog
 
-# Install to all runtimes
+# Install to all runtimes (symlinks)
 ./install.sh --skill req-nfr-analysis
 
-# Or: install to a specific runtime
+# Install via file copy
+./install.sh --skill req-nfr-analysis --mode copy
+
+# Install to a specific runtime
 ./install.sh --skill req-nfr-analysis --target claude
+
+# Force-reinstall
+./install.sh --skill req-nfr-analysis --force
+
+# Full reinstall via copy
+./install.sh --skill req-nfr-analysis --force --mode copy
 ```
+
+For general installation details and troubleshooting, see the [**Installation & Deployment**](../../README.md#-installation--deployment) section in the root README.
 
 ### Invocation
 
@@ -177,9 +188,11 @@ Use natural language or a slash command:
 ```text
 /req-nfr-analysis Analyze our BRD for phase 1 requirements
 
-extract nfr from BRD.md
+analyze requirements from BRD.md
 
-/req-nfr-analysis I need to see all functional and non-functional requirements before we design the architecture
+/req-nfr-analysis Extract NFRs and flag contradictions before architecture phase
+
+nfr analysis
 ```
 
 The skill reads the BRD and produces `req-nfr-analysis.md` with all four sections and structural findings.

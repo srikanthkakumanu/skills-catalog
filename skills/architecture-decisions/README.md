@@ -189,23 +189,36 @@ Invoke this skill when:
 ```bash
 cd /Users/skakumanu/practice/skills-catalog
 
-# Install to all runtimes
+# Install to all runtimes (symlinks)
 ./install.sh --skill architecture-decisions
 
-# Or: install to a specific runtime
+# Install via file copy
+./install.sh --skill architecture-decisions --mode copy
+
+# Install to a specific runtime
 ./install.sh --skill architecture-decisions --target claude
+
+# Force-reinstall
+./install.sh --skill architecture-decisions --force
+
+# Full reinstall via copy
+./install.sh --skill architecture-decisions --force --mode copy
 ```
+
+For general installation details and troubleshooting, see the [**Installation & Deployment**](../../README.md#-installation--deployment) section in the root README.
 
 ### Invocation
 
 Use natural language or a slash command:
 
 ```text
-/architecture-decisions Decide architecture style and agentic-AI fitness for our system
+/architecture-decisions Decide architecture style and agentic-AI fitness
 
-evaluate architecture for expense reconciliation system
+evaluate architecture for our system
 
-/architecture-decisions We have a BRD and NFR analysis; what style should we pick?
+/architecture-decisions We have a BRD and NFR analysis; what architecture style should we pick?
+
+architecture decision
 ```
 
 The skill reads the requirements analysis and produces `architecture-decisions.md` with both ADRs at `pending` status, waiting for your confirmation.

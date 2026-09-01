@@ -275,12 +275,23 @@ Invoke this skill when:
 ```bash
 cd /Users/skakumanu/practice/skills-catalog
 
-# Install to all runtimes
+# Install to all runtimes (symlinks)
 ./install.sh --skill prd
 
-# Or: install to a specific runtime
+# Install via file copy
+./install.sh --skill prd --mode copy
+
+# Install to a specific runtime
 ./install.sh --skill prd --target claude
+
+# Force-reinstall
+./install.sh --skill prd --force
+
+# Full reinstall via copy
+./install.sh --skill prd --force --mode copy
 ```
+
+For general installation details and troubleshooting, see the [**Installation & Deployment**](../../README.md#-installation--deployment) section in the root README.
 
 ### Invocation
 
@@ -289,9 +300,11 @@ Use natural language or a slash command:
 ```text
 /prd Assemble the PRD from all five completed documents
 
-assemble prd from our completed phases
+generate final PRD with all confirmed decisions
 
-/prd Generate the final PRD with all confirmed decisions
+/prd Synthesize BRD, requirements, architecture, design, and tech stack into one unified PRD
+
+final prd
 ```
 
 The skill reads the five upstream documents and produces `PRD.md` with all sections in manifest order plus Open Items.

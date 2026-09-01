@@ -331,23 +331,36 @@ Invoke this skill when:
 ```bash
 cd /Users/skakumanu/practice/skills-catalog
 
-# Install to all runtimes
+# Install to all runtimes (symlinks)
 ./install.sh --skill detailed-design
 
-# Or: install to a specific runtime
+# Install via file copy
+./install.sh --skill detailed-design --mode copy
+
+# Install to a specific runtime
 ./install.sh --skill detailed-design --target claude
+
+# Force-reinstall
+./install.sh --skill detailed-design --force
+
+# Full reinstall via copy
+./install.sh --skill detailed-design --force --mode copy
 ```
+
+For general installation details and troubleshooting, see the [**Installation & Deployment**](../../README.md#-installation--deployment) section in the root README.
 
 ### Invocation
 
 Use natural language or a slash command:
 
 ```text
-/detailed-design Turn our confirmed architecture decisions into detailed design
+/detailed-design Turn architecture decisions into detailed design
 
-design the system based on the architecture decisions we just confirmed
+design the system with bounded contexts, patterns, and APIs
 
-/detailed-design We have architecture ADRs locked; time to design the bounded contexts and patterns
+/detailed-design We have confirmed architecture; time to design the components and data flow
+
+detailed system design
 ```
 
 The skill reads the confirmed architecture decisions and produces `detailed-design.md` with all six sections and full NFR traceability.

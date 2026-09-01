@@ -150,12 +150,23 @@ Invoke this skill when:
 ```bash
 cd /Users/skakumanu/practice/skills-catalog
 
-# Install to all runtimes
+# Install to all runtimes (symlinks)
 ./install.sh --skill brd
 
-# Or: install to a specific runtime
+# Install via file copy (if symlinks don't work)
+./install.sh --skill brd --mode copy
+
+# Install to a specific runtime
 ./install.sh --skill brd --target claude
+
+# Force-reinstall (overwrites existing)
+./install.sh --skill brd --force
+
+# Full reinstall via copy
+./install.sh --skill brd --force --mode copy
 ```
+
+For general installation details, system requirements, and troubleshooting, see the [**Installation & Deployment**](../../README.md#-installation--deployment) section in the root README.
 
 ### Invocation
 
@@ -166,10 +177,12 @@ Use natural language or a slash command:
 
 generate brd for employee feedback collection
 
-/brd Build a quick notification system
+/brd Define a new customer onboarding process
+
+create business requirements for a mobile app
 ```
 
-The skill reads the concept and produces `BRD.md` with all five sections and self-check results.
+The skill reads the concept and produces `BRD.md` with domain, personas, use cases, scope boundaries, and self-check findings.
 
 ## Files
 

@@ -205,23 +205,36 @@ Invoke this skill when:
 ```bash
 cd /Users/skakumanu/practice/skills-catalog
 
-# Install to all runtimes
+# Install to all runtimes (symlinks)
 ./install.sh --skill tech-stack
 
-# Or: install to a specific runtime
+# Install via file copy
+./install.sh --skill tech-stack --mode copy
+
+# Install to a specific runtime
 ./install.sh --skill tech-stack --target claude
+
+# Force-reinstall
+./install.sh --skill tech-stack --force
+
+# Full reinstall via copy
+./install.sh --skill tech-stack --force --mode copy
 ```
+
+For general installation details and troubleshooting, see the [**Installation & Deployment**](../../README.md#-installation--deployment) section in the root README.
 
 ### Invocation
 
 Use natural language or a slash command:
 
 ```text
-/tech-stack Select technologies for each bounded context in our detailed design
+/tech-stack Select technologies for each bounded context
 
-pick the tech stack for the system
+choose the tech stack per context from catalog playbooks
 
-/tech-stack We have detailed design; time to choose technologies per context
+/tech-stack We have detailed design; select technologies per context
+
+tech stack selection
 ```
 
 The skill reads the detailed design and produces `tech-stack.md` with all contexts (some confirmed via playbooks, others at pending status awaiting your selection).
