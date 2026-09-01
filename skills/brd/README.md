@@ -384,59 +384,41 @@ When you provide a minimal requirement like "Build a notification system," the s
 
 ---
 
-## 📊 Understanding BRD.md Output Size
+## 📊 BRD.md Output Size & Lean Concision
 
-BRD.md documents vary in size by scope. **Larger ≠ waste.** Output size reflects completeness, not inefficiency.
+BRD.md documents are right-sized by scope, with concise output discipline applied across all scopes to maximize readability and minimize wasted prose.
 
-### Typical BRD.md Sizes by Scope
+### Target BRD.md Sizes by Scope
 
-| Scope               | Typical Size  | What It Represents                                                    |
+| Scope               | Target Size  | Coverage                                                              |
 | :------------------ | :------------ | :-------------------------------------------------------------------- |
-| **Minimal**   | ~600 tokens   | 2 personas, 2 UCs, 4 sections, minimal governance                     |
-| **Prototype** | ~1,100 tokens | 2 personas, 2 happy-path UCs, 7 sections, light governance            |
-| **MVP**       | ~2,000 tokens | 3–4 personas, 5–6 UCs with exceptions, MoSCoW, SLAs                 |
-| **Full**      | ~3,500 tokens | 6+ personas + RACI, 12+ UCs, complete governance, multi-phase roadmap |
+| **Minimal**   | ~300 tokens   | 2 personas, 2 UCs, 4 sections; lightweight template                   |
+| **Prototype** | ~550 tokens   | 2 personas, 2 UCs, 7 sections; basic governance omitted               |
+| **MVP**       | ~1,000 tokens | 3–4 personas, 5–6 UCs, MoSCoW, SLAs; scope-gated governance           |
+| **Full**      | ~1,800 tokens | 6+ personas w/ RACI, 8–12 UCs, full governance, multi-phase roadmap   |
 
-### Why Output Size Is Normal & Necessary
+### Concision Techniques Applied
 
-**Larger BRD.md = Higher Quality:**
+Every BRD applies **output discipline** to stay lean:
 
-- ✅ More personas → Better stakeholder coverage
-- ✅ More use cases → More complete requirements
-- ✅ More exception flows → Edge cases handled
-- ✅ More governance → Compliance requirements met
-- ✅ RACI matrix → Clear accountability
+- **Nominal flows**: 3 steps max (not 4+)
+- **Exceptions**: 1 line each (`Trigger → Behavior`, not separate bullets)
+- **Gherkin scenarios**: 3 lines per scenario (Given/When/Then only; no chained `And`)
+- **RACI**: Scope-gated (omit Prototype, 1-line MVP, full for Full scope)
+- **Governance**: Scope-gated (skip Prototype/MVP risk matrix; essential constraints only)
+- **UC counts**: 8–12 for Full (not open-ended "10+")
 
-### What Larger Means (Not Bloat)
+### Quality Without Bloat
 
-**Use Case Section (35–45% of output):**
+Lean output does not sacrifice quality:
 
-- 5–6 use cases × 150–200 tokens each = 750–1,200 tokens
-- Exception flows add 30–50 tokens each
-- Gherkin criteria add 20–40 tokens each
+- ✅ All required personas represented in use cases
+- ✅ All core workflows covered with happy path + exception
+- ✅ All acceptance criteria present (Given-When-Then)
+- ✅ All scope-required governance sections included
+- ✅ No redundant prose or filler steps
 
-**Governance Section (10–15% of output):**
-
-- Privacy constraints, SLAs, risk mitigation matrices
-- GDPR/HIPAA/SOC2 compliance requirements
-- Enterprise SLAs (99.9%, RTO/RPO targets)
-
-**Token Optimization (Not Size Reduction):**
-
-- We optimize clarity, not length
-- We optimize process (46% per-phase context reduction via checkpoints)
-- We optimize technique order (prevents rework)
-
-### Cannot Reduce Without Quality Loss
-
-To make BRD.md smaller, you'd need to:
-
-- ❌ Reduce personas → Miss stakeholder requirements
-- ❌ Reduce use cases → Incomplete requirements, gaps in coverage
-- ❌ Remove exception flows → Miss 30–40% of edge cases, runtime surprises
-- ❌ Skip governance → Compliance risks, unclear SLAs, accountability gaps
-
-**Every token serves a purpose. Optimizing for size means accepting incomplete requirements.**
+Output size is optimized for **scannability and speed of review**, not storage efficiency. Completeness is non-negotiable; wordiness is not.
 
 ---
 

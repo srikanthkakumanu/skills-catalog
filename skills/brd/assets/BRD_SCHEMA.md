@@ -27,14 +27,13 @@ Every BRD markdown file must begin with the following metadata header table:
 
 ## 1. Executive Summary & Business Intent
 
-### 1.1 Problem Statement & Market Opportunity
-- **Current State Deficiencies**: Concrete pain points, manual overhead, operational delays, or market gaps experienced by the business and users.
-- **Root Cause Analysis**: Underlying drivers necessitating this business initiative.
-- **Target State Vision**: Clear articulation of what success looks like from a purely business and user enablement perspective.
+### 1.1 Problem Statement & Business Outcome
+- **Problem**: Current state deficiencies, root causes, and drivers necessitating initiative (1–2 sentences).
+- **Target State**: Success vision from business and user perspective (1 sentence).
 
-### 1.2 Strategic Alignment & Business Objectives
-- Alignment with overarching corporate goals, quarterly OKRs, and market positioning.
-- Target value propositions and revenue, efficiency, or satisfaction drivers.
+### 1.2 Strategic Alignment & Objectives
+- Alignment with corporate goals, OKRs, and market positioning.
+- Value propositions and business drivers (revenue, efficiency, satisfaction).
 
 ### 1.3 Key Performance Indicators (KPIs) & Success Metrics
 A structured table quantifying measurable outcomes:
@@ -59,9 +58,10 @@ Every actor interacting directly or indirectly with the business capability must
 | `PER-004` | [e.g., Risk & Compliance Officer]| Governance & Risk | [Enforce regulatory rules and audit compliance] | [Incomplete audit trails, manual reporting] | [e.g., Audit Read-Only & Policy Enforcement] |
 | `PER-005` | [e.g., Platform Administrator] | Internal Administration | [Manage system tenants, policies, and rosters] | [Decentralized management tools] | [e.g., Global Organizational Admin] |
 
-### 2.2 Persona Interaction Dynamics
-- Interaction flow and handoff triggers across distinct actors.
-- RACI (Responsible, Accountable, Consulted, Informed) mapping across high-level business capabilities.
+### 2.2 Persona Interaction Dynamics (Scope-Gated)
+- **Prototype**: Omit RACI; focus on persona roles only.
+- **MVP**: 1–2 line summary of handoff flows; skip RACI table.
+- **Full**: Complete RACI (Responsible, Accountable, Consulted, Informed) mapping across L1 capabilities.
 
 ---
 
@@ -114,38 +114,25 @@ Every use case must follow a strict, standardized specification template.
 | **Pre-Conditions** | 1. [Condition 1 that must hold true before initiation]<br>2. [Condition 2] |
 | **Post-Conditions** | 1. [Guaranteed business outcome upon successful completion]<br>2. [Updated state of business entities] |
 
-#### A. Nominal Business Flow (Happy Path)
-1. **Initiation**: The [Primary Actor] navigates to [Business Workflow Entrypoint] and provides [Required Business Information].
-2. **Validation**: The system validates [Business Rule 1] and verifies [Pre-requisite Entitlement].
-3. **Execution**: The system performs [Core Business Transformation] and records [Business Transaction Record].
-4. **Notification & Confirmation**: The system confirms completion to the [Primary Actor] and dispatches [Business Notice] to [Secondary Actors].
+#### A. Nominal Business Flow (Happy Path) — 3 Steps Max
+1. [Primary Actor] initiates workflow; system validates business rules.
+2. System executes core transformation; records transaction.
+3. System confirms completion to actor and notifies stakeholders.
 
-#### B. Alternate & Exception Flows
-- **E1: [Exception Condition Name, e.g., Incomplete Verification Information]**
-  - *Trigger*: User submits invalid or incomplete verification documents.
-  - *Business Behavior*: The system halts progression, flags missing mandatory fields, and preserves draft state for 72 hours.
-- **E2: [Exception Condition Name, e.g., Elevated Risk Flag Triggered]**
-  - *Trigger*: Transaction score exceeds standard risk tolerance threshold.
-  - *Business Behavior*: The system places transaction into pending review, transitions state to `Under Manual Review`, and alerts `PER-004` (Risk Officer).
+#### B. Exception Flows — One Line Each
+- **E1: [Exception Name]** — [Trigger] → [Business Behavior outcome]
+- **E2: [Exception Name]** — [Trigger] → [Business Behavior outcome]
 
-#### C. Formal Given-When-Then Acceptance Criteria
+#### C. Acceptance Criteria (Gherkin) — 3 Lines Per Scenario
 
 ```gherkin
-Feature: UC-[XXX] - [Descriptive Title]
+Feature: UC-[XXX] - [Title]
 
-  Scenario: Nominal execution of [Business Goal]
-    Given [User has valid credentials and account is in active standing]
-    And [All pre-requisite business inputs meet threshold criteria]
-    When [User submits the transaction request]
-    Then [The system transitions transaction status to "Completed"]
-    And [An immutable audit record is logged with actor identifier and timestamp]
-    And [A confirmation notification is delivered to the user's primary channel]
+  Scenario: Nominal execution
+    Given [Initial conditions], When [Actor submits], Then [System transitions to desired state]
 
-  Scenario: Handling exception when [Business Rule Violation occurs]
-    Given [User initiates the workflow with out-of-bounds parameters]
-    When [Validation is evaluated against corporate policy rules]
-    Then [The system rejects the transaction with human-readable error rationale]
-    And [The state remains unchanged with zero persistent side-effects]
+  Scenario: Exception handling
+    Given [Out-of-bounds conditions], When [Validation fails], Then [System rejects with error; no state change]
 ```
 ```
 
@@ -169,22 +156,19 @@ Feature: UC-[XXX] - [Descriptive Title]
 
 ---
 
-## 6. Business Constraints & Governance Guardrails
+## 6. Business Constraints & Governance Guardrails (Scope-Gated)
 
 ### 6.1 Regulatory, Privacy & Legal Constraints
-- Applicable compliance standards (e.g., GDPR, CCPA, SOC2 Type II, HIPAA, PCI-DSS, ISO 27001).
-- Data residency, retention, right-to-be-forgotten, and consent requirements.
+- **Prototype**: Omit; assume internal use only.
+- **MVP/Full**: Applicable standards (GDPR, CCPA, SOC2, HIPAA, PCI-DSS); data residency, retention, consent.
 
 ### 6.2 Business Operational Constraints
-- Maximum acceptable business downtime during operational maintenance windows.
-- Escalation timeframes and Service Level Agreements (SLAs) for human reviews and support resolution.
+- **Prototype**: Omit.
+- **MVP/Full**: SLAs for support, escalation timeframes, acceptable downtime windows.
 
-### 6.3 Risk Management & Mitigation Matrix
-
-| Risk ID | Identified Business Risk | Severity / Impact | Probability | Mitigation Strategy | Contingency Plan |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `RSK-001` | [e.g., Regulatory policy shift prior to launch] | High | Medium | [Continuous alignment with compliance team] | [Modular policy engine rules] |
-| `RSK-002` | [e.g., User adoption friction in back-office] | Medium | High | [Early co-design sessions & pilot testing] | [Fallback manual override process] |
+### 6.3 Risk Management (Full Scope Only)
+- **Prototype/MVP**: Omit risk matrix.
+- **Full**: Identified risks (Severity, Probability, Mitigation, Contingency) — limit to 2–3 critical risks.
 
 ---
 

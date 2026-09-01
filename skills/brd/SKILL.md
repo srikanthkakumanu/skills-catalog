@@ -39,6 +39,7 @@ Your mission: Transform raw product ideas, one-line concepts, and unstructured s
 | **3** | Cost-Aware Model Tiering | Use reasoning tier (Phases 1-6), lightweight tier (Phase 7 validation) |
 | **Directive 4: Strict Context Window Optimization** | Progressive loading + subagent isolation + state-saving split | Optimize for context efficiency across multi-phase execution |
 | **Directive 5: Strict Scope Boundary Control** | Calibrate depth to selected scope (minimal/prototype/mvp/full) | Prevent scope bloat or under-specification per selection |
+| **Directive 6: Output Discipline** | Nominal flows ≤3 steps, exceptions ≤1 line, Gherkin ≤3 lines/scenario, no fluff | Keep generated BRDs lean and scannable for all scopes |
 
 ---
 
@@ -58,22 +59,24 @@ Your mission: Transform raw product ideas, one-line concepts, and unstructured s
 
 ## 3. Seven-Phase Cognitive Protocol (Summary)
 
-| # | Phase | Technique | Model Tier | Purpose |
-|---|-------|-----------|-----------|---------|
-| 1 | Strategic Analysis | Chain-of-Thought | Reasoning | Problem decomposition (personas, KPIs, constraints) |
-| 2 | Domain Decomposition | Tree-of-Thoughts | Reasoning | Explore competing structural models |
-| **🔔 CHECKPOINT 1** | **Domain Approval** | **STOP** | **—** | **Do not proceed to Phase 3 until the user explicitly confirms the domain model. If no confirmation is given, stop and ask for it.** |
-| 3 | Use Case Synthesis | Chain-of-Thought | Reasoning | Author UCs with happy paths, exceptions, Gherkin |
-| 4 | Use Case Validation | ReAct Critique | Reasoning | Four checks: persona orphan, technical leakage, scope, exceptions |
-| **🔔 CHECKPOINT 2** | **UC Approval** | **STOP** | **—** | **Do not proceed to Phase 5 until the user explicitly confirms all use cases are complete. If no confirmation is given, stop and ask for it.** |
-| 5 | MoSCoW Prioritization | Chain-of-Thought | Reasoning | Allocate UCs to Must/Should/Could/Out-of-Scope |
-| 6 | Final Critique | ReAct Validation | Reasoning | Comprehensive BRD review (all four checks again) |
-| **🔔 CHECKPOINT 3** | **Compilation Gate** | **STOP** | **—** | **Do not proceed to Phase 7 until all validation gates pass. If failures remain, stop and surface them.** |
-| 7 | Output Generation | Template Fill | Lightweight | Generate BRD.md; run `validate_brd.py` for final checks |
+| # | Phase | Technique | Tier |
+|---|-------|-----------|------|
+| 1 | Strategic Analysis | CoT | Reasoning |
+| 2 | Domain Decomposition | ToT | Reasoning |
+| **🔔** | **CHECKPOINT 1** | **Domain Approval — STOP** | **—** |
+| 3 | Use Case Synthesis | CoT | Reasoning |
+| 4 | Use Case Validation | ReAct | Reasoning |
+| **🔔** | **CHECKPOINT 2** | **UC Approval — STOP** | **—** |
+| 5 | MoSCoW Prioritization | CoT | Reasoning |
+| 6 | Final Critique | ReAct | Reasoning |
+| **🔔** | **CHECKPOINT 3** | **Compilation Gate — STOP** | **—** |
+| 7 | Output Generation | Template Fill | Lightweight |
 
-**See README.md §3–6 for phase details, techniques, token budgets, scope-specific variants, and self-correction patterns.**
+**Checkpoints are mandatory stops.** Do not proceed without explicit user confirmation (§1, §2) or validation gates passed (§3).
 
-**Execution Strategy:** Minimal/Prototype scopes flow continuously (Phases 1→7 in one pass). MVP/Full scopes use staged mode (Phases 1–2 → checkpoint 1 → phases 3–4 → checkpoint 2 → phases 5–6 → checkpoint 3 → phase 7) for 46% token efficiency gain. See README.md §7.
+**Execution:** Simple/Prototype scopes flow continuously (1→7). MVP/Full scopes use staged checkpoints (1–2 → ✓ → 3–4 → ✓ → 5–6 → ✓ → 7) for 46% context reduction per phase.
+
+**See README.md §3–6 for phase details, techniques, token budgets, and scope-specific variants.**
 
 ---
 
@@ -91,8 +94,7 @@ Exit code 0 = compliant. Exit code 1 = failures (return to Phase 4/6 for self-co
 
 ## 5. Reference Materials
 
-**For detailed guidance:**
-- README.md: Directives, scope deep dive, phase techniques (CoT/ToT/ReAct), checkpoint gates, state-saving strategy, one-liner handling, model tiering, high-level quick-start, installation
-- `assets/BRD_SCHEMA.md` — 7-section BABOK/IEEE template (prototype/mvp/full)
-- `assets/BRD_SCHEMA_MINIMAL.md` — 4-section lightweight template (minimal)
-- `scripts/validate_brd.py` — Zero-dependency Python 3 validator
+- `README.md` — Directives, scope deep dive, 7-phase details, installation, activation
+- `assets/BRD_SCHEMA.md` — 7-section template (prototype/mvp/full scopes)
+- `assets/BRD_SCHEMA_MINIMAL.md` — 4-section template (minimal scope)
+- `scripts/validate_brd.py` — Python validator

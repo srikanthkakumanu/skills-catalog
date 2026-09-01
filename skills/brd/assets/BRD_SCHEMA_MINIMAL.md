@@ -74,40 +74,25 @@ Every use case must follow a minimal, standardized specification template.
 | **Primary Actor** | `PER-[XXX]` ([Persona Name]) |
 | **Module / Submodule** | [Parent Module → Submodule] |
 
-#### Workflow / Main Sequence
-1. [Actor initiates the workflow by doing X]
-2. [System performs Y]
-3. [Actor receives confirmation Z]
+#### Main Flow (Happy Path) — 3 Steps Max
+1. [Actor initiates]; system validates conditions.
+2. System executes core action; records outcome.
+3. System confirms completion and notifies actor.
 
-#### Happy Path (Nominal Success Flow)
-1. [Happy path step 1 — optimal case with valid inputs]
-2. [Happy path step 2 — system processes successfully]
-3. [Happy path step 3 — user receives desired outcome]
+#### Exception Flows — One Line Each
+- **E1: [Exception Name]** — [Trigger] → [Behavior outcome]
+- **E2: [Exception Name]** — [Trigger] → [Behavior outcome]
 
-#### Exception & Negative Paths
-- **E1: [Exception Name, e.g., Invalid Input Detected]**
-  - *Trigger*: [Condition causing this exception]
-  - *Behavior*: [How the system handles this state]
-- **E2: [Exception Name, e.g., Service Unavailable]**
-  - *Trigger*: [Condition causing this exception]
-  - *Behavior*: [How the system handles this state]
-
-#### Formal Given-When-Then Acceptance Criteria
+#### Acceptance Criteria (Gherkin) — 3 Lines Per Scenario
 
 ```gherkin
-Feature: UC-[XXX] - [Descriptive Title]
+Feature: UC-[XXX] - [Title]
 
-  Scenario: Nominal successful execution
-    Given [User has valid credentials and initial state is X]
-    When [User initiates the workflow action]
-    Then [The system transitions to the desired state]
-    And [A confirmation is sent to the user]
+  Scenario: Nominal execution
+    Given [Preconditions], When [Actor initiates], Then [System transitions to success state]
 
-  Scenario: Handling [Exception Name]
-    Given [User attempts action with invalid data]
-    When [Validation is evaluated]
-    Then [The system rejects with clear error message]
-    And [No persistent state change occurs]
+  Scenario: Exception handling
+    Given [Out-of-bounds input], When [Validation fails], Then [System rejects; no state change]
 ```
 ```
 
