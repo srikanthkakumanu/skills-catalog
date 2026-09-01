@@ -81,47 +81,38 @@ Each skill in the catalog is self-contained and documented with its own dedicate
 
 ---
 
-## ⚡ Model Selection & Cost Optimization Framework
+## ⚡ Design Principles: Lightweight Single-Pass & Assembly-Based Workflows
 
-To prevent unnecessary token expenditure, all skills in this catalog enforce a **two-tier model selection architecture**. Skills must never randomly invoke expensive high-reasoning models for trivial or mechanical operations.
+The six-phase pipeline prioritizes **focused decision-making** over heavyweight multi-phase reasoning. Each skill is designed as a **single-pass, lightweight process** that:
 
-### 1. Model Tiering Taxonomy
+1. **Consumes upstream outputs** — Takes confirmed decisions from prior phases as input
+2. **Produces focused output** — Delivers one specific artifact per skill
+3. **Enforces checkpoints** — Uses mandatory confirmation gates for pending decisions
+4. **Avoids redundant reasoning** — Each phase builds on prior work, never re-decides
+5. **Stays in scope** — Executes only the directives it's responsible for
 
-| Tier                       | Complexity & Task Types                                                                                                                                                                                         | Google Antigravity / Gemini               | Anthropic Claude                                      | OpenAI Codex / GPT        | Cost Profile                               |
-| :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------- | :---------------------------------------------------- | :------------------------ | :----------------------------------------- |
-| **Reasoning Tier**   | • Multi-phase cognitive reasoning (CoT, ToT)• 360° Persona elicitation & RACI modeling• Domain decomposition & cohesion analysis• Comprehensive document authoring• ReAct self-critique & boundary audits | `gemini-2.5-progemini-3.7-flash` (High) | `claude-3-7-sonnetclaude-3-5-sonnet``claude-3-opus` | `gpt-4oo3-mini``o1`     | Standard / High Intelligence               |
-| **Lightweight Tier** | • Standalone script execution (e.g.`validate_brd.py`)• Schema syntax & header linting• Table formatting & Markdown alignment• Persona ID / Regex pattern audits• Simple diffing & typo corrections       | `gemini-2.5-flashgemini-2.0-flash-lite` | `claude-3-5-haikuclaude-3-haiku`                    | `gpt-4o-minicodex-mini` | **Ultra-Low Cost (~10-20x cheaper)** |
+### Cost & Context Efficiency
 
-### 2. Core Economic Principles for Skills
+- **No multi-scope complexity** — Each skill is a single, focused workflow (not minimal/prototype/mvp/full variants)
+- **No model tiering** — Skills are designed to be efficient regardless of model tier
+- **Single-pass execution** — No re-derivation loops or costly re-reasoning cycles
+- **Assembly-based thinking** — Phases 1-5 make decisions; Phase 6 assembles them (no new judgments)
 
-1. **Intelligent Delegation**: When a skill orchestrates subagents or automated steps, trivial utility actions (formatting, linting, regex scanning) must be delegated to the **Lightweight Tier**.
-2. **Preserve Reasoning Tokens**: High-tier models (`sonnet`, `pro`, `opus`, `o3-mini`) are reserved exclusively for deep domain analysis, creative synthesis, and complex multi-perspective critique loops.
-3. **Local CLI Execution First**: Where possible, validation scripts (e.g., zero-dependency Python tools) should be executed directly on the host machine before querying any LLM.
+This approach minimizes cognitive load on both AI and human stakeholders, reducing decision fatigue and token expenditure.
 
 ---
 
 ## 🧠 Context Window Management & Token Efficiency Standard
 
-Managing the agent's context window efficiently is essential for maintaining prompt responsiveness, avoiding context saturation, and maximizing reasoning accuracy across extended multi-step workflows.
+Each skill is designed to minimize context overhead:
 
-All skills in `skills-catalog` must adhere to the **Four Pillars of Context Window Efficiency**:
+- **Compact SKILL.md** — Directives fit on one screen; references are links, not inlined
+- **Clear input/output** — Each skill knows exactly what it consumes and produces
+- **No re-reading** — Upstream decisions are trusted; confirmed items are never re-analyzed
+- **No optional states** — No scope variants or model-dependent branches; one workflow per skill
+- **Checkpoint gates** — Pending decisions stop execution, preventing speculative processing
 
-```mermaid
-flowchart TD
-    subgraph "Four Pillars of Context Management"
-        P1["1. Progressive Loading<br>Keep SKILL.md compact; read assets on-demand"]
-        P2["2. Subagent Isolation<br>Delegate linting/tools to clean ephemeral sub-contexts"]
-        P3["3. Line-Bounded Slicing<br>Read & replace targeted line ranges (no bulk dumps)"]
-        P4["4. Compact CLI Outputs<br>Use --quiet / --json for machine-readable status summaries"]
-    end
-```
-
-| Context Strategy              | Anti-Pattern (Wasteful)                                                 | Best Practice (Optimized)                                                        | Impact                                                      |
-| :---------------------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------- | :---------------------------------------------------------- |
-| **Asset Loading**       | Inlining 500-line schemas into`SKILL.md` or preloading them on launch | Loading`assets/*.md` just-in-time when entering compilation phases             | ~70% reduction in initial discovery prompt tokens           |
-| **Verification**        | Running verbose linters directly in the main orchestrator conversation  | Spawning isolated subagents or running quiet CLI scripts                         | Prevents log clutter and retains clean reasoning history    |
-| **Document Refinement** | Rewriting or re-reading entire 1,000-line files for single-line changes | Using line slicing (`view_file` Start/End lines) and chunk diff replacements   | Eliminates redundant context churn during iterative editing |
-| **State Tracking**      | Accumulating sprawling chat logs over multi-phase workflows             | Checkpointing intermediate results to disk files or structured markdown sections | Retains tight focus on active phase requirements            |
+This results in predictable, low-overhead execution: read upstream output once, apply directives, produce output, move to next phase.
 
 ---
 
@@ -129,47 +120,67 @@ flowchart TD
 
 Deploy skills from this catalog to your local AI agent runtimes using the automated installer script [`install.sh`](file:///Users/skakumanu/practice/skills-catalog/install.sh).
 
-### Quick Install (All Skills to All Runtimes)
+### Quick Start
 
 ```bash
-# Symlink all catalog skills into Antigravity, Claude Code, and Codex runtimes
+# Install all 6 skills to all supported runtimes (symlinks)
 ./install.sh
+
+# Install all skills via file copy (recommended if symlinks don't work)
+./install.sh --mode copy
+
+# Force-reinstall all skills (overwrites existing installations)
+./install.sh --force
 ```
 
 ### Targeted Installations
 
 ```bash
-# Install all skills exclusively for Google Antigravity 2.x
-./install.sh --target antigravity
+# Install all skills to a specific runtime
+./install.sh --target claude          # Claude Code only
+./install.sh --target antigravity     # Google Antigravity only
+./install.sh --target codex           # OpenAI Codex only
 
-# Install all skills exclusively for Claude Code
-./install.sh --target claude
-
-# Install all skills exclusively for OpenAI Codex
-./install.sh --target codex
-
-# Install a specific skill (e.g., brd) to all runtimes
+# Install a single skill (e.g., 'brd') to all runtimes
 ./install.sh --skill brd
 
-# Install a specific skill to a specific runtime
-./install.sh --skill brd --target antigravity
+# Install a single skill to a specific runtime
+./install.sh --skill brd --target claude
 
-# Install via file copying instead of symlinks
-./install.sh --mode copy
+# Force-reinstall a specific skill (overwrites)
+./install.sh --skill brd --force
 
-# Force overwrite existing installations
-./install.sh --force
+# Install via file copy to a specific runtime
+./install.sh --skill detailed-design --target claude --mode copy
 ```
+
+### Common Installation Scenarios
+
+| Scenario                                           | Command                                              |
+| :------------------------------------------------- | :--------------------------------------------------- |
+| First-time setup (all skills, all runtimes)      | `./install.sh --mode copy`                        |
+| Update a single skill after edits                 | `./install.sh --skill <name> --force`             |
+| Reinstall everything from scratch                 | `./install.sh --force --mode copy`                |
+| Install only for Claude Code                      | `./install.sh --target claude`                    |
+| Troubleshoot: use copy mode instead of symlinks   | `./install.sh --mode copy --force`                |
 
 ### CLI Installer Options Reference
 
 | Flag                 | Argument                                              | Description                                            | Default     |
 | :------------------- | :---------------------------------------------------- | :----------------------------------------------------- | :---------- |
 | `-t`, `--target` | `antigravity` \| `claude` \| `codex` \| `all` | Target runtime environment                             | `all`     |
-| `-m`, `--mode`   | `symlink` \| `copy`                               | Installation method                                    | `symlink` |
-| `-s`, `--skill`  | `<skill_name>` \| `all`                           | Specific skill to deploy                               | `all`     |
-| `-f`, `--force`  | (None)                                                | Overwrite existing skill directories in target runtime | `false`   |
-| `-h`, `--help`   | (None)                                                | Display help and usage information                     |             |
+| `-m`, `--mode`   | `symlink` \| `copy`                               | Installation method (symlink or file copy)             | `symlink` |
+| `-s`, `--skill`  | `<skill_name>` \| `all`                           | Specific skill to deploy or `all`                      | `all`     |
+| `-f`, `--force`  | (None)                                                | Force-overwrite existing installations                 | `false`   |
+| `-h`, `--help`   | (None)                                                | Display full help and usage details                    |             |
+
+### Installation Locations
+
+Skills are installed to these standard locations:
+
+- **Claude Code**: `~/.claude/skills/<skill_name>/`
+- **Google Antigravity**: `~/.antigravity/skills/<skill_name>/` or `.agents/skills/<skill_name>/`
+- **OpenAI Codex**: `~/.codex/skills/<skill_name>/`
 
 ---
 
@@ -178,38 +189,28 @@ Deploy skills from this catalog to your local AI agent runtimes using the automa
 Each skill in `skills/<skill_name>/` follows the standardized Agent Skills anatomy:
 
 1. **`SKILL.md` (Required Entrypoint)**:
-   - Contains YAML frontmatter metadata (`name`, `description`, `license`, `compatibility`, `models`, `context_optimization`).
-   - Defines agent persona, behavioral boundaries, prime directives, cost-aware model routing, and context preservation guidelines.
+   - Contains YAML frontmatter metadata (`name`, `description`, `license`, `compatibility`).
+   - Defines agent persona, behavioral boundaries, and prime directives.
+   - Skills are intentionally simplified: one workflow per skill, no scopes/models/context_optimization variants.
 2. **`README.md` (Required Documentation)**:
-   - Complete reference manual for the specific skill, explaining role, schema, triggers, model selection guide, context management, and validation tests.
+   - Complete reference manual for the specific skill, explaining role, input/output, process steps, and when to use it.
 3. **`assets/` (Optional Resources)**:
-   - Houses formal output schemas, templates (e.g., `BRD_SCHEMA.md`), reference examples, and architectural diagrams.
+   - Houses templates, schemas, reference examples, and architectural diagrams (loaded on-demand by skills).
 4. **`scripts/` (Optional Tooling)**:
-   - Standalone utilities, formatters, and compliance linters (e.g., zero-dependency Python scripts) that can be run by agents or in CI/CD pipelines.
+   - Standalone utilities and validators (e.g., zero-dependency Python scripts).
 
-### Standard YAML Frontmatter Example
+### Standard YAML Frontmatter Example (Simplified)
 
 ```yaml
 ---
 name: sample-skill
-description: Comprehensive summary of what the skill does and when the agent should trigger it.
+description: What the skill does and when to trigger it.
 license: Apache-2.0
-compatibility: Antigravity 2.x, Claude Code, OpenAI Codex, Python 3
-models:
-  reasoning_tier:
-    gemini: gemini-2.5-pro / gemini-3.7-flash
-    claude: claude-3-7-sonnet / claude-3-5-sonnet
-    codex: gpt-4o / o3-mini
-  lightweight_tier:
-    gemini: gemini-2.5-flash / gemini-2.0-flash-lite
-    claude: claude-3-5-haiku
-    codex: gpt-4o-mini
-context_optimization:
-  progressive_loading: true
-  chunked_synthesis: true
-  subagent_delegation: true
+compatibility: Claude Code, OpenAI Codex, Google Antigravity 2
 ---
 ```
+
+**Note:** The current catalog skills use this simplified frontmatter. Optional extensions like `models`, `scopes`, or `context_optimization` can be added to individual skills when needed, but are not required.
 
 ---
 
@@ -222,6 +223,12 @@ The catalog maintains a centralized, machine-readable manifest at [`registry.jso
   "$schema": "https://agentskills.io/schema/registry.json",
   "name": "skills-catalog",
   "version": "1.0.0",
+  "compatibility": {
+    "antigravity": ">=2.0.0",
+    "claude_code": ">=1.0.0",
+    "codex": ">=1.0.0",
+    "python": ">=3.9"
+  },
   "context_standards": {
     "progressive_loading": true,
     "subagent_isolation": true,
@@ -231,13 +238,14 @@ The catalog maintains a centralized, machine-readable manifest at [`registry.jso
   "skills": [
     {
       "name": "brd",
-      "version": "3.0.0",
+      "version": "1.0.0",
       "path": "skills/brd",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
       "description": "Produces a compact Business Requirements Document — domain, personas, use cases with happy/negative paths and acceptance criteria, and in/out-of-scope boundaries — with a mandatory self-check for unsupported framing claims, contradictions, and orphaned scope items. Pure functional scope: WHAT and WHO, never HOW.",
-      "triggers": ["/brd", "generate brd", "create business requirements", "draft brd"],
+      "triggers": ["/brd", "generate brd", "create business requirements", "draft brd", "business requirements document", "requirements analysis"],
       "runtimes": ["antigravity", "claude", "codex"],
+      "tags": ["requirements-engineering", "product-management", "bakok", "ieee-29148", "business-analysis", "pure-functional-spec"],
       "license": "Apache-2.0"
     }
   ]
@@ -283,20 +291,64 @@ To contribute or add a new skill to `skills-catalog`:
    ```bash
    mkdir -p skills/<new_skill>/assets skills/<new_skill>/scripts
    ```
+
 2. **Author `SKILL.md`**:
-   - Add valid YAML frontmatter (`name`, `description`, `license`, `compatibility`, `models`, and `context_optimization`).
-   - Define directives, cognitive reasoning protocols, and cost/context-aware delegation rules.
+   - Add YAML frontmatter: `name`, `description`, `license`, `compatibility`
+   - Define directives (behavioral rules) and the skill's execution process
+   - Keep it focused: one workflow per skill, no scope variants
+   - Example:
+     ```yaml
+     ---
+     name: my-skill
+     description: What this skill does and when to invoke it.
+     license: Apache-2.0
+     compatibility: Claude Code, OpenAI Codex, Google Antigravity 2
+     ---
+     # My Skill
+     
+     ## Directives
+     1. [directive 1]
+     2. [directive 2]
+     ...
+     
+     ## Process
+     [step 1] → [step 2] → ... → Output
+     ```
+
 3. **Author `README.md`**:
-   - Provide comprehensive documentation for the specific skill in `skills/<new_skill>/README.md`, including Model Selection and Context Window Management sections.
-4. **Add Assets & Schemas**:
-   - Place output templates and schemas under `skills/<new_skill>/assets/`.
-5. **Add Validator Scripts & Tests**:
-   - Add standalone validators under `skills/<new_skill>/scripts/`.
-   - Add unit tests in `tests/test_validate_<new_skill>.py`.
+   - Comprehensive reference: Overview, What It Does, Input/Output, How It Works, When to Use
+   - Include installation instructions with skill-specific examples
+   - Link to upstream/downstream skills in the pipeline
+
+4. **Add Assets & Schemas** (optional):
+   - Place templates and schemas under `skills/<new_skill>/assets/`
+   - Load on-demand in the skill, not inline in SKILL.md
+
+5. **Add Tests** (optional):
+   - Standalone validators under `skills/<new_skill>/scripts/`
+   - Unit tests in `tests/test_validate_<new_skill>.py`
+
 6. **Register in `registry.json`**:
-   - Append the skill entry with metadata, entrypoint, triggers, tags, context configuration, and model mappings to [`registry.json`](file:///Users/skakumanu/practice/skills-catalog/registry.json).
-7. **Update Available Skills**:
-   - Add a row for the new skill in the [Available Skills](#-available-skills) table of this root `README.md`.
+   - Add skill entry with: name, version, path, entrypoint, readme, description, triggers, runtimes, tags, license
+   - Example:
+     ```json
+     {
+       "name": "my-skill",
+       "version": "1.0.0",
+       "path": "skills/my-skill",
+       "entrypoint": "SKILL.md",
+       "readme": "README.md",
+       "description": "...",
+       "triggers": ["/my-skill", "invoke my skill"],
+       "runtimes": ["antigravity", "claude", "codex"],
+       "tags": ["tag1", "tag2"],
+       "license": "Apache-2.0"
+     }
+     ```
+
+7. **Update This Catalog**:
+   - Add a row for the new skill in the [Available Skills](#-available-skills) table above
+   - Run tests to ensure everything passes: `python3 -m unittest discover tests`
 
 ---
 
