@@ -18,13 +18,13 @@ context_optimization:
   subagent_delegation: true
   state_saving_split: true
 scopes:
-  supported: ["simple", "prototype", "mvp", "full"]
+  supported: ["minimal", "prototype", "mvp", "full"]
   default: "mvp"
 ---
 
 # Autonomous Principal Product Owner & Requirements Engineer (`brd`)
 
-When activated via `/brd` with scope flags (`--scope simple|prototype|mvp|full`), you operate exclusively as a **Principal Product Owner & Lead Requirements Engineer (AI-PO)**.
+When activated via `/brd` with scope flags (`--scope minimal|prototype|mvp|full`), you operate exclusively as a **Principal Product Owner & Lead Requirements Engineer (AI-PO)**.
 
 Your mission: Transform raw product ideas, one-line concepts, and unstructured stakeholder notes into authoritative, unambiguous **Business Requirements Documents (`BRD.md`)** calibrated to your selected scope while adhering to **BABOK Guide v3** and **IEEE 29148:2018** standards.
 
@@ -38,13 +38,13 @@ Your mission: Transform raw product ideas, one-line concepts, and unstructured s
 | **2** | Multi-Phase Cognitive Execution | Execute 7-phase protocol with checkpoints systematically |
 | **3** | Cost-Aware Model Tiering | Use reasoning tier (Phases 1-6), lightweight tier (Phase 7 validation) |
 | **Directive 4: Strict Context Window Optimization** | Progressive loading + subagent isolation + state-saving split | Optimize for context efficiency across multi-phase execution |
-| **Directive 5: Strict Scope Boundary Control** | Calibrate depth to selected scope (simple/prototype/mvp/full) | Prevent scope bloat or under-specification per selection |
+| **Directive 5: Strict Scope Boundary Control** | Calibrate depth to selected scope (minimal/prototype/mvp/full) | Prevent scope bloat or under-specification per selection |
 
 ---
 
 ## 2. Scope Boundaries (Quick Reference)
 
-| Dimension | Simple | Prototype | MVP | Full |
+| Dimension | Minimal | Prototype | MVP | Full |
 | :--- | :--- | :--- | :--- | :--- |
 | **Personas** | 1–2 | 1–2 | 3–4 | 5+ |
 | **Use Cases** | 2 | 2 happy-path | 5–6 + exceptions | 10+ exhaustive |
@@ -73,7 +73,7 @@ Your mission: Transform raw product ideas, one-line concepts, and unstructured s
 
 **See README.md §3–6 for phase details, techniques, token budgets, scope-specific variants, and self-correction patterns.**
 
-**Execution Strategy:** Simple/Prototype scopes flow continuously (Phases 1→7 in one pass). MVP/Full scopes use staged mode (Phases 1–2 → checkpoint 1 → phases 3–4 → checkpoint 2 → phases 5–6 → checkpoint 3 → phase 7) for 46% token efficiency gain. See README.md §7.
+**Execution Strategy:** Minimal/Prototype scopes flow continuously (Phases 1→7 in one pass). MVP/Full scopes use staged mode (Phases 1–2 → checkpoint 1 → phases 3–4 → checkpoint 2 → phases 5–6 → checkpoint 3 → phase 7) for 46% token efficiency gain. See README.md §7.
 
 ---
 
@@ -82,7 +82,7 @@ Your mission: Transform raw product ideas, one-line concepts, and unstructured s
 After Phase 7, validate the output:
 
 ```bash
-python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope [simple|prototype|mvp|full]
+python3 skills/brd/scripts/validate_brd.py BRD.md --strict --scope [minimal|prototype|mvp|full]
 ```
 
 Exit code 0 = compliant. Exit code 1 = failures (return to Phase 4/6 for self-correction). See README.md §7 for output interpretation.
@@ -94,5 +94,5 @@ Exit code 0 = compliant. Exit code 1 = failures (return to Phase 4/6 for self-co
 **For detailed guidance:**
 - README.md: Directives, scope deep dive, phase techniques (CoT/ToT/ReAct), checkpoint gates, state-saving strategy, one-liner handling, model tiering, high-level quick-start, installation
 - `assets/BRD_SCHEMA.md` — 7-section BABOK/IEEE template (prototype/mvp/full)
-- `assets/BRD_SCHEMA_SIMPLE.md` — 4-section lightweight template (simple)
+- `assets/BRD_SCHEMA_MINIMAL.md` — 4-section lightweight template (minimal)
 - `scripts/validate_brd.py` — Zero-dependency Python 3 validator

@@ -1,12 +1,12 @@
-# Simple Business Requirements Document (BRD) Schema
+# Minimal Business Requirements Document (BRD) Schema
 
-This specification defines the minimal, lightweight 4-section structure for Business Requirements Documents produced under the `brd` Agent Skill using the **`simple` scope**. Simple BRDs focus on rapid, lean requirements without KPIs, RACI matrices, MoSCoW phasing, governance matrices, or regulatory compliance detail — suitable for throwaway prototypes, quick concept validation, or internal workflow documentation. Generated documents must strictly adhere to this 4-section structure while maintaining pure business/functional scope in accordance with BABOK Guide v3 and IEEE 29148:2018 principles.
+This specification defines the minimal, lightweight 4-section structure for Business Requirements Documents produced under the `brd` Agent Skill using the **`minimal` scope**. Minimal BRDs focus on rapid, lean requirements without KPIs, RACI matrices, MoSCoW phasing, governance matrices, or regulatory compliance detail — suitable for throwaway prototypes, quick concept validation, or internal workflow documentation. Generated documents must strictly adhere to this 4-section structure while maintaining pure business/functional scope in accordance with BABOK Guide v3 and IEEE 29148:2018 principles.
 
 ---
 
 ## Document Metadata Header
 
-Every simple BRD markdown file must begin with the following metadata header table:
+Every minimal BRD markdown file must begin with the following metadata header table:
 
 ```markdown
 # Business Requirements Document: [Product / Initiative Name]
@@ -15,7 +15,7 @@ Every simple BRD markdown file must begin with the following metadata header tab
 | :--- | :--- |
 | **Document Version** | `1.0.0` (or semantic version) |
 | **Status** | `Draft` \| `In Review` \| `Approved` |
-| **Scope Level** | `Simple` |
+| **Scope Level** | `Minimal` |
 | **Author / Lead AI-PO** | Principal Requirements Engineer (`brd` skill) |
 | **Business Sponsor / Owner** | [Target Business Unit / Executive Sponsor] |
 | **Last Updated** | [YYYY-MM-DD] |
@@ -28,7 +28,7 @@ Every simple BRD markdown file must begin with the following metadata header tab
 ## 1. Domain & Module Taxonomy
 
 ### 1.1 Domain Decomposition (Lightweight Hierarchy)
-A simple hierarchical decomposition of the business domain into logical domains, modules, and submodules without explicit L1/L2 capability identification or KPI mappings.
+A lightweight hierarchical decomposition of the business domain into logical domains, modules, and submodules without explicit L1/L2 capability identification or KPI mappings.
 
 ```text
 Domain: [Core Business Ecosystem]

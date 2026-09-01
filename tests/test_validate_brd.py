@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for validate_brd.py supporting scope levels (prototype, mvp, full).
+Unit tests for validate_brd.py supporting scope levels (minimal, prototype, mvp, full).
 """
 
 import json
@@ -162,13 +162,13 @@ Scenario: Auditor approves compliant claim
 
 SAMPLE_PROTOTYPE_BRD = SAMPLE_VALID_BRD.replace("| **Scope Level** | `MVP` |", "| **Scope Level** | `Prototype` |")
 
-SAMPLE_SIMPLE_BRD = """# Business Requirements Document: Quick Expense Tracking
+SAMPLE_MINIMAL_BRD = """# Business Requirements Document: Quick Expense Tracking
 
 | Document Attribute | Specification Value |
 | :--- | :--- |
 | **Document Version** | `1.0.0` |
 | **Status** | `Draft` |
-| **Scope Level** | `Simple` |
+| **Scope Level** | `Minimal` |
 | **Author / Lead AI-PO** | Principal Requirements Engineer (`brd` skill) |
 | **Business Sponsor** | Finance Team |
 | **Last Updated** | 2026-08-20 |
@@ -376,28 +376,28 @@ class TestBRDValidator(unittest.TestCase):
         finally:
             Path(temp_path).unlink()
 
-    def test_simple_scope_validation(self):
+    def test_minimal_scope_validation(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
-            f.write(SAMPLE_SIMPLE_BRD)
+            f.write(SAMPLE_MINIMAL_BRD)
             temp_path = f.name
 
         try:
             result = subprocess.run(
-                ["python3", str(self.script_path), temp_path, "--strict", "--scope", "simple", "--json"],
+                ["python3", str(self.script_path), temp_path, "--strict", "--scope", "minimal", "--json"],
                 capture_output=True,
                 text=True,
             )
             self.assertEqual(result.returncode, 0, f"Validator failed: {result.stdout} {result.stderr}")
             data = json.loads(result.stdout)
             self.assertEqual(data["status"], "PASSED")
-            self.assertEqual(data["scope"]["effective_scope"], "simple")
+            self.assertEqual(data["scope"]["effective_scope"], "minimal")
             self.assertEqual(data["summary"]["mandatory_sections_required"], 4)
         finally:
             Path(temp_path).unlink()
 
-    def test_simple_scope_detected_without_flag(self):
+    def test_minimal_scope_detected_without_flag(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
-            f.write(SAMPLE_SIMPLE_BRD)
+            f.write(SAMPLE_MINIMAL_BRD)
             temp_path = f.name
 
         try:
@@ -409,26 +409,26 @@ class TestBRDValidator(unittest.TestCase):
             self.assertEqual(result.returncode, 0, f"Validator failed: {result.stdout} {result.stderr}")
             data = json.loads(result.stdout)
             self.assertEqual(data["status"], "PASSED")
-            self.assertEqual(data["scope"]["effective_scope"], "simple", "Scope should be detected from document metadata")
+            self.assertEqual(data["scope"]["effective_scope"], "minimal", "Scope should be detected from document metadata")
         finally:
             Path(temp_path).unlink()
 
-    def test_simple_scope_missing_mapping_matrix(self):
+    def test_minimal_scope_missing_mapping_matrix(self):
         # Remove the Mapping Matrix section completely
-        lines = SAMPLE_SIMPLE_BRD.split('\n')
+        lines = SAMPLE_MINIMAL_BRD.split('\n')
         filtered_lines = [line for line in lines if not line.startswith("## 4. Mapping Matrix") and "Domain / Module" not in line]
         # Remove blank lines at the end
         while filtered_lines and not filtered_lines[-1].strip():
             filtered_lines.pop()
-        simple_no_matrix = '\n'.join(filtered_lines)
+        minimal_no_matrix = '\n'.join(filtered_lines)
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
-            f.write(simple_no_matrix)
+            f.write(minimal_no_matrix)
             temp_path = f.name
 
         try:
             result = subprocess.run(
-                ["python3", str(self.script_path), temp_path, "--scope", "simple", "--json"],
+                ["python3", str(self.script_path), temp_path, "--scope", "minimal", "--json"],
                 capture_output=True,
                 text=True,
             )

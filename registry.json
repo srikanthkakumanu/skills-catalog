@@ -28,23 +28,23 @@
   "skills": [
     {
       "name": "brd",
-      "version": "1.1.0",
+      "version": "2.0.0",
       "path": "skills/brd",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
       "description": "Autonomous Principal Product Owner skill for Antigravity 2.x, Claude Code, and Codex that transforms raw concepts into verified, pure Business Requirements Documents (BRD.md) using CoT, ToT, and ReAct critique loops.",
       "triggers": [
         "/brd",
-        "/brd --scope simple",
+        "/brd --scope minimal",
         "/brd --scope prototype",
         "/brd --scope mvp",
         "/brd --scope full",
-        "/brd --simple",
+        "/brd --minimal",
         "/brd --prototype",
         "/brd --mvp",
         "/brd --full",
         "generate brd",
-        "generate simple brd",
+        "generate minimal brd",
         "generate prototype brd",
         "generate mvp brd",
         "generate full enterprise brd",
@@ -60,13 +60,13 @@
       ],
       "scopes": {
         "supported": [
-          "simple",
+          "minimal",
           "prototype",
           "mvp",
           "full"
         ],
         "default": "mvp",
-        "description": "Supports calibrating requirements to Simple (lightweight minimal), Prototype (feasibility), MVP (Day-1 production release), or Full (enterprise multi-phase platform) boundaries."
+        "description": "Supports calibrating requirements to Minimal (lightweight throwaway), Prototype (feasibility), MVP (Day-1 production release), or Full (enterprise multi-phase platform) boundaries."
       },
       "tags": [
         "requirements-engineering",
@@ -75,7 +75,7 @@
         "ieee-29148",
         "business-analysis",
         "pure-functional-spec",
-        "simple-scoping",
+        "minimal-scoping",
         "mvp-scoping",
         "prototype-scoping",
         "enterprise-spec"

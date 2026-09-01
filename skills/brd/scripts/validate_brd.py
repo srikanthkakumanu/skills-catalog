@@ -4,6 +4,7 @@ validate_brd.py - Production-Grade Business Requirements Document (BRD) Validato
 Compliant with BABOK Guide v3 and IEEE 29148:2018 Standards.
 
 Supports Scope Boundaries:
+- minimal: Lightweight 4-section validation for throwaway/quick-validation scope
 - prototype: Rapid concept feasibility & happy path validation
 - mvp: Production-ready Day-1 viable scope (Default)
 - full: Comprehensive enterprise multi-phase specification
@@ -43,7 +44,7 @@ MANDATORY_SECTIONS = [
     (7, r"7\.\s*Refinement\s+&\s+Validation\s+Changelog", "7. Refinement & Validation Changelog"),
 ]
 
-MANDATORY_SECTIONS_SIMPLE = [
+MANDATORY_SECTIONS_MINIMAL = [
     (1, r"1\.\s*Domain\s+&\s+Module\s+Taxonomy", "1. Domain & Module Taxonomy"),
     (2, r"2\.\s*Personas", "2. Personas"),
     (3, r"3\.\s*Use\s+Case\s+Catalog", "3. Use Case Catalog"),
@@ -108,7 +109,7 @@ class BRDValidator:
                     f"Scope Mismatch: Document metadata specifies Scope Level '{self.detected_scope.capitalize()}', "
                     f"but validation was executed with '--scope {self.requested_scope}'."
                 )
-        elif self.detected_scope in ["simple", "prototype", "mvp", "full"]:
+        elif self.detected_scope in ["minimal", "prototype", "mvp", "full"]:
             self.effective_scope = self.detected_scope
         else:
             self.effective_scope = "mvp"
@@ -126,9 +127,9 @@ class BRDValidator:
             if not found:
                 self.errors.append(f"Missing mandatory section: '{display_name}'")
 
-    def validate_mandatory_sections_simple(self) -> None:
-        """Ensure all 4 mandatory sections exist in a simple-scope document."""
-        for sec_id, pattern, display_name in MANDATORY_SECTIONS_SIMPLE:
+    def validate_mandatory_sections_minimal(self) -> None:
+        """Ensure all 4 mandatory sections exist in a minimal-scope document."""
+        for sec_id, pattern, display_name in MANDATORY_SECTIONS_MINIMAL:
             regex = re.compile(r"^#{1,3}\s+" + pattern, re.MULTILINE | re.IGNORECASE)
             found = False
             for idx, line in enumerate(self.lines):
@@ -222,8 +223,8 @@ class BRDValidator:
             if current_uc:
                 self.use_cases.append(current_uc)
 
-    def extract_personas_and_use_cases_simple(self) -> None:
-        """Extract declared personas in Section 2 and use case mappings in Section 3 (simple scope)."""
+    def extract_personas_and_use_cases_minimal(self) -> None:
+        """Extract declared personas in Section 2 and use case mappings in Section 3 (minimal scope)."""
         sec2_line = self.section_matches.get(2, 0)
         sec3_line = self.section_matches.get(3, len(self.lines))
         sec4_line = self.section_matches.get(4, len(self.lines))
@@ -237,7 +238,7 @@ class BRDValidator:
                 if p_id not in ("PER-XXX", "PER-YYY", "PER-ZZZ", "PER-00N", "PER-NNN"):
                     self.declared_personas.add(p_id)
 
-        # Extract use cases and referenced personas from Section 3 lines (simple scope)
+        # Extract use cases and referenced personas from Section 3 lines (minimal scope)
         if sec3_line > 0:
             end_line = sec4_line if sec4_line > sec3_line else len(self.lines)
             current_uc = None
@@ -293,8 +294,8 @@ class BRDValidator:
                     f"Use Case '{uc['id']}' (Line {uc['start_line']}): Missing formal Given-When-Then acceptance criteria."
                 )
 
-    def validate_use_cases_simple(self) -> None:
-        """Validate use cases in simple scope (Section 3) contain acceptance criteria."""
+    def validate_use_cases_minimal(self) -> None:
+        """Validate use cases in minimal scope (Section 3) contain acceptance criteria."""
         if self.section_matches.get(3) and len(self.use_cases) == 0:
             self.errors.append("Section 3 (Use Case Catalog) is present but contains no identifiable use cases (expected format: '### UC-101: Title')")
             return
@@ -305,7 +306,7 @@ class BRDValidator:
                     f"Use Case '{uc['id']}' (Line {uc['start_line']}): Missing formal Given-When-Then acceptance criteria."
                 )
 
-    def validate_mapping_matrix_simple(self) -> None:
+    def validate_mapping_matrix_minimal(self) -> None:
         """Validate that the Mapping Matrix (Section 4) references personas and use cases."""
         if not self.section_matches.get(4):
             return
@@ -333,11 +334,11 @@ class BRDValidator:
         persona_count = len(self.declared_personas)
         use_case_count = len(self.use_cases)
 
-        if self.effective_scope == "simple":
+        if self.effective_scope == "minimal":
             if persona_count == 0:
-                self.warnings.append("Simple Scope: At least 1 persona should be declared in Section 2.")
+                self.warnings.append("Minimal Scope: At least 1 persona should be declared in Section 2.")
             if use_case_count == 0:
-                self.errors.append("Simple Scope: At least 1 use case must be defined in Section 3.")
+                self.errors.append("Minimal Scope: At least 1 use case must be defined in Section 3.")
         elif self.effective_scope == "prototype":
             if persona_count == 0:
                 self.warnings.append("Prototype Scope: At least 1 core persona should be declared in Section 2.")
@@ -373,14 +374,14 @@ class BRDValidator:
 
         self.extract_scope()
 
-        if self.effective_scope == "simple":
-            # Simple scope validation path
-            self.validate_mandatory_sections_simple()
+        if self.effective_scope == "minimal":
+            # Minimal scope validation path
+            self.validate_mandatory_sections_minimal()
             self.validate_technical_leakage()
-            self.extract_personas_and_use_cases_simple()
+            self.extract_personas_and_use_cases_minimal()
             self.validate_persona_traceability()
-            self.validate_use_cases_simple()
-            self.validate_mapping_matrix_simple()
+            self.validate_use_cases_minimal()
+            self.validate_mapping_matrix_minimal()
             self.validate_scope_boundaries()
         else:
             # Original 7-section validation path (prototype/mvp/full)
@@ -394,7 +395,7 @@ class BRDValidator:
         return len(self.errors) == 0
 
     def generate_json_report(self) -> str:
-        mandatory_sections_for_scope = MANDATORY_SECTIONS_SIMPLE if self.effective_scope == "simple" else MANDATORY_SECTIONS
+        mandatory_sections_for_scope = MANDATORY_SECTIONS_MINIMAL if self.effective_scope == "minimal" else MANDATORY_SECTIONS
         data = {
             "file": str(self.file_path),
             "status": "PASSED" if len(self.errors) == 0 else "FAILED",
@@ -438,8 +439,8 @@ class BRDValidator:
         print(f"Strict Mode:    {'Enabled' if self.strict else 'Disabled'}\n")
 
         # Mandatory Sections Check
-        mandatory_sections_for_scope = MANDATORY_SECTIONS_SIMPLE if self.effective_scope == "simple" else MANDATORY_SECTIONS
-        section_header = "Mandatory Sections (Simple Scope - 4 Sections):" if self.effective_scope == "simple" else "Mandatory Sections (BABOK & IEEE 29148 - 7 Sections):"
+        mandatory_sections_for_scope = MANDATORY_SECTIONS_MINIMAL if self.effective_scope == "minimal" else MANDATORY_SECTIONS
+        section_header = "Mandatory Sections (Minimal Scope - 4 Sections):" if self.effective_scope == "minimal" else "Mandatory Sections (BABOK & IEEE 29148 - 7 Sections):"
         print(f"{COLOR_BOLD}1. {section_header}{COLOR_RESET}")
         for sec_id, _, name in mandatory_sections_for_scope:
             if sec_id in self.section_matches:
@@ -487,7 +488,7 @@ def main():
         description="Validate Business Requirements Documents (BRD) against BABOK and IEEE 29148 standards."
     )
     parser.add_argument("file_path", type=str, help="Path to the BRD markdown file to validate")
-    parser.add_argument("--scope", choices=["simple", "prototype", "mvp", "full"], help="Target scope boundary to validate against (simple, prototype, mvp, full)")
+    parser.add_argument("--scope", choices=["minimal", "prototype", "mvp", "full"], help="Target scope boundary to validate against (minimal, prototype, mvp, full)")
     parser.add_argument("--strict", action="store_true", help="Enable strict mode (fails on technical leakage warnings)")
     parser.add_argument("--json", action="store_true", help="Output machine-readable JSON report")
     parser.add_argument("--quiet", action="store_true", help="Suppress non-error text output")
