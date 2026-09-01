@@ -1,422 +1,252 @@
-# Architecture Decisions
+# Architecture Decision Skill
 
-Systematically evaluate **architecture style** (monolith, modular monolith, microservices, event-driven, serverless) and **agentic-AI fitness** (fit, partial-fit, not-fit) using normalized requirements and NFR analysis, with mandatory checkpoint before lock-in. Produces MADR-formatted Architecture Decision Records (ADRs) with full rationale and alternatives considered.
+**Decides architecture style and agentic-AI fitness from normalized requirements, produces ADRs, gated behind a mandatory confirmation checkpoint.**
+
+A focused skill for consuming requirements analysis and NFR prioritization (from `/req-nfr-analysis`), evaluating two key architectural decisions (style: monolith/modular-monolith/microservices/event-driven/serverless; agentic-AI fitness per capability), and producing MADR-formatted Architecture Decision Records with a mandatory checkpoint before lock-in. "Not applicable" is a valid verdict when no agentic capability is evidenced.
+
+## Overview
+
+This skill takes a normalized requirements set (BRD + req-nfr-analysis outputs) and produces two focused ADRs: one for architecture style (deployment topology) and one for agentic-AI fitness (per explicitly automated capability). Both ADRs are presented at `pending` status — the skill does not auto-confirm; you review, adjust if needed, and explicitly confirm before the decisions are locked.
+
+## What It Does
+
+The skill executes exactly four sequential steps:
+
+1. **Read the Hard Constraints** — Extract only Hard Constraint (HC) NFRs from the NFR table plus scope boundaries and success criteria from the BRD. Ignore Deferred/Not-Evidenced rows.
+2. **Style ADR** — Evaluate architecture style (monolith / modular monolith / microservices / event-driven / serverless, or a named split). Checklist: independent scaling needs? Single team/deploy cadence? Explicit "avoid over-engineering" signal? Bursty/event-triggered work?
+3. **Agentic-AI ADR** — Evaluate per capability that's explicitly automated/AI in the functional requirements or flagged upstream as an unsupported claim. Checklist: multi-step autonomous reasoning? Tolerant of non-determinism? Needs a human-confirmation gate? If none qualify: "Not applicable — no agentic capability in confirmed requirements," naming any gap if the BRD implied otherwise.
+4. **Present at Pending** — Show both ADRs with status `pending`. Wait for explicit confirmation. Update status to `confirmed` (or revise and re-present).
+
+Output is always `architecture-decisions.md` with two ADRs: Architecture Style and Agentic-AI Fitness.
+
+## Key Design Principles
+
+- **Two decisions only** — Architecture style and agentic-AI fitness per capability. No component-level patterns, stack selection, or detailed design.
+- **Hard constraints drive the decision** — Only HC NFRs and explicit scope boundaries inform the choice. Inferred or deferred NFRs are noted but don't override.
+- **"Not applicable" is correct** — If the BRD's title claims "AI-driven" but no actual agentic capability exists in the FRs or use cases, the verdict is "Not applicable," and the gap is named.
+- **No forced verdict** — Unresolved contradictions or unsupported claims from upstream block the decision. The skill surfaces them and doesn't pick a side.
+- **Checkpoint enforced** — Nothing is final until the user confirms. Status remains `pending` until explicitly updated.
+
+## Input
+
+A completed requirements analysis, typically:
+
+- **BRD.md** — Domain, personas, use cases, scope boundaries, self-check findings
+- **req-nfr-analysis.md** — Normalized functional requirements, NFR table (10 categories), structural findings, open questions
+
+The analysis must identify:
+- Which NFRs are Hard Constraints (HC)
+- Whether any agentic/AI capabilities are claimed (in title/domain) or evidenced (in FRs/use cases)
+- Any unresolved contradictions or unsupported claims
+
+## Output: `architecture-decisions.md`
+
+```markdown
+# Architecture Decisions: [System Name]
+
+## Architecture Style
+
+**Decision:** Modular Monolith
+
+**Why:**
+- Single team (3 developers), weekly deploy cadence
+- No independent scaling needs per NFR (no hot-spot identified)
+- Performance HC (100k concurrent) solvable within one process boundary + caching
+- "Avoid over-engineering" signal in scope
+
+**Alternatives:**
+- Microservices: Would add network latency, eventual consistency burden, operational complexity (3-person team cannot support 4+ services in production)
+- Event-Driven: Adds learning curve, overkill for single-cadence deployments; deferred to Phase 2 if async messaging becomes critical
+
+**Status:** Pending
 
 ---
+
+## Agentic-AI Fitness
+
+**Decision:** Not Applicable
+
+**Why:**
+- BRD title: "AI-driven expense reconciliation"
+- Functional requirements: User uploads receipt → system validates → human auditor approves
+- No multi-step autonomous reasoning, no tolerance of non-determinism
+- Framing claim flagged in req-nfr-analysis: unsupported (no auto-reconciliation UC)
+
+**Gap:**
+If "AI-driven" is intended, Phase 2 should clarify: which decisions are autonomous vs. human-approved? Currently, all decision-making is human-in-the-loop.
+
+**Status:** Pending
+```
+
+Each ADR includes:
+- **Decision** — The style choice or agentic-AI verdict (including "Not Applicable")
+- **Why** — Rationale tied to HC NFRs and scope
+- **Alternatives** — Other considered options and why they were rejected
+- **Status** — `pending` (awaiting confirmation) or `confirmed` (locked)
+
+## How It Works
+
+### Step 1: Read the Hard Constraints
+
+Review the req-nfr-analysis NFR table. Extract only rows marked **HC (Hard Constraint)**. Also note:
+- Scope boundaries (in-scope modules, clear out-of-scope)
+- Success criteria or KPIs from the BRD
+- Any unresolved contradictions or unsupported claims flagged upstream
+
+Ignore:
+- NE (Not Evidenced) rows — they don't drive architecture decisions
+- NTH (Nice-to-Have) rows — lower priority
+- Inferred (I) rows — unless marked HC
+
+### Step 2: Style ADR
+
+Evaluate the candidate architecture styles against the HC constraints and operational context:
+
+**Monolith**
+- Pros: Simple deployment, low latency (shared memory), single codebase, low operational overhead
+- Cons: Single failure domain, harder to scale independent components, tech-stack is unified
+- Fits when: Single team, single deploy cadence, no independent scaling hotspots, no clear domain boundaries
+
+**Modular Monolith**
+- Pros: Monolith deployment model, module/package boundaries for cohesion, clear dependency rules
+- Cons: Still one failure domain, still unified tech stack, requires discipline on module boundaries
+- Fits when: Single team, but clear internal module boundaries; prep for potential future split
+
+**Microservices**
+- Pros: Independent scaling, independent deployment, team autonomy per service, polyglot stack possible
+- Cons: High operational complexity, network latency, eventual consistency burden, distributed tracing/debugging
+- Fits when: Multiple teams, independent scaling needs per service, asynchronous communication expected, acceptance of operational complexity
+
+**Event-Driven**
+- Pros: Decoupled services, natural async processing, scales bursty workloads
+- Cons: Adds eventual consistency, hard to debug, requires event store or message broker
+- Fits when: Bursty or async work (e.g., batch jobs, triggers), explicit event model in domain
+
+**Serverless**
+- Pros: No infrastructure to manage, pay-per-execution, auto-scaling
+- Cons: Cold starts, vendor lock-in, hard to manage state, limited runtime environments
+- Fits when: Event-triggered workloads, stateless functions, acceptable cold-start latency, cost sensitivity
+
+**Checklist for decision:**
+- Are there independent scaling needs? (different services need different scaling profiles)
+- Single team / single deploy cadence, or multiple teams / independent deployments?
+- Explicit "avoid over-engineering" in scope, or prepare for multi-team scale?
+- Bursty/event-triggered work, or steady request/response flows?
+
+### Step 3: Agentic-AI ADR
+
+Evaluate agentic-AI fitness **per capability** that's either:
+1. Explicitly marked as automated/AI in the functional requirements (e.g., "System shall auto-reconcile expenses using ML")
+2. Claimed in the title/domain but flagged as unsupported in req-nfr-analysis (e.g., title says "AI-driven" but no FRs deliver it)
+
+**For each candidate capability, ask:**
+
+- **Multi-step autonomous reasoning?** Does the system make a series of dependent decisions without human intervention? (E.g., risk assessment → approval → payment, all auto.)
+- **Tolerant of non-determinism?** Can the system handle "good enough" outcomes, or does it need 100% accuracy?
+- **Needs a human-confirmation gate?** Should a human approve the AI decision before it's acted upon?
+
+**If none of these apply: "Not Applicable"** — no agentic capability exists, even if the BRD's title implies one. Name the gap if relevant.
+
+**If yes:** Decide:
+- **Fit** — Agentic approach is suitable
+- **Partial Fit** — Agentic for some decisions, human-in-the-loop for others
+- **Not Fit** — Would require too much uncertainty tolerance or lacks sufficient autonomy needs
+
+**Example verdicts:**
+
+- ✅ **Fit**: "Expense categorization is multi-step (extract category → validate against policy → suggest) and tolerant of ~95% accuracy. Agentic approach: LLM model fine-tuned on historical data."
+- ⚠️ **Partial Fit**: "Auto-reconciliation is 70% of cases (clear matches); flagged cases require human review. Agentic: similarity matching for clear pairs; human gate for ambiguous."
+- ❌ **Not Applicable**: "No agentic capability. All decisions are binary (approve/reject) based on policy rules. Framing claim 'AI-driven' is unsupported by FRs."
+
+### Step 4: Present at Pending, Wait for Confirmation
+
+Display both ADRs with `status: pending`. Do not lock them. Wait for user review and confirmation.
+
+- If user says "confirmed" or similar: update both statuses to `confirmed` and finalize
+- If user says "revise" or identifies an issue: revise the ADR and re-present at `pending`
+- If an upstream unresolved contradiction or unsupported claim blocks the decision: surface it and ask for guidance before deciding
 
 ## When to Use
 
 Invoke this skill when:
 
-- Your normalized and NFR requirement analysis is ready and you need architecture decisions
-- You're asking "should this be a monolith or microservices?" or similar
-- You need to evaluate whether agentic-AI (autonomous agents, multi-step tool use) fits your domain
-- You finished requirements analysis and need to move into design phase
-- You need documented architectural rationale (ADR format) for stakeholder alignment
+- You have a completed BRD and normalized requirements (req-nfr-analysis output)
+- You need to settle on architecture style (deployment topology) before detailed design
+- You need to evaluate whether agentic/AI capabilities are viable and how to implement them
+- Stakeholders ask "what does this look like in production?" and you need a reasoned answer
 
----
+**Do NOT use this skill for:**
 
-## Overview
+- Tech stack selection (database, framework, language — those are Phase 3+)
+- Component-level or detailed design (those are downstream)
+- Test/deploy/CI-CD planning (separate concern)
+- Resolving contradictions or filling BRD gaps (those are upstream in req-nfr-analysis)
 
-This skill consumes the output of normalized requirements and NFR analysis and evaluates two interdependent decisions:
+## Installation & Activation
 
-1. **Architecture Style** — which of 5 candidates (monolith, modular monolith, microservices, event-driven, serverless) best fits your system, justified by exactly 4 drivers: team size, deployment cadence, scaling shape, and data consistency requirements. Fashion, trends, and "best practice by authority" are explicitly disallowed as justification.
-2. **Agentic-AI Fitness** — whether your domain tolerates autonomous agents and multi-step tool use, evaluated across 3 independent dimensions:
-
-   - **Non-Determinism Tolerance:** Does the domain allow variable outputs from the same input?
-   - **Autonomous Multi-Step Tool Use:** Do you need long-running agent loops, or is orchestrated/request-response sufficient?
-   - **Human-in-Loop Requirements:** Must humans approve before execution, or is post-decision review acceptable?
-
-Both decisions are **checkpoint-gated** before output — you must confirm them in conversation. This is not an auto-decision; everything downstream depends on getting these right.
-
----
-
-## Scope Boundaries
-
-| Dimension                               | Quick                          | Standard                         | Thorough                                                     |
-| :-------------------------------------- | :----------------------------- | :------------------------------- | :----------------------------------------------------------- |
-| **Architecture Alternatives**     | 1 alternative considered       | 2 alternatives + rationale table | 3 alternatives + weighted scoring matrix                     |
-| **Agentic-AI Analysis**           | 2–3 sentences per dimension   | 1 paragraph per dimension        | Detailed per-dimension + style↔AI cross-dependency analysis |
-| **Org Context Questions**         | Asked if missing (direct)      | Asked if missing (direct)        | Asked if missing (direct)                                    |
-| **Depth**                         | Suitable for exploratory phase | Default; production-ready        | Deep analysis for complex/high-stakes decisions              |
-| **Token Budget (Reasoning Tier)** | ~800                           | ~1200                            | ~1800                                                        |
-
----
-
-## Model Selection & Cost Optimization
-
-| Phase                                       | Model Tier                 | Use                                                                       | Recommended Models        |
-| :------------------------------------------ | :------------------------- | :------------------------------------------------------------------------ | :------------------------ |
-| **Steps 1–3: Analysis & Evaluation** | Reasoning Tier             | Deep decision-tree analysis, multi-criteria scoring, dependency reasoning | Sonnet, Pro, GPT-4o       |
-| **Step 4: Checkpoint**                | Reasoning Tier (continued) | Conversational presentation, user interaction                             | Same as above             |
-| **Step 5: ADR Output**                | Lightweight Tier           | Markdown formatting, table structuring, reference citation                | Haiku, Flash, GPT-4o-mini |
-
----
-
-## Context Window Management
-
-This skill progressively loads architecture reference material on-demand:
-
-- **SKILL.md** inlines only the 5 style names and 3 agentic-AI dimensions; full criteria referenced from `references/`
-- **references/architecture-styles.md** — fully detailed per-style definition, driver signals, and failure modes
-- **references/agentic-ai-fitness.md** — per-dimension evaluation, verdict combination rules, and style↔AI cross-dependencies
-- Only load references as needed during Step 2–3 analysis (no upfront reading)
-
----
-
-## Execution Example (Standard Scope)
-
-### Input: `req-nfr-analysis.md`
-
-Suppose you provide:
-
-```
-## NFR List
-
-| # | Category | Status | Evidence | Priority |
-| --- | --- | --- | --- | --- |
-| 3 | Scalability | Explicit | Must handle 10x user growth in 18 months | Hard Constraint |
-| 5 | Availability | Explicit | 99.5% SLA required | Hard Constraint |
-| 9 | Reliability / Resilience | Explicit | RTO 1 hour, RPO 15 min | Hard Constraint |
-| 14 | Data Privacy | Explicit | GDPR compliance required | Hard Constraint |
-| 18 | Explainability / Transparency | Inferred | Audit trail required for all business decisions | Inferred (from Privacy) |
-| 19 | AI Safety / Autonomy Control | Not evidenced | — | — |
-```
-
-And context: Team size = 12, Deployment cadence = 1x/week, Scaling shape = "heterogeneous (core API 5x, search 20x, data pipeline 50x)", Data consistency = "eventual OK, but order/payment transactions require strict ACID".
-
-### Step 1 Output (Decision Inputs Recap)
-
-**Architecture Style Drivers:**
-
-- Team: 12 people (modular monolith / microservices range)
-- Cadence: 1x/week (monolith–modular acceptable; microservices feasible with coordination)
-- Scaling: Heterogeneous (search scales 4x faster than API; pipeline scales 10x faster; microservices beneficial)
-- Consistency: Mixed (order/payment strict; recommendations eventual; federation needed)
-
-**Agentic-AI Drivers:**
-
-- Explainability: Inferred from Privacy — audit trails required (Dimension 3 = partial-fit, human review logs needed)
-- Autonomy Control: Not stated (assume low priority unless user clarifies)
-
-### Step 2 Output (Architecture Style Evaluation)
-
-**Recommendation: Microservices**
-
-| Driver                            | Microservices                                                                       | Modular Monolith                                                       | Serverless                                               |
-| :-------------------------------- | :---------------------------------------------------------------------------------- | :--------------------------------------------------------------------- | :------------------------------------------------------- |
-| **Team (12)**               | ✅ Supports independent ownership                                                   | ✅ Single team works                                                   | ⚠️ Ops overhead, still single team                     |
-| **Cadence (1x/week)**       | ✅ Async deployment (each service deploys independently)                            | ✅ Acceptable (single coordinator)                                     | ⚠️ Overkill for weekly cadence                         |
-| **Scaling (heterogeneous)** | ✅ Search service scales 4x independently; pipeline 10x; API 2x—no monolith bloat  | ⚠️ Single deployment = all scale together; search DBA contention     | ⚠️ Scaling efficiency good, but search cold-start risk |
-| **Consistency (mixed)**     | ✅ Order/Payment in one service (ACID); Recommendations via eventual-consistent API | ⚠️ Single shared DB = transaction complexity for strict requirements | ✅ Cloud DB ACID native, but vendor lock-in              |
-
-**Alternatives Considered:**
-
-- **Modular Monolith (rejected):** Satisfies team/cadence, but heterogeneous scaling = shared DB contention when search indexes hit hot-spot; eventual-consistency reconciliation complex in single codebase; loses scaling benefit.
-- **Serverless (rejected):** Strong fit for scaling/consistency (cloud ACID), but overkill for 1x/week cadence; cold-start latency risk for search queries (>5 sec response unacceptable for search UX per implied Latency constraint); team doesn't need ops-managed pricing complexity.
-
-### Step 3 Output (Agentic-AI Fitness Evaluation)
-
-**Dimension 1: Non-Determinism Tolerance** — GDPR + Explainability inferred constraint = must audit all decisions. Non-determinism allowed if logged. **Partial-fit**
-
-**Dimension 2: Autonomous Multi-Step Tool Use** — Scalability (10x growth) suggests automation help, but no use case states "autonomous agent required." Could hire and train; not a driver. **Not-fit** (no stated need)
-
-**Dimension 3: Human-in-Loop** — Explainability + audit trail = human must review decisions. "Human review logs" acceptable post-execution. **Partial-fit**
-
-**Verdict: Not-fit** (Dimension 2 blocker; no autonomous loops needed or justified; audit trails don't require agents)
-
-**Interpretation:** Agentic-AI not a good fit for this domain. Emphasis on explainability/audit means you need full traceability of business logic, which agents obscure. Focus on deterministic business rules + audit logs instead.
-
-### Step 4: 🔔 CHECKPOINT
-
-**Present to User:**
-
-*Architecture Style: Recommended **Microservices** because:*
-
-- *Your team (12) can own separate services (Order/Payment service, Search service, Data Pipeline service)*
-- *1x/week cadence allows coordinated deployment without constant orchestration*
-- *Heterogeneous scaling (search 20x vs. core 5x) justifies independent services*
-- *Mixed consistency (ACID for orders, eventual for recommendations) maps to service boundaries*
-
-*Alternatives:*
-
-- *Modular Monolith: Simpler deployment, but shared DB contention when search hot-spots; loses scaling benefit*
-- *Serverless: Great scaling efficiency, but overkill for weekly cadence; search cold-start latency risk*
-
-**Confirm or redirect? Any concerns?**
-
-*Agentic-AI Fitness: **Not-fit** because:*
-
-- *Non-Determinism Tolerance (partial-fit): GDPR audit trails allow logged variance*
-- *Autonomous Multi-Step Tool Use (not-fit): No use case for autonomous agents; no stated scalability pressure requiring agent automation*
-- *Human-in-Loop (partial-fit): Explainability requires human review of business decisions*
-
-*Verdict: Not-fit overall. Recommendation: Focus on deterministic business rules + comprehensive audit logging. Agents add complexity without clear benefit.*
-
-**Does this match your domain reality? Any corrections?**
-
-*User confirms both ✅*
-
-### Step 5 Output: `architecture-decisions.md`
-
-```markdown
-# Architecture Decision Records
-
-## ADR-001: Architecture Style
-
-**Status:** Accepted (2026-08-31)
-
-**Context and Problem Statement:**
-Our system serves 12 million users with heterogeneous scaling demands (search queries 20x user growth, core API 5x, data pipeline 50x). Order/payment transactions require strict ACID guarantees; recommendation data can tolerate eventual consistency. We have 12 engineers across 2–3 teams. We deploy updates weekly.
-
-**Decision Drivers:**
-1. Team size (12) supports multiple independent service teams without excessive coordination
-2. Deployment cadence (1x/week) permits each service to deploy asynchronously without blocking others
-3. Scaling heterogeneity (search 4x faster than core) requires per-service scaling independent of monolith constraints
-4. Data consistency (mixed strict + eventual) maps cleanly to service boundaries with federated databases
-
-**Considered Options:**
-
-| Option | Justification | Status |
-| :--- | :--- | :--- |
-| **Microservices** ✅ | Aligns with all 4 drivers: team autonomy, async deployment, per-service scaling, federated consistency model | **Chosen** |
-| Modular Monolith | Satisfies team/cadence, but shared DB prevents heterogeneous scaling; search hot-spot contention; single deployment gates all teams | Rejected |
-| Serverless | Excellent scaling & consistency, but cold-start latency unacceptable for search UX; overkill for 1x/week cadence | Rejected |
-
-**Decision Outcome:**
-Adopt **Microservices** architecture with service boundaries aligned to domains: Order/Payment Service (ACID, strict), Search Service (independent scaling, eventual consistency), Data Pipeline Service (independent batch processing, eventual consistency).
-
-**Consequences:**
-
-*Positive:*
-- Each team (Order, Search, Data) owns end-to-end delivery; parallel deployment velocity
-- Search scaling (20x) no longer constrained by core API (5x) growth; pure cost-efficiency
-- ACID boundaries localized to Order/Payment; eventual consistency complexity relegated to cross-service integration
-
-*Negative:*
-- Service-to-service API contracts required; async coordination overhead
-- Distributed tracing & debugging across 3+ services; ops complexity increases
-- Data consistency between services (e.g., search index updates) requires choreography or eventual-consistency reconciliation (not instant)
-
----
-
-## ADR-002: Agentic-AI Fitness
-
-**Status:** Accepted (2026-08-31)
-
-**Context and Problem Statement:**
-Evaluating whether autonomous agents and LLM-driven multi-step tool use fit this system's business logic and regulatory constraints.
-
-**Decision Drivers:**
-
-1. **Non-Determinism Tolerance:** GDPR compliance + explainability requirement permit non-deterministic AI if all decisions are logged and auditable. (Partial-fit)
-2. **Autonomous Multi-Step Tool Use:** No stated use case requires autonomous agent loops. Scaling pressure (10x growth) solvable via infrastructure, not agents. (Not-fit)
-3. **Human-in-Loop Requirement:** Explainability & audit-trail mandates human review of all business decisions. (Partial-fit)
-
-**Considered Options:**
-
-| Option | Justification | Status |
-| :--- | :--- | :--- |
-| **No Agentic-AI** ✅ | Deterministic business rules + comprehensive audit logging satisfy compliance without agent complexity overhead | **Chosen** |
-| Autonomous Agents (Low Autonomy) | Could theoretically automate exploratory recommendation ranking, but audit trail obscures agent reasoning; deterministic ranking rules clearer | Rejected |
-| Human-Orchestrated Agent Workflow | Agents + per-step human approval possible but adds latency; deterministic rules + human spot-checks simpler & cheaper | Rejected |
-
-**Decision Outcome:**
-**Not-fit.** Implement the system with deterministic business logic and comprehensive audit logging. Do not introduce autonomous agents or LLM-driven decision-making at this phase.
-
-**Consequences:**
-
-*Positive:*
-- Full determinism & auditability: every recommendation trace back to clear business rule
-- Simpler compliance: no LLM hallucination risk; regulators understand deterministic logic
-- Faster iteration: no agent prompt-tuning; rules versioning straightforward
-
-*Negative:*
-- Cannot leverage LLM for adaptive/contextual ranking (agents could personalize better)
-- Manual rule maintenance as scaling increases; rule complexity grows with business logic
-- Lost opportunity for autonomous customer-support escalation (would require agents)
-```
-
----
-
-## Pipeline Context
-
-This skill is next phase of the BRD → Requirements → Architecture pipeline:
-
-- `brd` skill (Business Requirements Document) + `req-nfr-analysis` skill (Requirements & NFR Analysis) — normalize and prioritize requirements
-- **this skill:** Architecture & Design Decisions — evaluate architecture style & agentic-AI fitness, checkpoint-gated, ADR-formatted
-- **future:** PRD Refinement / Specification — detail user stories, API contracts, test plans, based on Architecture and Design decisions
-
-Each phase's output feeds the next. ADRs become the "architecture constraints" section of Next Phase PRD.
-
----
-
-## 🚀 Installation & Activation
-
-### Quick Install (All Agents)
+### Install
 
 ```bash
 cd /Users/skakumanu/practice/skills-catalog
 
-# Install to all agents (Antigravity, Claude Code, Codex)
-./install.sh --skill architecture-decisions --target all
+# Install to all runtimes
+./install.sh --skill architecture-decisions
 
-# Or with short flags
-./install.sh -s architecture-decisions -t all
+# Or: install to a specific runtime
+./install.sh --skill architecture-decisions --target claude
 ```
 
-### Forceful Installation (Recommended for Updates)
+### Invocation
 
-Use `--force` to overwrite an existing installation and pick up the latest version:
-
-```bash
-./install.sh --skill architecture-decisions --target all --force --mode copy
-```
-
-#### Installation Mode Comparison
-
-| Mode              | Command                      | Use Case                                        | Auto-Updates |
-| ----------------- | ---------------------------- | ----------------------------------------------- | ------------ |
-| **Copy**    | `--mode copy`              | Independent copies (recommended for production) | ❌ No        |
-| **Symlink** | `--mode symlink` (default) | Link to catalog source                          | ✅ Yes       |
-
-### Installation Flags Reference
-
-| Flag                      | Purpose                                 | Example                                                     |
-| ------------------------- | --------------------------------------- | ----------------------------------------------------------- |
-| `-s, --skill <NAME>`    | Which skill to install                  | `-s architecture-decisions` or `-s all`                 |
-| `-t, --target <TARGET>` | Agent(s) to install to                  | `-t all`, `-t claude`, `-t antigravity`, `-t codex` |
-| `-f, --force`           | **Forcefully overwrite existing** | Forces reinstall even if already present                    |
-| `-m, --mode <MODE>`     | Installation method                     | `-m copy` or `-m symlink`                               |
-| `-h, --help`            | Show help message                       | `--help`                                                  |
-
-### Verify Installation Success
-
-```bash
-# Check all agents have the skill installed
-echo "=== Antigravity ===" && ls -la ~/.antigravity/skills/architecture-decisions/SKILL.md && echo "✓ Installed"
-echo "=== Claude Code ===" && ls -la ~/.claude/skills/architecture-decisions/SKILL.md && echo "✓ Installed"
-echo "=== Codex ===" && ls -la ~/.codex/skills/architecture-decisions/SKILL.md && echo "✓ Installed"
-```
-
-### Targeted Installation Examples
-
-```bash
-# Install only to Claude Code (copy mode)
-./install.sh --skill architecture-decisions --target claude --mode copy
-
-# Install specific skill with default settings
-./install.sh -s architecture-decisions
-
-# View installation help
-./install.sh --help
-```
-
-### Safety Notes
-
-- **`--force` flag:** Removes existing installations and replaces with latest version (safe for updates)
-- **Symlink mode:** Updates in catalog automatically propagate to all agents (but breaks if catalog moves)
-- **Copy mode:** Independent installations don't auto-update (safer if you modify locally)
-- **Recommendation:** Use `--force --mode copy` for production environments
-
-### Activation Triggers by Scope
-
-Invoke the skill within your AI agent runtime with your desired scope depth:
-
-#### 1. Quick Scope Invocation
+Use natural language or a slash command:
 
 ```text
-/architecture-decisions --scope quick
+/architecture-decisions Decide architecture style and agentic-AI fitness for our system
+
+evaluate architecture for expense reconciliation system
+
+/architecture-decisions We have a BRD and NFR analysis; what style should we pick?
 ```
 
-or
+The skill reads the requirements analysis and produces `architecture-decisions.md` with both ADRs at `pending` status, waiting for your confirmation.
 
-```text
-should this be a monolith or microservices? (quick evaluation)
-```
+## Files
 
-Quick scope evaluates 1 architecture alternative and provides 2–3 sentences per agentic-AI dimension. Suitable for exploratory phase with limited token budget (~800).
+- **SKILL.md** — Persona directives and 4-step execution protocol
+- **README.md** — This file; user-facing reference documentation
 
-#### 2. Standard Scope Invocation (Default)
+## Out of Scope
 
-```text
-/architecture-decisions --scope standard
-```
+- **Tech stack, component design, patterns, data/API/security detail** — Those are Phase 3+ decisions (detailed design, implementation planning).
+- **Test and deployment strategies** — Separate concern; addressed after architecture is locked.
+- **Resolving upstream contradictions or filling BRD gaps** — Those belong in req-nfr-analysis. Architecture decisions assume a clean, analyzed requirements set.
 
-or
+## Pipeline Context
 
-```text
-/architecture-decisions I finished requirements analysis. What's next for architecture?
-```
+This skill is **Phase 2** of the BRD → Requirements → Architecture → PRD pipeline:
 
-or
+- **Phase 1 (req-nfr-analysis):** Normalize requirements, extract and prioritize NFRs, identify gaps
+- **Phase 2 (this skill):** Decide architecture style and agentic-AI fitness; produce ADRs with checkpoint gate
+- **Phase 3 (future):** Detailed design (tech stack, component structure, API contracts, deployment plan)
 
-```text
-Generate architecture decision records for our system
-```
+Each phase's output feeds into the next.
 
-Standard scope evaluates 2 architecture alternatives with rationale table and 1 paragraph per agentic-AI dimension. Production-ready with ~1200 token budget.
+## Version History
 
-#### 3. Thorough Scope Invocation
+**v2.0** (2026-09-02):
 
-```text
-/architecture-decisions --scope thorough
-```
+- Simplified from complex multi-scope evaluation (quick/standard/thorough) to straightforward 4-step process
+- Frontmatter reduced (no `models`, `context_optimization`)
+- Focused on two core decisions: architecture style + agentic-AI fitness per capability
+- Mandatory checkpoint remains (status: pending/confirmed)
+- Clearer emphasis on "Not Applicable" as a valid agentic-AI verdict
+- "Not Applicable" is correct when no agentic capability is evidenced, even if claimed in title
 
-or
-
-```text
-Is agentic-AI a good fit for our platform? (thorough analysis)
-```
-
-or
-
-```text
-Evaluate architecture with detailed cross-dependency analysis
-```
-
-Thorough scope evaluates 3 alternatives with weighted scoring matrix and detailed per-dimension analysis plus style↔AI cross-dependency analysis. For complex/high-stakes decisions with ~1800 token budget.
-
-#### 4. Interactive Checkpoint Confirmation
-
-```text
-/architecture-decisions --ask-checkpoint Confirm architecture decisions
-```
-
-Explicitly re-enters checkpoint phase for user confirmation before ADR output generation. Useful when confidence is uncertain or stakeholder alignment is needed before final output.
-
----
-
-## Success Criteria
-
-Before the skill outputs `architecture-decisions.md`, the user should:
-
-- [ ] Confirm the recommended architecture style in the checkpoint conversation
-- [ ] Confirm the agentic-AI fitness verdict (including all 3-dimension reasoning)
-- [ ] Have both ADRs tracing back to specific Hard Constraint NFRs from normalized requirements and NFR analysis
-- [ ] See 1–2 genuine alternatives considered (not strawmen) with explicit rejection reasons
-- [ ] Understand the cross-dependency between architecture style and agentic-AI feasibility (thorough scope only)
-
----
-
-## Troubleshooting
-
-**Q: "The skill is recommending microservices, but we're a 3-person startup. That feels wrong."**
-
-A: This is a sign the org context is missing. Step 1 will ask: "Is team size really 3?" and "Do you truly need heterogeneous scaling?" If yes to both, monolith is recommended instead. The skill never auto-recommends based on fashion—only on the 4 drivers (team size, cadence, scaling, consistency).
-
-**Q: "Agentic-AI came back as 'not-fit,' but we want to use agents anyway."**
-
-A: The verdict is based on Hard Constraints from normalized and NFR requirements analysis. If a constraint changed or was misstated, re-run with corrected inputs. If you want to explore agentic-AI despite the verdict, that's a business decision (not a technical one). The ADR documents why it's a trade-off, not a recommendation against it.
-
-**Q: "How do I choose between the alternatives if I'm still unsure?"**
-
-A: Use the Consequences section of ADR-001 to weigh trade-offs. Microservices example: Does your team have ops expertise for service-to-service debugging? If not, modular monolith may be safer. Does your scaling shape truly heterogeneous, or was that an estimate? If not, monolith may save cost. The ADR surfaces these trade-offs; you make the final call based on risk tolerance and constraints not captured in normalized requirements and NFR analysis.
+**v1.x** (prior):
+- Multi-scope (quick/standard/thorough) with detailed evaluation matrices, model tiering, context management overhead.
 
 ---
 
 ## Questions?
 
-For details on architecture style criteria, see `references/architecture-styles.md`.
-
-For agentic-AI dimension definitions and verdict combination rules, see `references/agentic-ai-fitness.md`.
+For details on how contradictions or unsupported claims block architecture decisions, see **SKILL.md**. For how to structure ADRs, see the Output example above. For upstream requirements questions, see the [`req-nfr-analysis` README](../req-nfr-analysis/README.md) (Phase 1).

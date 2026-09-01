@@ -68,12 +68,14 @@ All skills in this catalog are designed for zero-friction cross-runtime compatib
 
 Each skill in the catalog is self-contained and documented with its own dedicated `README.md`:
 
-| Skill                                                                 | Version   | Description                                                                                                                                                                                                             | Target Runtimes            | Cost & Context Profile                             | Dedicated Documentation                                                                                   |
-| :-------------------------------------------------------------------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------- | :------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- |
-| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/) | `1.0.0` | Autonomous Principal Product Owner & Requirements Engineer (AI-PO) supporting **Simple**, **Prototype**, **MVP**, and **Full Enterprise** scope boundaries to produce pure BABOK v3 & IEEE 29148 compliant BRDs. | Antigravity, Claude, Codex | Multi-Scope + Tiered Routing + Progressive Loading | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md) |
-| [`req-nfr-analysis`](file:///Users/skakumanu/practice/skills-catalog/skills/req-nfr-analysis/) | `1.2` | Phase 1 requirements analysis skill that normalizes functional requirements, extracts and tags across 19 NFR categories (security, performance, scalability, reliability, compliance, etc.), flags inferred NFRs, and prioritizes each as hard constraint vs nice-to-have for downstream architecture. | Antigravity, Claude, Codex | Multi-Scope (Minimal/Standard/Thorough) + Progressive Taxonomy Loading | [**`skills/req-nfr-analysis/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/req-nfr-analysis/README.md) |
-| [`architecture-decisions`](file:///Users/skakumanu/practice/skills-catalog/skills/architecture-decisions/) | `1.0.0` | Phase 2 architecture decisioning skill that evaluates architecture styles (monolith, modular monolith, microservices, event-driven, serverless) and agentic-AI fitness (fit/partial-fit/not-fit), surfaces alternatives at mandatory checkpoint, and produces MADR-formatted ADRs with documented rationale. | Antigravity, Claude, Codex | Multi-Scope (Quick/Standard/Thorough) + Decision Checkpoint Gate | [**`skills/architecture-decisions/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/architecture-decisions/README.md) |
-| [`robinhood`](file:///Users/skakumanu/practice/skills-catalog/skills/robinhood/) | `1.0.0` | Lawful direct-link and resource-access finder for books, movies, videos, audio/music, papers, and other named resources using official, public-domain, open-license, library, streaming, rental, and purchase sources. | Antigravity, Claude, Codex | Resource Discovery + Progressive Source Guide | [**`skills/robinhood/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/robinhood/README.md) |
+| Skill                                                                                                       | Version   | Description                                                                                                                                                                                                                                                                                                  | Target Runtimes            | Cost & Context Profile                                                 | Dedicated Documentation                                                                                                                         |
+| :---------------------------------------------------------------------------------------------------------- | :-------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------- | :--------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`brd`](file:///Users/skakumanu/practice/skills-catalog/skills/brd/)                                       | `1.0.0` | Produces a compact Business Requirements Document — domain, personas, use cases with happy/negative paths and acceptance criteria, scope boundaries, and self-checks for framing claims, contradictions, and orphaned scope items. Pure functional scope: WHAT and WHO, never HOW.                                                                      | Antigravity, Claude, Codex | Lightweight Single-Pass                     | [**`skills/brd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/brd/README.md)                                       |
+| [`req-nfr-analysis`](file:///Users/skakumanu/practice/skills-catalog/skills/req-nfr-analysis/)             | `1.0.0`   | Normalizes a BRD's functional requirements and tags NFRs across 10 categories (Performance & Scalability, Reliability & Recovery, Security, Compliance & Data Governance, Usability & Accessibility, Maintainability & Portability, Observability, Transparency/Explainability, Cost, Other), flags contradictions and unsupported claims, prioritizes as hard-constraint or nice-to-have.       | Antigravity, Claude, Codex | Lightweight Single-Pass | [**`skills/req-nfr-analysis/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/req-nfr-analysis/README.md)             |
+| [`architecture-decisions`](file:///Users/skakumanu/practice/skills-catalog/skills/architecture-decisions/) | `1.0.0` | Decides architecture style and agentic-AI fitness from normalized requirements, produces MADR-formatted ADRs, gated behind mandatory confirmation checkpoint. "Not applicable" is valid when no agentic capability is evidenced. | Antigravity, Claude, Codex | Lightweight Single-Pass + Checkpoint Gate       | [**`skills/architecture-decisions/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/architecture-decisions/README.md) |
+| [`detailed-design`](file:///Users/skakumanu/practice/skills-catalog/skills/detailed-design/)               | `1.0.0` | Turns confirmed architecture decisions into bounded contexts, design pattern selection, data architecture, API contracts, and security model. Traces every hard-constraint NFR to a design decision or flags it unaddressed. Refuses to run against unconfirmed ADRs. | Antigravity, Claude, Codex | Lightweight Single-Pass + Checkpoint Guard | [**`skills/detailed-design/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/detailed-design/README.md)                 |
+| [`tech-stack`](file:///Users/skakumanu/practice/skills-catalog/skills/tech-stack/)                       | `1.0.0` | Selects full-stack technology choices per bounded context from detailed design, citing catalog playbooks where they fit or presenting tradeoff options with a mandatory confirmation checkpoint. Never decides off-catalog stacks unilaterally. | Antigravity, Claude, Codex | Lightweight Single-Pass + Playbook-First | [**`skills/tech-stack/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/tech-stack/README.md)                           |
+| [`prd`](file:///Users/skakumanu/practice/skills-catalog/skills/prd/)                                   | `1.0.0` | Assembles a Product Requirements Document by pulling confirmed sections from all five upstream documents per a section manifest. No new judgments — pure assembly only. Aggregates all unresolved items (pending, open questions, structural findings) into one Open Items section. | Antigravity, Claude, Codex | Lightweight Single-Pass + Assembly | [**`skills/prd/README.md`**](file:///Users/skakumanu/practice/skills-catalog/skills/prd/README.md)                                       |
 
 *(Additional skills can be authored and added following the [Contribution Guide](#-authoring--contributing-skills).)*
 
@@ -85,10 +87,10 @@ To prevent unnecessary token expenditure, all skills in this catalog enforce a *
 
 ### 1. Model Tiering Taxonomy
 
-| Tier                       | Complexity & Task Types                                                                                                                                                                                         | Google Antigravity / Gemini               | Anthropic Claude                                        | OpenAI Codex / GPT        | Cost Profile                               |
-| :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------- | :------------------------------------------------------ | :------------------------ | :----------------------------------------- |
-| **Reasoning Tier**   | • Multi-phase cognitive reasoning (CoT, ToT)• 360° Persona elicitation & RACI modeling• Domain decomposition & cohesion analysis• Comprehensive document authoring• ReAct self-critique & boundary audits | `gemini-2.5-progemini-3.7-flash` (High) | `claude-3-7-sonnetclaude-3-5-sonnet``claude-3-opus` | `gpt-4oo3-mini``o1`   | Standard / High Intelligence               |
-| **Lightweight Tier** | • Standalone script execution (e.g.`validate_brd.py`)• Schema syntax & header linting• Table formatting & Markdown alignment• Persona ID / Regex pattern audits• Simple diffing & typo corrections       | `gemini-2.5-flashgemini-2.0-flash-lite` | `claude-3-5-haikuclaude-3-haiku`                      | `gpt-4o-minicodex-mini` | **Ultra-Low Cost (~10-20x cheaper)** |
+| Tier                       | Complexity & Task Types                                                                                                                                                                                         | Google Antigravity / Gemini               | Anthropic Claude                                      | OpenAI Codex / GPT        | Cost Profile                               |
+| :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------- | :---------------------------------------------------- | :------------------------ | :----------------------------------------- |
+| **Reasoning Tier**   | • Multi-phase cognitive reasoning (CoT, ToT)• 360° Persona elicitation & RACI modeling• Domain decomposition & cohesion analysis• Comprehensive document authoring• ReAct self-critique & boundary audits | `gemini-2.5-progemini-3.7-flash` (High) | `claude-3-7-sonnetclaude-3-5-sonnet``claude-3-opus` | `gpt-4oo3-mini``o1`     | Standard / High Intelligence               |
+| **Lightweight Tier** | • Standalone script execution (e.g.`validate_brd.py`)• Schema syntax & header linting• Table formatting & Markdown alignment• Persona ID / Regex pattern audits• Simple diffing & typo corrections       | `gemini-2.5-flashgemini-2.0-flash-lite` | `claude-3-5-haikuclaude-3-haiku`                    | `gpt-4o-minicodex-mini` | **Ultra-Low Cost (~10-20x cheaper)** |
 
 ### 2. Core Economic Principles for Skills
 
@@ -229,22 +231,14 @@ The catalog maintains a centralized, machine-readable manifest at [`registry.jso
   "skills": [
     {
       "name": "brd",
-      "version": "1.0.0",
+      "version": "3.0.0",
       "path": "skills/brd",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "...",
-      "triggers": ["/brd", "generate brd"],
+      "description": "Produces a compact Business Requirements Document — domain, personas, use cases with happy/negative paths and acceptance criteria, and in/out-of-scope boundaries — with a mandatory self-check for unsupported framing claims, contradictions, and orphaned scope items. Pure functional scope: WHAT and WHO, never HOW.",
+      "triggers": ["/brd", "generate brd", "create business requirements", "draft brd"],
       "runtimes": ["antigravity", "claude", "codex"],
-      "context_optimization": {
-        "progressive_loading": true,
-        "chunked_synthesis": true,
-        "subagent_delegation": true
-      },
-      "models": {
-        "reasoning_tier": { ... },
-        "lightweight_tier": { ... }
-      }
+      "license": "Apache-2.0"
     }
   ]
 }
@@ -277,9 +271,6 @@ python3 -m unittest discover tests
 
 # Run registry and context validation tests
 python3 -m unittest tests/test_registry.py
-
-# Run specific skill validator test suite
-python3 -m unittest tests/test_validate_brd.py
 ```
 
 ---

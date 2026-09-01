@@ -36,8 +36,8 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
             skill_name = skill.get("name")
             self.assertIsNotNone(skill_name, "Skill entry missing 'name'")
 
-            # Check required fields
-            for field in ["name", "version", "path", "entrypoint", "readme", "triggers", "runtimes", "scopes", "models", "context_optimization"]:
+            # Check required fields (note: scopes, models, context_optimization are optional)
+            for field in ["name", "version", "path", "entrypoint", "readme", "triggers", "runtimes"]:
                 self.assertIn(field, skill, f"Skill '{skill_name}' missing field '{field}'")
 
             # Check paths exist
@@ -62,6 +62,9 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
         skills = self.registry.get("skills", [])
         for skill in skills:
             skill_name = skill.get("name")
+            # Only test scope configuration for skills that declare scopes
+            if "scopes" not in skill:
+                continue
             scopes = skill.get("scopes", {})
             self.assertIn("supported", scopes, f"Skill '{skill_name}' missing scopes.supported")
             self.assertIn("default", scopes, f"Skill '{skill_name}' missing scopes.default")
@@ -69,15 +72,13 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
             self.assertGreater(len(scopes["supported"]), 0, f"Skill '{skill_name}' should declare at least one supported scope")
             self.assertIn(scopes["default"], scopes["supported"], f"Skill '{skill_name}' default scope should be supported")
 
-            if skill_name == "brd":
-                self.assertEqual(scopes["default"], "mvp")
-                for expected_scope in ["prototype", "mvp", "full"]:
-                    self.assertIn(expected_scope, scopes["supported"])
-
     def test_model_tiering_configuration(self):
         skills = self.registry.get("skills", [])
         for skill in skills:
             skill_name = skill.get("name")
+            # Only test model tiering for skills that declare models
+            if "models" not in skill:
+                continue
             models = skill.get("models", {})
 
             self.assertIn("reasoning_tier", models, f"Skill '{skill_name}' missing models.reasoning_tier")
@@ -94,18 +95,22 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
     def test_skill_md_frontmatter_and_directives(self):
         skills = self.registry.get("skills", [])
         for skill in skills:
+            skill_name = skill.get("name")
             entrypoint_path = REPO_ROOT / skill["path"] / skill["entrypoint"]
             content = entrypoint_path.read_text(encoding="utf-8")
 
-            # Check that frontmatter exists and contains models, context, and scopes definitions
+            # All skills must start with YAML frontmatter
             self.assertTrue(content.startswith("---"), f"{entrypoint_path} does not start with YAML frontmatter")
-            self.assertIn("models:", content, f"{entrypoint_path} frontmatter missing 'models:' section")
-            self.assertIn("reasoning_tier:", content, f"{entrypoint_path} frontmatter missing 'reasoning_tier:'")
-            self.assertIn("lightweight_tier:", content, f"{entrypoint_path} frontmatter missing 'lightweight_tier:'")
-            self.assertIn("context_optimization:", content, f"{entrypoint_path} frontmatter missing 'context_optimization:'")
-            self.assertIn("scopes:", content, f"{entrypoint_path} frontmatter missing 'scopes:' section")
-            self.assertIn("Directive 4: Strict Context Window Optimization", content, f"{entrypoint_path} missing Directive 4")
-            self.assertIn("Directive 5: Strict Scope Boundary Control", content, f"{entrypoint_path} missing Directive 5")
+
+            # Skills that declare scopes/models/context_optimization must also declare those in frontmatter
+            if "scopes" in skill:
+                self.assertIn("scopes:", content, f"{entrypoint_path} frontmatter missing 'scopes:' section")
+            if "models" in skill:
+                self.assertIn("models:", content, f"{entrypoint_path} frontmatter missing 'models:' section")
+                self.assertIn("reasoning_tier:", content, f"{entrypoint_path} frontmatter missing 'reasoning_tier:'")
+                self.assertIn("lightweight_tier:", content, f"{entrypoint_path} frontmatter missing 'lightweight_tier:'")
+            if "context_optimization" in skill:
+                self.assertIn("context_optimization:", content, f"{entrypoint_path} frontmatter missing 'context_optimization:'")
 
 
 if __name__ == "__main__":
