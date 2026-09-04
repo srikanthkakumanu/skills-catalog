@@ -3,6 +3,8 @@ name: prd
 description: Assembles a Product Requirements Document purely by pulling fixed sections from BRD.md, req-nfr-analysis.md, architecture-decisions.md, detailed-design.md, and tech-stack.md per a section manifest. Makes no architecture, stack, or requirement judgments of its own — every upstream item must already be confirmed, or it's flagged, not decided here.
 license: Apache-2.0
 compatibility: Claude Code, OpenAI Codex, Google Antigravity 2
+metadata:
+  tier_policy: "lightweight tier throughout — this skill only extracts, filters by status, and deduplicates; it never needs reasoning-tier judgment"
 ---
 # PRD Assembler Skill
 
@@ -13,6 +15,8 @@ compatibility: Claude Code, OpenAI Codex, Google Antigravity 2
 4. Aggregate every upstream file's unresolved items (Open Questions, Structural Findings, unaddressed NFRs, under-constrained stacks, any pending status) into one deduplicated Open Items section — never repeat the same item under multiple sources.
 5. A missing required upstream file blocks only the sections that depend on it — assemble what's available, and name the missing file explicitly rather than omitting the section silently.
 6. Out of pipeline scope by prior decision: no test strategy, no deployment plan.
+7. **Cost control** — this entire skill is lightweight-tier work: extraction, status filtering, and deduplication, never original judgment. If a step ever seems to need reasoning-tier weighing of options, that step belongs in an upstream skill, not here — don't do it, flag it instead.
+8. **Context** — read each upstream file once, pull only the manifested section per row below; don't reload a file already read earlier in the same run.
 
 ## Section Manifest
 
