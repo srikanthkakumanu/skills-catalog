@@ -65,6 +65,9 @@ venv.bak/
 .pytype/
 .ruff_cache/
 
+# uv package manager
+.uv-cache/
+
 # Operating System Files
 .DS_Store
 .DS_Store?
@@ -89,3 +92,6 @@ Thumbs.db
 *.bak
 .cache/
 scratch/
+
+# Claude Code local settings
+.claude/settings.local.json
