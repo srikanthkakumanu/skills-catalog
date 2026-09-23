@@ -132,6 +132,36 @@
       "license": "Apache-2.0"
     },
     {
+      "name": "arch-diagram-generator",
+      "version": "1.0.0",
+      "path": "skills/arch-diagram-generator",
+      "entrypoint": "SKILL.md",
+      "readme": "README.md",
+      "description": "Generate modern, professional, presentation-quality architecture diagrams from natural language system descriptions.",
+      "triggers": [
+        "/arch-diagram-generator",
+        "generate architecture diagram",
+        "create architecture diagram",
+        "system architecture diagram",
+        "architecture infographic",
+        "draw system architecture"
+      ],
+      "runtimes": [
+        "antigravity",
+        "claude",
+        "codex"
+      ],
+      "tags": [
+        "architecture-diagram",
+        "visualization",
+        "infographic",
+        "solution-design",
+        "presentation",
+        "diagram-generation"
+      ],
+      "license": "Apache-2.0"
+    },
+    {
       "name": "detailed-design",
       "version": "1.0.0",
       "path": "skills/detailed-design",
@@ -238,7 +268,7 @@
       "path": "skills/implementation-guide",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Resolves confirmed tech-stack.md playbook citations against this catalog's migrated Spring Boot 4.x / Java 26 reference guides and produces project conventions (CLAUDE.md/AGENTS.md). Runs only after PRD.md exists. Makes no architecture, stack, or requirement decisions.",
+      "description": "Resolves confirmed tech-stack.md playbook citations against this catalog's migrated Spring Boot 4.x / Java 27 reference guides and produces project conventions (CLAUDE.md/AGENTS.md). Runs only after PRD.md exists. Makes no architecture, stack, or requirement decisions.",
       "triggers": [
         "/implementation-guide",
         "generate project conventions",
@@ -256,7 +286,7 @@
       "tags": [
         "implementation-guide",
         "spring-boot-4",
-        "java-26",
+        "java-27",
         "project-conventions",
         "phase-7-implementation",
         "claude-md",
@@ -271,7 +301,7 @@
       "path": "skills/rest-api",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Spring Boot 4 / Spring Framework 7 REST API reference covering controller conventions, versioning, hypermedia, OpenAPI-first generation, RFC 9457 error responses, and declarative HTTP interface clients. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Spring Boot 4 / Spring Framework 7 REST API reference covering controller conventions, versioning, hypermedia, OpenAPI-first generation, RFC 9457 error responses, and declarative HTTP interface clients. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/rest-api",
         "rest api conventions",
@@ -292,7 +322,7 @@
         "rfc-9457",
         "http-clients",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -302,7 +332,7 @@
       "path": "skills/persistence",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Spring Boot 4 persistence reference covering JPA/Hibernate 7 entities, Redis caching, Flyway migrations, transactional patterns, and JSpecify null-safety. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Spring Boot 4 persistence reference covering JPA/Hibernate 7 entities, Redis caching, Flyway migrations, transactional patterns, and JSpecify null-safety. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/persistence",
         "spring data jpa",
@@ -323,7 +353,7 @@
         "redis",
         "flyway",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -333,7 +363,7 @@
       "path": "skills/security",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Spring Boot 4 / Spring Security 7 reference for first-party JWT authentication and OAuth2 resource-server validation. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Spring Boot 4 / Spring Security 7 reference for first-party JWT authentication and OAuth2 resource-server validation. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/security",
         "spring security jwt",
@@ -351,7 +381,7 @@
         "oauth2",
         "spring-security",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -361,7 +391,7 @@
       "path": "skills/architecture-patterns",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Architectural pattern reference for Spring Boot 4 projects: domain-driven design, hexagonal architecture, layered architecture, multi-tenancy, and Spring Modulith. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Architectural pattern reference for Spring Boot 4 projects: domain-driven design, hexagonal architecture, layered architecture, multi-tenancy, and Spring Modulith. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/architecture-patterns",
         "domain driven design",
@@ -382,7 +412,7 @@
         "spring-modulith",
         "multi-tenancy",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -392,7 +422,7 @@
       "path": "skills/messaging",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Messaging and edge-routing reference for Spring Boot 4: Kafka/RabbitMQ/Pulsar/JMS event-driven messaging and Spring Cloud Gateway 5 edge routing. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Messaging and edge-routing reference for Spring Boot 4: Kafka/RabbitMQ/Pulsar/JMS event-driven messaging and Spring Cloud Gateway 5 edge routing. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/messaging",
         "event driven messaging",
@@ -410,7 +440,7 @@
         "rabbitmq",
         "spring-cloud-gateway",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -420,7 +450,7 @@
       "path": "skills/testing",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Testing reference for Spring Boot 4 applications: unit, slice, and integration test structure and tooling. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Testing reference for Spring Boot 4 applications: unit, slice, and integration test structure and tooling. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/testing",
         "testing pyramid",
@@ -437,7 +467,7 @@
         "testing-pyramid",
         "testcontainers",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -447,7 +477,7 @@
       "path": "skills/observability",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Observability reference for Spring Boot 4: service-wide Actuator/Micrometer/OTLP telemetry, plus Spring AI-specific model observability. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Observability reference for Spring Boot 4: service-wide Actuator/Micrometer/OTLP telemetry, plus Spring AI-specific model observability. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/observability",
         "production observability",
@@ -466,7 +496,7 @@
         "opentelemetry",
         "spring-ai",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -476,7 +506,7 @@
       "path": "skills/batch",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Spring Batch 6 reference for Spring Boot 4: chunk-oriented batch jobs, ETL pipelines, and restartability. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Spring Batch 6 reference for Spring Boot 4: chunk-oriented batch jobs, ETL pipelines, and restartability. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/batch",
         "spring batch",
@@ -493,7 +523,7 @@
         "spring-batch",
         "etl",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -503,7 +533,7 @@
       "path": "skills/ai-integration",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Spring AI 2.0 reference for Spring Boot 4: LLM/ChatClient integration, RAG/embeddings, and exposing application capabilities as MCP tools. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Spring AI 2.0 reference for Spring Boot 4: LLM/ChatClient integration, RAG/embeddings, and exposing application capabilities as MCP tools. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/ai-integration",
         "spring ai integration",
@@ -522,7 +552,7 @@
         "rag",
         "embeddings",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -532,7 +562,7 @@
       "path": "skills/resilience",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Resilience reference for Spring Boot 4 / Spring Framework 7: native retry/concurrency-limit support and idempotency patterns for retried operations. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Resilience reference for Spring Boot 4 / Spring Framework 7: native retry/concurrency-limit support and idempotency patterns for retried operations. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/resilience",
         "resilience retry spring boot",
@@ -549,7 +579,7 @@
         "retry",
         "idempotency",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -559,7 +589,7 @@
       "path": "skills/configuration",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Configuration reference for Spring Boot 4: grouped, typed @ConfigurationProperties binding, validation, profiles, and secrets. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Configuration reference for Spring Boot 4: grouped, typed @ConfigurationProperties binding, validation, profiles, and secrets. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/configuration",
         "configuration properties spring boot",
@@ -574,7 +604,7 @@
         "configuration",
         "configuration-properties",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -584,7 +614,7 @@
       "path": "skills/deployment",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Container-native deployment reference for Spring Boot 4: OCI images, buildpacks, AOT, and GraalVM native executables. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Container-native deployment reference for Spring Boot 4: OCI images, buildpacks, AOT, and GraalVM native executables. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/deployment",
         "container native deployment",
@@ -602,7 +632,7 @@
         "graalvm",
         "buildpacks",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     },
@@ -612,7 +642,7 @@
       "path": "skills/reactive",
       "entrypoint": "SKILL.md",
       "readme": "README.md",
-      "description": "Reactive-stack reference for Spring Boot 4: fully-reactive request paths with WebFlux, Reactor, and R2DBC. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 26 contexts.",
+      "description": "Reactive-stack reference for Spring Boot 4: fully-reactive request paths with WebFlux, Reactor, and R2DBC. Resolved by implementation-guide for confirmed Spring Boot 4.x / Java 27 contexts.",
       "triggers": [
         "/reactive",
         "webflux reactive patterns",
@@ -630,7 +660,7 @@
         "reactor",
         "r2dbc",
         "spring-boot-4",
-        "java-26"
+        "java-27"
       ],
       "license": "Apache-2.0"
     }
