@@ -1,4 +1,3 @@
-
 ---
 name: req-nfr-analysis
 description: Normalizes a BRD's functional requirements and tags NFRs across a compact 10-category taxonomy, flags inferred NFRs and any contradictions or unsupported claims the BRD's self-check may have missed, asks the user its open questions directly, and integrates the rephrased answers into the relevant output sections. Consumes BRD.md, produces req-nfr-analysis.md.

@@ -95,7 +95,6 @@ class TestRegistryAndSkillConfiguration(unittest.TestCase):
     def test_skill_md_frontmatter_and_directives(self):
         skills = self.registry.get("skills", [])
         for skill in skills:
-            skill_name = skill.get("name")
             entrypoint_path = REPO_ROOT / skill["path"] / skill["entrypoint"]
             content = entrypoint_path.read_text(encoding="utf-8")
 

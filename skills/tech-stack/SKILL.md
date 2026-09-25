@@ -1,4 +1,3 @@
-
 ---
 name: tech-stack
 description: Selects a full-stack technology choice per bounded context, decomposed by layer, against a standing defaults policy (Java/Spring Boot for microservice layers, Python/uv for AI/agentic layers, common infra, pattern-based messaging). Shows a per-layer comparison table (decision, why, cross-stack alternatives), batch-confirms policy-backed rows, and asks individually for anything the policy doesn't resolve.
