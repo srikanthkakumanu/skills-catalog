@@ -663,6 +663,40 @@
         "java-27"
       ],
       "license": "Apache-2.0"
+    },
+    {
+      "name": "front-end",
+      "version": "1.0.0",
+      "path": "skills/front-end",
+      "entrypoint": "SKILL.md",
+      "readme": "README.md",
+      "description": "Next.js 16 / React 19 / TypeScript frontend reference covering component composition, App Router rendering/data patterns, state management, TanStack Query data fetching, React Hook Form + Zod validation, Tailwind CSS styling, Vitest/RTL/Playwright testing, and performance/accessibility. Resolved by implementation-guide for tech-stack contexts where a frontend/presentation layer was evidence-gated in.",
+      "triggers": [
+        "/frontend",
+        "react component patterns",
+        "nextjs app router",
+        "frontend state management",
+        "tanstack query data fetching",
+        "react hook form zod validation",
+        "tailwind css styling",
+        "frontend testing vitest playwright"
+      ],
+      "runtimes": [
+        "antigravity",
+        "claude",
+        "codex"
+      ],
+      "tags": [
+        "frontend",
+        "react",
+        "nextjs",
+        "typescript",
+        "tanstack-query",
+        "tailwind",
+        "testing",
+        "accessibility"
+      ],
+      "license": "Apache-2.0"
     }
   ]
 }

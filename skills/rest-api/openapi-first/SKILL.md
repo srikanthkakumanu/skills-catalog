@@ -3,42 +3,40 @@ name: openapi-first
 description: >
   Use when the project follows API-first / OpenAPI-first approach: generating controller
   interfaces, DTOs, and clients from an OpenAPI spec. Use when you see openapi.yaml,
-  openapi-generator-maven-plugin, or ApiDelegate pattern in the project.
+  openapi-generator-gradle-plugin, or ApiDelegate pattern in the project.
 ---
 
 # OpenAPI-First Development
 
-## Maven Plugin Setup
+## Gradle Plugin Setup
 
-```xml
-<plugin>
-    <groupId>org.openapitools</groupId>
-    <artifactId>openapi-generator-maven-plugin</artifactId>
-    <version>7.5.0</version>
-    <executions>
-        <execution>
-            <goals><goal>generate</goal></goals>
-            <configuration>
-                <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
-                <generatorName>spring</generatorName>
-                <apiPackage>com.example.api</apiPackage>
-                <modelPackage>com.example.api.model</modelPackage>
-                <configOptions>
-                    <delegatePattern>true</delegatePattern>      <!-- implement delegate, not controller -->
-                    <interfaceOnly>false</interfaceOnly>
-                    <useSpringBoot3>true</useSpringBoot3> <!-- still the OpenAPI Generator Jakarta/Spring 6+ switch -->
-                    <useTags>true</useTags>
-                    <dateLibrary>java8</dateLibrary>
-                    <serializationLibrary>jackson</serializationLibrary>
-                    <openApiNullable>false</openApiNullable>
-                    <skipDefaultInterface>true</skipDefaultInterface>
-                </configOptions>
-                <generateSupportingFiles>true</generateSupportingFiles>
-                <output>${project.build.directory}/generated-sources/openapi</output>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
+```gradle
+plugins {
+    id 'org.openapi.generator' version '7.5.0'
+}
+
+openApiGenerate {
+    inputSpec = "$projectDir/src/main/resources/openapi.yaml"
+    generatorName = "spring"
+    apiPackage = "com.example.api"
+    modelPackage = "com.example.api.model"
+    configOptions = [
+        delegatePattern      : "true",       // implement delegate, not controller
+        interfaceOnly        : "false",
+        useSpringBoot3       : "true",       // still the OpenAPI Generator Jakarta/Spring 6+ switch
+        useTags              : "true",
+        dateLibrary          : "java8",
+        serializationLibrary : "jackson",
+        openApiNullable      : "false",
+        skipDefaultInterface : "true"
+    ]
+    generateSupportingFiles = true
+    outputDir = "$buildDir/generated/openapi"
+}
+
+// Gradle's plugin doesn't auto-register generated sources as a compile root like Maven's does
+compileJava.dependsOn tasks.openApiGenerate
+sourceSets.main.java.srcDir "$buildDir/generated/openapi/src/main/java"
 ```
 
 ## OpenAPI Spec Example
@@ -158,7 +156,7 @@ public class OrdersApiDelegateImpl implements OrdersApiDelegate {
 ## .gitignore — Never Commit Generated Files
 
 ```gitignore
-target/generated-sources/openapi/
+build/generated/openapi/
 ```
 
 ## Gotchas

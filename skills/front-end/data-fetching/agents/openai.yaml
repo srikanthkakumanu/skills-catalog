@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Fetching (TanStack Query)"
+  short_description: "Query keys, caching, mutations, optimistic updates"
+  default_prompt: "Use $data-fetching to implement this frontend change."

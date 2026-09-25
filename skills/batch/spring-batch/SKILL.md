@@ -26,13 +26,10 @@ from 4.x) — most online examples are wrong. The rules that break the most agen
 
 ## Dependencies
 
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-batch-jdbc</artifactId> <!-- persistent BATCH_* metadata -->
-</dependency>
-<!-- spring-boot-starter-batch alone = resourceless in-memory repository:
-     fine for run-and-forget jobs, but no restart-on-failure, no audit trail -->
+```gradle
+implementation 'org.springframework.boot:spring-boot-starter-batch-jdbc' // persistent BATCH_* metadata
+// spring-boot-starter-batch alone = resourceless in-memory repository:
+// fine for run-and-forget jobs, but no restart-on-failure, no audit trail
 ```
 
 ## Job & Step (Spring Batch 6 API)

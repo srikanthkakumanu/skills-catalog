@@ -13,15 +13,9 @@ description: >
 Boot's modular starters do NOT pull Flyway in transitively — `spring-boot-starter-data-jpa`
 alone means migrations silently never run. Add the Flyway starter plus your database's module:
 
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-flyway</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.flywaydb</groupId>
-    <artifactId>flyway-database-postgresql</artifactId> <!-- DB-specific module is required -->
-</dependency>
+```gradle
+implementation 'org.springframework.boot:spring-boot-starter-flyway'
+implementation 'org.flywaydb:flyway-database-postgresql' // DB-specific module is required
 ```
 
 ## File Naming Convention

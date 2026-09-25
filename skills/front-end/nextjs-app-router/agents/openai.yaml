@@ -1,0 +1,4 @@
+interface:
+  display_name: "Next.js App Router"
+  short_description: "Server Components, data fetching, streaming, Server Actions"
+  default_prompt: "Use $nextjs-app-router to implement this frontend change."

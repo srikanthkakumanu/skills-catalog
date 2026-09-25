@@ -14,11 +14,8 @@ Spring Boot 4.x ships **Spring Security 7** — lambda DSL only; `and()`, `autho
 
 ## Dependency
 
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
-</dependency>
+```gradle
+implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-resource-server'
 ```
 
 ## Security Configuration

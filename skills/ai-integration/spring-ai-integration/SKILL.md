@@ -10,42 +10,20 @@ description: >
 
 ## Dependencies
 
-```xml
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-bom</artifactId>
-            <version>2.0.0</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-</dependencyManagement>
+```gradle
+dependencies {
+    implementation platform('org.springframework.ai:spring-ai-bom:2.0.0')
 
-<dependencies>
-    <!-- Choose your model provider — pattern is spring-ai-starter-model-<provider> -->
-    <dependency>
-        <groupId>org.springframework.ai</groupId>
-        <artifactId>spring-ai-starter-model-anthropic</artifactId>
-    </dependency>
-    <!-- OR -->
-    <dependency>
-        <groupId>org.springframework.ai</groupId>
-        <artifactId>spring-ai-starter-model-openai</artifactId>
-    </dependency>
+    // Choose your model provider — pattern is spring-ai-starter-model-<provider>
+    implementation 'org.springframework.ai:spring-ai-starter-model-anthropic'
+    // OR
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
-    <!-- For RAG / vector search -->
-    <dependency>
-        <groupId>org.springframework.ai</groupId>
-        <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
-    </dependency>
-    <!-- QuestionAnswerAdvisor lives here — 2.0 renamed spring-ai-advisors-vector-store -->
-    <dependency>
-        <groupId>org.springframework.ai</groupId>
-        <artifactId>spring-ai-vector-store-advisor</artifactId>
-    </dependency>
-</dependencies>
+    // For RAG / vector search
+    implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
+    // QuestionAnswerAdvisor lives here — 2.0 renamed spring-ai-advisors-vector-store
+    implementation 'org.springframework.ai:spring-ai-vector-store-advisor'
+}
 ```
 
 > **Version pairing matters.** Spring Boot 4 requires **Spring AI 2.0** (`spring-ai-bom` 2.0.0);

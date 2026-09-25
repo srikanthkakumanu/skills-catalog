@@ -1,0 +1,4 @@
+interface:
+  display_name: "Performance and Accessibility"
+  short_description: "Bundle size, re-render cost, virtualization, a11y"
+  default_prompt: "Use $performance-accessibility to implement this frontend change."

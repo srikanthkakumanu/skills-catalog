@@ -1,0 +1,19 @@
+/* Drop-in Tailwind CSS v4 CSS-first theme starter. Adjust tokens to the project's design system. */
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-50: oklch(0.97 0.02 250);
+  --color-brand-500: oklch(0.6 0.15 250);
+  --color-brand-600: oklch(0.52 0.16 250);
+  --color-danger-500: oklch(0.55 0.22 25);
+  --color-surface: oklch(1 0 0);
+
+  --font-display: 'Inter', sans-serif;
+  --radius-card: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-surface: oklch(0.2 0 0);
+  }
+}

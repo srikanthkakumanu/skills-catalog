@@ -3,8 +3,10 @@
 Project-invariant Spring Boot 4.x / Java 27 implementation knowledge, plus Python 3.11.x /
 AI-agentic implementation knowledge.
 
-**Scope:** Spring Boot 4.x + Java 27 (Spring Boot 3.x was never read or migrated), and Python
-3.11.x for the AI-agentic layer (`stacks/python-ai-agentic.md`). No other language or framework.
+**Scope:** Spring Boot 4.x + Java 27 (Spring Boot 3.x was never read or migrated), Python 3.11.x
+for the AI-agentic layer (`stacks/python-ai-agentic.md`), and Next.js 16.x / React 19 /
+TypeScript 5.9.x for the frontend/presentation layer (`stacks/frontend-nextjs-react-typescript.md`)
+when that layer was evidence-gated in for a context. No other language or framework.
 
 ## Why this exists
 
@@ -14,7 +16,8 @@ This skill resolves the detail those citations point to. It runs *after* `PRD.md
 each confirmed context's playbook citation to the reference skills/conventions below, and produces project
 conventions (`CLAUDE.md`/`AGENTS.md`) — never a PRD section, never read by any upstream phase. It is
 not part of the six-phase decision pipeline (`brd` → `prd`); it's a stack-specific extension that
-only applies when `tech-stack` selected a Spring Boot 4.x context or a Python AI-agentic context.
+only applies when `tech-stack` selected a Spring Boot 4.x context, a Python AI-agentic context, or
+an evidence-gated frontend/presentation context.
 
 ## Spring Boot 4.x reference skills
 
@@ -52,6 +55,19 @@ Each `stacks/*.md` playbook in `tech-stack` points back here by topic name under
 `spring-data-jpa, flyway-migrations, ...`. Resolve those names against the table above, at
 `skills/<category>/<topic>/`.
 
+## Frontend reference skills
+
+All 8 topics live under one new top-level catalog skill, `skills/frontend/`, resolved the same way
+the 13 Spring Boot categories above are — evidence-gated, not default-applied (see `tech-stack`
+Directive 1):
+
+| Category (`skills/<category>/`) | Topics |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `frontend/` | react-component-patterns, nextjs-app-router, state-management, data-fetching, forms-validation, styling-tailwind, testing-frontend, performance-accessibility |
+
+`stacks/frontend-nextjs-react-typescript.md`'s "Implementation detail" line cites these 8 topic
+names.
+
 ## Java baseline mini-skills
 
 `java-language-conventions/` and `spring-boot-conventions/` sit directly under
@@ -70,9 +86,28 @@ citable topic owned by one category:
 Both are loaded unconditionally for every Java context — never resolved per-context the way
 `skills/<category>/<topic>/` topics are.
 
+## Frontend baseline mini-skills
+
+`typescript-language-conventions/` and `nextjs-project-conventions/` sit directly under
+`implementation-guide/` (siblings of this `SKILL.md`/`README.md`) — the same tier as a
+`skills/<category>/<topic>/` topic (lightweight `name`+`description` frontmatter only, not the
+full top-level package frontmatter, not independently registered in `registry.json`), nested here
+instead of promoted to top-level because they're cross-cutting baselines rather than a citable
+topic owned by one category:
+
+- `typescript-language-conventions/SKILL.md` — TypeScript 5.9.x version/toolchain facts (strict
+  mode flags, target/module resolution) plus language-feature usage guidance (discriminated
+  unions, `satisfies`, template literal types, utility types) with good/bad examples
+- `nextjs-project-conventions/SKILL.md` — project conventions (App Router folder structure,
+  Server/Client Component boundary rules, environment variable handling, git conventions);
+  consistently Next.js 16.x / React 19 throughout
+
+Both are loaded unconditionally for every frontend context — never resolved per-context the way
+`skills/frontend/<topic>/` topics are.
+
 ## `conventions/`
 
-- `compatibility-baseline.md` — verified version pins (Spring Boot/Cloud/AI, GraalVM) as of Aug 2026, loaded unconditionally for every Java context alongside the two mini-skills above
+- `compatibility-baseline.md` — verified version pins (Spring Boot/Cloud/AI, GraalVM) as of Aug 2026, loaded unconditionally for every Java context alongside the two mini-skills above; also now carries React/Next.js/TypeScript/TanStack Query/Zod/React Hook Form/Tailwind/Vitest/Playwright/RTL/Node/pnpm pins, loaded unconditionally for every frontend context alongside the two frontend mini-skills above
 
 ## `conventions/python/`
 
@@ -95,5 +130,6 @@ per-context resolved pointers.
 
 Registered in `registry.json` as `implementation-guide`, `SKILL.md` written. Triggerable via
 `/implementation-guide` or natural language once installed. Each of the 13 Spring Boot 4.x
-reference skills above is separately registered too (see the root README's Available Skills
-table), so they can be triggered directly without going through this skill.
+reference skills and the 1 Frontend reference skill above is separately registered too (see the
+root README's Available Skills table), so they can be triggered directly without going through
+this skill.

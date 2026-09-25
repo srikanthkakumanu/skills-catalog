@@ -17,14 +17,11 @@ Keep the gateway an edge adapter. Do not move domain workflows into filters.
 - Import `spring-cloud-dependencies` as a BOM and omit versions from individual Cloud dependencies.
 - Choose exactly one gateway runtime.
 
-```xml
-<!-- Reactive Netty gateway -->
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
-</dependency>
+```gradle
+// Reactive Netty gateway
+implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
 
-<!-- OR servlet gateway: spring-cloud-starter-gateway-server-webmvc -->
+// OR servlet gateway: spring-cloud-starter-gateway-server-webmvc
 ```
 
 Do not use the old `spring-cloud-starter-gateway` coordinate or force a Boot 3 release train onto

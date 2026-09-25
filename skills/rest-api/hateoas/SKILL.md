@@ -10,11 +10,8 @@ description: >
 
 ## Dependency
 
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-hateoas</artifactId>
-</dependency>
+```gradle
+implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 ```
 
 ## When to Add Links

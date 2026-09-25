@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Component Patterns"
+  short_description: "Compound components, variant props, ref-as-prop composition"
+  default_prompt: "Use $react-component-patterns to implement this frontend change."

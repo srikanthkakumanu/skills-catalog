@@ -16,26 +16,19 @@ standalone SDK only when Spring integration is intentionally not required.
 Let the Spring AI BOM manage every Spring AI and MCP transitive dependency. Do not override its MCP
 SDK version independently.
 
-```xml
-<!-- Pick exactly one transport starter. -->
-<dependency>
-    <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-starter-mcp-server</artifactId>
-</dependency>
-<!-- Remote MVC: spring-ai-starter-mcp-server-webmvc -->
-<!-- Remote reactive: spring-ai-starter-mcp-server-webflux -->
+```gradle
+// Pick exactly one transport starter.
+implementation 'org.springframework.ai:spring-ai-starter-mcp-server'
+// Remote MVC: spring-ai-starter-mcp-server-webmvc
+// Remote reactive: spring-ai-starter-mcp-server-webflux
 ```
 
 For an application that uses the raw SDK without Spring AI, use the current 2.x release and follow
 its 2.0 migration guide. MCP Java SDK 2.0 tracks the 2025-11-25 protocol and prefers Streamable HTTP;
 SSE transports are deprecated.
 
-```xml
-<dependency>
-    <groupId>io.modelcontextprotocol.sdk</groupId>
-    <artifactId>mcp</artifactId>
-    <version>2.0.0</version>
-</dependency>
+```gradle
+implementation 'io.modelcontextprotocol.sdk:mcp:2.0.0'
 ```
 
 ## Native Spring AI MCP tools

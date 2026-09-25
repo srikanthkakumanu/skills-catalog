@@ -1,0 +1,4 @@
+interface:
+  display_name: "Forms and Validation"
+  short_description: "React Hook Form + Zod schemas, accessible error handling"
+  default_prompt: "Use $forms-validation to implement this frontend change."

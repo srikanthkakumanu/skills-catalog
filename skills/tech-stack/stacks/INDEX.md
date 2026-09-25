@@ -17,6 +17,7 @@ a Python playbook, not a Spring Boot one, so it doesn't inherit this baseline.
 | Multiple backend services needing unified edge routing, rate limiting, auth | `springboot4-gateway.md` |
 | LLM/agent integration, RAG, tool-calling, exposing capabilities via MCP | `python-ai-agentic.md` (default) — or `springboot4-ai-mcp.md` only when deliberately hosting inside an existing Spring service |
 | Single team, single deploy cadence, explicit "avoid over-engineering" signal, wants module boundaries without microservices ops cost | `springboot4-modulith.md` |
+| Browser-based UI (web app/dashboard/portal) confirmed as a bounded context's consumer — evidence-gated, see `SKILL.md` Directive 1; additive alongside any backend row above, not a mutually-exclusive alternative to them | `frontend-nextjs-react-typescript.md` |
 
 ## Disqualifiers worth checking before matching
 
@@ -30,6 +31,9 @@ a Python playbook, not a Spring Boot one, so it doesn't inherit this baseline.
 - **Constraint calls for reactive (WebFlux) AND heavy JPA/Hibernate use** → no clean fit; the two
   playbooks are mutually exclusive at the persistence layer (Hibernate is blocking). Present as
   `pending` with the conflict named, per Directive 3 — don't force one.
+- **No UI/browser-facing consumer evidenced for a context** (pure API/service-to-service) → don't
+  attach `frontend-nextjs-react-typescript.md`; the evidence gate at decomposition (Directive 1)
+  already said no frontend layer exists here — this isn't a playbook mismatch to route around.
 
 ## Cross-cutting — not a playbook of its own
 

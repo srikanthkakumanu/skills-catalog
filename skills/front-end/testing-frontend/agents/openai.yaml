@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Testing"
+  short_description: "Vitest/RTL component tests and Playwright e2e tests"
+  default_prompt: "Use $testing-frontend to implement this frontend change."

@@ -4,6 +4,7 @@
 | ------------------------------- | ---------------------------------- | ---------------------------------- |
 | Microservice / business-logic   | Spring Boot 4.x, Java 27 — see `java-baseline.md` | Gradle (Groovy DSL) Latest Version |
 | AI / agentic (MCP, RAG, agents) | Python (runtime settled by policy) | uv Latest Version                  |
+| Frontend / presentation (evidence-gated — not applied by default) | Next.js 16.x / React 19 / TypeScript 5.9.x — see `frontend-nextjs-react-typescript.md` | pnpm + Next.js build toolchain |
 
 **AI framework composition — not policy-resolved, ask individually:** LangChain,
 LangGraph, OpenAI SDK, Claude SDK are all in scope; which combination applies
@@ -16,6 +17,13 @@ with the above.
 Catalog playbooks: `stacks/python-ai-agentic.md` documents this default stack;
 `stacks/springboot4-ai-mcp.md` is a rare fallback for hosting inside an existing
 Spring Boot service — see `stacks/INDEX.md`.
+
+**Frontend layer — evidence-gated, not policy-default:** unlike the microservice/business-logic
+and AI/agentic rows above, this layer is never added to a context automatically.
+`tech-stack/SKILL.md` Directive 1 / Process step 2 governs whether it's added, omitted, or asked
+about. Once added, the stack choice itself *is* policy-resolved (the row above) — only the layer's
+existence is gated, not the technology within it. Catalog playbook:
+`stacks/frontend-nextjs-react-typescript.md`.
 
 **Common infra, any layer:** Docker · Kubernetes · GitHub Actions · Redis
 

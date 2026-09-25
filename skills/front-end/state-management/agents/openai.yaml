@@ -1,0 +1,4 @@
+interface:
+  display_name: "State Management"
+  short_description: "UI state vs URL state vs server state placement"
+  default_prompt: "Use $state-management to implement this frontend change."

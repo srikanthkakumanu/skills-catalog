@@ -1,0 +1,4 @@
+interface:
+  display_name: "Styling with Tailwind CSS"
+  short_description: "Tailwind v4 theming, variant helpers, design tokens"
+  default_prompt: "Use $styling-tailwind to implement this frontend change."
