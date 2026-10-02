@@ -162,6 +162,37 @@
       "license": "Apache-2.0"
     },
     {
+      "name": "tutorial-author",
+      "version": "1.0.0",
+      "path": "skills/tutorial-author",
+      "entrypoint": "SKILL.md",
+      "readme": "README.md",
+      "validator": "scripts/validate_tutorial.py",
+      "description": "Authors a hands-on TUTORIAL.md — plain-language concept intro, optional architecture diagram, full table of contents, back-to-top anchors, and verified step-by-step implementation instructions that say exactly where and how to make each code/config change, plus troubleshooting and next steps.",
+      "triggers": [
+        "/tutorial-author",
+        "write a tutorial",
+        "create tutorial",
+        "author tutorial",
+        "step-by-step guide",
+        "TUTORIAL.md"
+      ],
+      "runtimes": [
+        "antigravity",
+        "claude",
+        "codex"
+      ],
+      "tags": [
+        "tutorial",
+        "documentation",
+        "technical-writing",
+        "diataxis",
+        "step-by-step",
+        "markdown"
+      ],
+      "license": "Apache-2.0"
+    },
+    {
       "name": "detailed-design",
       "version": "1.0.0",
       "path": "skills/detailed-design",
