@@ -110,6 +110,7 @@ Exit codes: `0` no errors, `1` findings, `2` file not found. It is suitable for 
 
 **Do NOT use this skill for:**
 
+- Explaining a topic so the reader understands it, without building one specific thing — use [`teach-me`](../teach-me/README.md)
 - API or configuration reference documentation
 - READMEs, changelogs, or release notes
 - Short how-to recipes for readers who already know the topic
@@ -151,6 +152,7 @@ create tutorial: adding a new skill to this catalog, save under docs/guides/
 
 ## See Also
 
+- [Teach Me](../teach-me/README.md) — explains a topic so the reader understands it, in HTML, PDF, or Markdown
 - [Architecture Diagram Generator](../arch-diagram-generator/README.md) — produces the optional architecture diagram
 - [Agent Skills Catalog](../../README.md) — complete skill listing and installation guide
 

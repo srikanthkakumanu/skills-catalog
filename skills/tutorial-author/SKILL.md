@@ -49,5 +49,6 @@ metadata:
 - `## Recap`, `## Cleanup` (if resources were created), `## Next Steps`, `## Glossary` (optional)
 
 ## Out of Scope
+- Explaining a topic for understanding rather than building one specific thing — use `teach-me`.
 - API reference docs, READMEs, changelogs, and how-to recipes for readers who already know the topic.
 - Making architecture or stack decisions — document what exists or what the user specifies.

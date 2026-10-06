@@ -193,6 +193,39 @@
       "license": "Apache-2.0"
     },
     {
+      "name": "teach-me",
+      "version": "1.0.0",
+      "path": "skills/teach-me",
+      "entrypoint": "SKILL.md",
+      "readme": "README.md",
+      "validator": "scripts/validate_lesson.py",
+      "description": "Teaches any topic in simple English as one ordered lesson — researches the topic, proposes an outline of topics and sub-topics, asks which related topics to include and whether to write HTML, PDF, or Markdown, then explains step by step with easy code and configuration examples, files to create or modify, best practices in context, Note/Warning/Help callouts, a nested table of contents, and back-to-top links.",
+      "triggers": [
+        "/teach-me",
+        "teach me",
+        "explain this topic",
+        "help me learn",
+        "I want to learn",
+        "create a lesson"
+      ],
+      "runtimes": [
+        "antigravity",
+        "claude",
+        "codex"
+      ],
+      "tags": [
+        "learning",
+        "education",
+        "explanation",
+        "research",
+        "plain-english",
+        "html",
+        "pdf",
+        "markdown"
+      ],
+      "license": "Apache-2.0"
+    },
+    {
       "name": "detailed-design",
       "version": "1.0.0",
       "path": "skills/detailed-design",
