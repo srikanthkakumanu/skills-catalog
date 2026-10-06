@@ -132,8 +132,11 @@ public class CustomerController {
 Global exception handler in `exception/GlobalExceptionHandler.java`:
 
 - `@RestControllerAdvice` with `@ExceptionHandler` methods
-- Custom exceptions: `ResourceNotFoundException`, `BusinessValidationException`, `ConflictException`
-- Return structured error responses: `{ "error": "...", "code": "...", "timestamp": "..." }`
+- Error responses are RFC 9457 Problem Details (`application/problem+json`) — see
+  `skills/rest-api/problem-details-rfc9457`; keep an existing legacy error contract only when the
+  project already has one
+- Custom exceptions follow that topic's `DomainException` hierarchy, mapped by its
+  `ProblemDetailExceptionHandler` template — don't invent a parallel set of names
 - Never expose stack traces or internal details in error responses
 
 ## Testing
